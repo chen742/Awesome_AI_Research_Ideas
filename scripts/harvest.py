@@ -62,7 +62,7 @@ def arxiv_search(title):
                 if jacc(t, title) >= 0.6:
                     return re.sub(r"v\d+$", "", e.id.get_text().split("/abs/")[-1]), t
         except Exception: pass
-        time.sleep(1.5)
+        time.sleep(1.2)
     return None, None
 
 def sections_from_html(text):
@@ -98,7 +98,7 @@ def sections_from_pdf(pdf_bytes):
     return out
 
 def fetch_arxiv(aid):
-    time.sleep(2.0)
+    time.sleep(1.5)
     try:
         r = requests.get(f"https://arxiv.org/html/{aid}", headers=UA, timeout=60)
         if r.status_code == 200 and "ltx_document" in r.text:
@@ -113,12 +113,13 @@ def fetch_arxiv(aid):
     return {}, "", "none"
 
 q = queue.Queue()
-def resolver():
-    for line in SRC.read_text().splitlines():
+def resolver(wid=0, nw=1):
+    for i, line in enumerate(SRC.read_text().splitlines()):
+        if i % nw != wid: continue
         c = json.loads(line); k = key(c["title"])
         if k in done: continue
         rec = dict(c, title_key=k)
-        aid, t = arxiv_search(c["title"]); time.sleep(1.5)
+        aid, t = arxiv_search(c["title"]); time.sleep(1.2)
         if aid:
             rec["arxiv"] = aid; rec["s2_title"] = t
         elif c["track"] == "award":
@@ -129,7 +130,6 @@ def resolver():
                 rec.update(s2_title=m["title"], citations=m.get("citationCount"), fields=m.get("fieldsOfStudy"),
                            arxiv=(m.get("externalIds") or {}).get("ArXiv"))
         q.put(rec)
-    q.put(None)
 
 def fetcher():
     while True:
@@ -143,11 +143,12 @@ def fetcher():
         emit(rec)
         print(f"[{len(done)+q.qsize():5d}] {rec['venue']} {rec['year']} {rec.get('arxiv')} secs={len(rec.get('sections',{}))} {rec['title'][:60]}", flush=True)
 
-NF = 3
-ta = threading.Thread(target=resolver, daemon=True); ta.start()
+NF, NR = 4, 2
+tas = [threading.Thread(target=resolver, args=(i, NR), daemon=True) for i in range(NR)]
+for t in tas: t.start()
 tbs = [threading.Thread(target=fetcher, daemon=True) for _ in range(NF)]
 for t in tbs: t.start()
-ta.join()
-for _ in range(NF - 1): q.put(None)
+for t in tas: t.join()
+for _ in range(NF): q.put(None)
 for t in tbs: t.join()
 print("DONE")
