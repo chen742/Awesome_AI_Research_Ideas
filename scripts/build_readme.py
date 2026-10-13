@@ -73,5 +73,10 @@ md = README.read_text(encoding="utf-8")
 new = re.sub(r"<!-- INDEX:START -->.*?<!-- INDEX:END -->", "<!-- INDEX:START -->\n" + index + "<!-- INDEX:END -->", md, flags=re.S)
 new = re.sub(r"💡_Ideas-\d+-", f"💡_Ideas-{total}-", new)
 new = re.sub(r"🗂️_Categories-\d+-", f"🗂️_Categories-{len(toc)}-", new)
-README.write_text(new, encoding="utf-8")
-print(f"ideas={total} categories={len(toc)}")
+if "--check" in sys.argv:
+    for f in sorted((ROOT / "ideas").glob("*.md")):
+        print(f.name, len(parse(f.read_text(encoding="utf-8"))))
+    print(f"ideas={total} categories={len(toc)} (check only, README not written)")
+else:
+    README.write_text(new, encoding="utf-8")
+    print(f"ideas={total} categories={len(toc)}")
