@@ -8,7 +8,7 @@
 
 ---
 
-## 💡 Idea 7.1 — *Frequency-Aware Token Weighting: Using Internet-Scale n-gram Counts to Curb Memorization in Pretraining*
+## 💡 Idea 9.1 — *Frequency-Aware Token Weighting: Using Internet-Scale n-gram Counts to Curb Memorization in Pretraining*
 
 | | |
 |:--|:--|
@@ -41,7 +41,7 @@ Infini-gram mini 用 FM-index 把 46TB 互联网文本压到可查询的索引�
 
 ---
 
-## 💡 Idea 7.2 — *Learning to Elicit: Active Field-Linguistics Agents for Low-Resource Language Documentation*
+## 💡 Idea 9.2 — *Learning to Elicit: Active Field-Linguistics Agents for Low-Resource Language Documentation*
 
 | | |
 |:--|:--|
@@ -74,7 +74,7 @@ LingGym 用行间注释文本（IGT）构造任务，测试 LLM 能否像田野�
 
 ---
 
-## 💡 Idea 7.3 — *Context-Conditioned Fairness: Teaching LLMs When Group Differences Should and Should Not Matter*
+## 💡 Idea 9.3 — *Context-Conditioned Fairness: Teaching LLMs When Group Differences Should and Should Not Matter*
 
 | | |
 |:--|:--|
