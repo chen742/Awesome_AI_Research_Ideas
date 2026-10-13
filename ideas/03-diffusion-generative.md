@@ -8,37 +8,42 @@
 
 ---
 
-## 💡 Idea 3.1 — *Order as a Policy: Learning Where to Unmask in Diffusion Language Models under Constrained Order Families*
+## 💡 Idea 3.1 — *Order as an Exploration Policy: Entropy-Preserving Unmasking Schedules for Diffusion LLM Reinforcement Learning*
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **The Flexibility Trap: Rethinking the Value of Arbitrary Order in Diffusion Language Models** · Ni et al. · 🏆 ICML 2026 Outstanding Paper ＋ **Train for the Worst, Plan for the Best: Understanding Token Ordering in Masked Diffusions** · Kim et al. · 🏆 ICML 2025 Outstanding Paper · [arXiv:2502.06768](https://arxiv.org/abs/2502.06768) |
-| 📌 **线索来源** | Flexibility Trap §"任意顺序的训练负担与其收益不匹配"；Train-for-the-Worst §"adaptive inference-time ordering closes the train/test gap" + Future Work §"learned orderings" |
+| 🎯 **源论文** | **The Flexibility Trap: Rethinking the Value of Arbitrary Order in Diffusion Language Models** · Ni et al. · 🏆 ICML 2026 Outstanding Paper · [arXiv:2601.15165](https://arxiv.org/abs/2601.15165) ＋ **Train for the Worst, Plan for the Best: Understanding Token Ordering in Masked Diffusions** · Kim et al. · 🏆 ICML 2025 Outstanding Paper · [arXiv:2502.06768](https://arxiv.org/abs/2502.06768) |
+| 📌 **线索来源** | Flexibility Trap, Conclusion §"the flexibility of arbitrary order in general reasoning tasks may inadvertently favor inference-time exploitation over exploration … by prioritizing low-uncertainty decisions, the model implicitly anchors its trajectory to specific outcomes early in the generation process" §"Standard AR ordering … retains the high-entropy nature of logical forks … which helps preserve the solution coverage essential for reinforcement learning"；Train-for-the-Worst §"adaptive inference-time ordering" 在 Sudoku 等逻辑任务上的巨大收益 |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
 
 **🔍 深入分析**
-两篇论文从相反方向指向同一结论。Kim 等证明：掩码扩散模型（MDM）在训练时被迫学习**所有**随机顺序下的条件分布，其中很多（如先填中间再填两边）是极难的子问题，这是 MDM 似然落后于 AR 的根因；但在推理时可以**自适应选择**最容易的位置先解码，从而在 Sudoku 等逻辑任务上从 <7% 提到 ~90%。Ni 等（Flexibility Trap）则系统质疑"任意顺序"的价值：大部分收益来自并行解码而非顺序自由，灵活性反而成为训练效率的陷阱。合起来的 insight：**顺序应当既不是"任意"也不是"固定"，而是一个受约束的、可学习的策略**；训练只在一个小的顺序族上做（减轻 worst-case 负担），推理在该族内学习如何选位置（保留 plan-for-the-best 的收益）。现有 dLLM（LLaDA、Dream、MMaDA）使用的置信度/熵启发式是手工规则，没有被当作可优化对象。
+两篇最佳论文给出的证据表面上相互矛盾。Kim 等证明掩码扩散模型（MDM）训练时被迫学习所有随机顺序下的条件分布（其中很多是极难的子问题），但推理时**自适应选择最容易的位置先解码**可以把 Sudoku 从 <7% 提到 ~90%。Ni 等（Flexibility Trap）则在数学与代码推理上发现：置信度优先的任意顺序解码会**提前锚定低不确定性的决策**，表现为采样熵快速退化，单条轨迹更连贯但解空间覆盖变窄，从而损害 RL（GRPO）所依赖的探索；反而是标准从左到右顺序保留了"逻辑分叉点"的高熵，于是他们用 AR 目标对齐 dLLM 后直接做 GRPO（JustGRPO），既简单又更强，推理时仍保留并行解码。把两者放在一起看，矛盾消失了：Kim 等的"先易后难"在**约束传播型**任务（每一步都能被局部规则确定）上是最优的，而在**开放式推理**任务上同样的贪心恰恰是 Flexibility Trap 所说的过早利用。真正的空隙是：**解码顺序应当作为一个显式的探索策略来优化**，而不是一个固定的启发式（置信度优先）或一个固定的退路（从左到右）。两篇论文都没有把顺序本身作为被优化对象，也没有把"保留分叉点的熵"写进目标。
 
 **💡 一句话 Idea**
-把"下一步解码哪些位置"建模为一个轻量级策略头，用执行反馈的 RL 在受限顺序族（块级半自回归 + 块内自由）内学习解码顺序，同时让训练的顺序分布与推理策略对齐，消除 train/test 顺序失配。
+把 dLLM 的解码顺序建模为一个轻量策略头，用"结果正确性 + 组内解覆盖率（熵保持）"的 RL 目标训练它决定每步解码哪些位置，让模型在约束传播型任务上自动学会先易后难、在开放推理上自动学会保留逻辑分叉，而无需退回纯 AR 顺序。
 
 **🛠️ 可能的解决方法**
-1. **受限顺序族**：采用块级半自回归（块间从左到右，块内任意），块长 B 为超参；训练时仅对块内位置随机掩码，使模型只需学习 O(B) 规模的顺序子问题。
-2. **顺序策略头**：在主干最后一层加一个小的逐位置打分头 g_θ(h_i)，每步在当前块内按 g 选取 top-m 位置解码（m 可自适应：以 g 的归一化分数阈值决定并行度）；策略头与主干共享特征，几乎不增加成本。
-3. **执行反馈 RL**：在可验证任务（数学、代码、Sudoku/逻辑谜题）上用结果奖励 + 步数惩罚训练策略头（REINFORCE / GRPO，主干冻结或低学习率联合训练），奖励鼓励"用更少步数得到正确答案"，从而自动学到"先易后难、先约束强的位置"。
-4. **训练分布对齐**：把策略头产生的顺序回灌为训练时的掩码调度（self-play 式的 order distillation），进一步缩小 worst-case 训练负担。
+1. **顺序策略头**：在主干最后一层上加逐位置打分头 g_θ(h_i, t)，输入包含该位置当前的预测熵与所在块的已解码比例；每步按 g 的分布采样 m 个位置解码（m 由归一化分数阈值决定，保留并行性）。训练时主干冻结或低学习率。
+2. **探索感知的奖励**：对同一提示采样 G 条轨迹（不同顺序），奖励 r = 正确性 + λ·（组内最终答案的去重数 / G）− μ·步数。第二项直接奖励"顺序带来的覆盖"，对应 Flexibility Trap 指出的 RL 所需的 solution coverage；第三项保留 Kim 等的效率收益。
+3. **熵保持正则**：对被策略跳过（延后）的位置，若其熵高于阈值则给予小的正奖励——鼓励把高熵"分叉 token"留到后面而不是用低熵 token 先把轨迹锚死；这与 Flexibility Trap 的熵退化诊断一一对应。
+4. **两阶段训练**：先在 Sudoku/Zebra 等约束任务上验证策略能复现"先易后难"，再在 GSM8K/MATH/HumanEval 上与 JustGRPO（纯 AR 顺序 + GRPO）对比，检验学习到的顺序是否同时优于两种固定顺序。
+5. 主干训练仍可用 Flexibility Trap 的 AR 对齐以降低 worst-case 训练负担；顺序策略只作用于推理与 RL 阶段。
+
+**🧭 与最接近工作的区别**
+- JustGRPO（Flexibility Trap, 2026）固定 AR 顺序；本 idea 把顺序当作可学习的探索策略，AR 只是策略空间中的一个点。
+- Kim et al. (2025) 的自适应顺序是无参数的置信度启发式，且只在逻辑谜题上验证；本 idea 用 RL 学顺序并以覆盖率为目标。
+- Fast-dLLM / dKV-Cache 等只做加速，不改变顺序语义。
 
 **🧪 验证方案**
-- 逻辑任务：Sudoku、Zebra puzzles（复现 Kim 等的设置）；代码/数学：HumanEval、GSM8K、MATH；
-- 指标：准确率、解码步数（吞吐）、与置信度/熵启发式、固定从左到右、完全任意顺序的对比；
-- 消融：块长 B、策略头是否训练、是否做顺序回灌。
+- 约束任务：Sudoku、Zebra puzzles（Kim 等设置）；推理任务：GSM8K、MATH-500、HumanEval、LiveCodeBench；
+- 指标：pass@1、pass@k（k 到 64，测覆盖）、解码步数、采样熵随步数的曲线（复现并对比 Flexibility Trap 的熵退化图）；
+- 对比：置信度优先、随机顺序、纯 AR + GRPO（JustGRPO）、d1、diffu-GRPO。
 
-🔑 `diffusion LLM` `masked diffusion` `decoding order` `semi-autoregressive` `RL` `parallel decoding`
+🔑 `diffusion LLM` `decoding order` `exploration` `GRPO` `entropy` `parallel decoding`
 
 [🔝 top](#top)
-
 ---
 
 ## 💡 Idea 3.2 — *Twin-Denoiser Consistency: Turning the Memorization-to-Generalization Transition into a Training Objective*
@@ -149,7 +154,7 @@ TRACE 发现文生图扩散模型的自注意力在去噪过程中存在一个"�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Evaluation Agent: Efficient and Promptable Evaluation Framework for Visual Generative Models** · Zhang et al. · 🏆 ACL 2025 Outstanding Paper · [arXiv:2412.09645](https://arxiv.org/abs/2412.09645) |
+| 🎯 **源论文** | **Evaluation Agent: Efficient and Promptable Evaluation Framework for Visual Generative Models** · Zhang et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2412.09645](https://arxiv.org/abs/2412.09645) |
 | 📌 **线索来源** | Limitations §"While we can integrate state-of-the-art (SOTA) toolkits, they may not always perfectly align with human perception, particularly when evaluating visual generative models. This misalignment can negatively impact the accuracy of evaluation results when the Evaluation Agent relies on these tools." + §"We found that even the most advanced LLMs occasionally fall short, such as producing inconsistent output formats or struggling with numerical comparisons." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -188,7 +193,7 @@ Evaluation Agent 让 LLM 像人类一样"看几张就下判断"：多轮规划�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Deciphering Oracle Bone Language with Diffusion Models** · Guan et al. · 🏆 ACL 2024 Best Paper · [arXiv:2406.00684](https://arxiv.org/abs/2406.00684) |
+| 🎯 **源论文** | **Deciphering Oracle Bone Language with Diffusion Models** · Guan et al. · 🏆 ACL 2024 Best Paper· [arXiv:2406.00684](https://arxiv.org/abs/2406.00684) |
 | 📌 **线索来源** | Limitations §"However, these methods cannot be directly applied to evaluate truly undeciphered OBS, where the absence of ground truth necessitates expert validation." + §"Evaluating the decipherment results of entirely unknown OBS characters presents a unique challenge that goes beyond the capabilities of OCR technology." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -383,7 +388,7 @@ Motive 是第一个面向"运动"的视频扩散数据归因框架：用点跟�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **PAI-Bench: A Comprehensive Benchmark For Physical AI** · Zhou et al. · 🎤 CVPR 2026 Oral · [arXiv:2512.01989](https://arxiv.org/abs/2512.01989) ＋ **PhyWorldBench: A Comprehensive Evaluation of Physical Realism in Text-to-Video Models** · Gu et al. · 🎤 ICLR 2026 Oral · [arXiv:2507.13428](https://arxiv.org/abs/2507.13428) |
+| 🎯 **源论文** | **PAI-Bench: A Comprehensive Benchmark For Physical AI** · Zhou et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2512.01989](https://arxiv.org/abs/2512.01989) ＋ **PhyWorldBench: A Comprehensive Evaluation of Physical Realism in Text-to-Video Models** · Gu et al. · 🎤 ICLR 2026 Oral · [arXiv:2507.13428](https://arxiv.org/abs/2507.13428) |
 | 📌 **线索来源** | PAI-Bench Appendix E §"We observe that some models tend to adopt a conservative strategy that prioritizing static fidelity (e.g., holding a racket) over complex, high-risk dynamics (e.g., rapidly swinging it) to avoid artifacts." + §"developing methods that encourage risk-taking in motion generation without compromising visual quality remains a vital direction"；PhyWorldBench Appendix I §"our CAP evaluator generally provides balanced feedback, yet it can display a slight preference for videos with particularly polished visual presentation, such as smooth lighting or dynamic camera movement." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -539,7 +544,7 @@ Quotient-Space Diffusion 把等变扩散过程投影到商空间 M/G 再拉回�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models** · Chung et al. · 🎤 CVPR 2026 Oral · [arXiv:2602.18993](https://arxiv.org/abs/2602.18993) ＋ **SenCache: Accelerating Diffusion Model Inference via Sensitivity-Aware Caching** · Haghighi & Alahi · 🎤 CVPR 2026 Oral · [arXiv:2602.24208](https://arxiv.org/abs/2602.24208) |
+| 🎯 **源论文** | **SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models** · Chung et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2602.18993](https://arxiv.org/abs/2602.18993) ＋ **SenCache: Accelerating Diffusion Model Inference via Sensitivity-Aware Caching** · Haghighi & Alahi · 🎤 CVPR 2026 Oral · [arXiv:2602.24208](https://arxiv.org/abs/2602.24208) |
 | 📌 **线索来源** | SeaCache Limitation §"our analysis is formulated in the image or video domain, while most modern generative models operate in a learned latent space. The encoder can reshape the spectrum, so the latent distribution may differ from the assumed pixel-domain power-law model"；SenCache Discussions and Future Work §"as the sensitivity threshold ε maps directly to an error budget at each denoising step, dynamically scheduling ε across timesteps could further accelerate inference while maintaining generation quality: different steps contribute unequally to final fidelity" |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |

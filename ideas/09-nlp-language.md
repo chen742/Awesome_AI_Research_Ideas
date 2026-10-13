@@ -12,7 +12,7 @@
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Infini-gram mini: Exact n-gram Search at the Internet Scale with FM-Index** · Xu et al. · 🏆 EMNLP 2025 Best Paper · [arXiv:2506.12229](https://arxiv.org/abs/2506.12229) ＋ **Not All Tokens Are What You Need for Pretraining (Rho-1)** · Lin et al. · 🏆 NeurIPS 2024 Best Paper · [arXiv:2404.07965](https://arxiv.org/abs/2404.07965) |
+| 🎯 **源论文** | **Infini-gram mini: Exact n-gram Search at the Internet Scale with FM-Index** · Xu et al. · 🏆 EMNLP 2025 Best Paper· [arXiv:2506.12229](https://arxiv.org/abs/2506.12229) ＋ **Not All Tokens Are What You Need for Pretraining (Rho-1)** · Lin et al. · 🏆 NeurIPS 2024 Best Paper · [arXiv:2404.07965](https://arxiv.org/abs/2404.07965) |
 | 📌 **线索来源** | Infini-gram mini Future Work §"beyond contamination detection: use counts to guide training"；Rho-1 Limitation §"requires a reference model trained on curated data; fixed selection ratio" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -45,14 +45,14 @@ Infini-gram mini 用 FM-index 把 46TB 互联网文本压到可查询的索引�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **LingGym: How Far Are LLMs from Thinking Like Field Linguists?** · Shi et al. · 🏆 EMNLP 2025 Outstanding Paper |
-| 📌 **线索来源** | Discussion §"LLMs reason over interlinear glossed text passively; real field linguists actively elicit data from informants" + Future Work §"interactive settings" |
+| 🎯 **源论文** | **LingGym: How Far Are LLMs from Thinking Like Field Linguists?** · Yang et al. · 🏆 EMNLP 2025 Outstanding Paper· [arXiv:2511.00343](https://arxiv.org/abs/2511.00343) |
+| 📌 **线索来源** | Conclusion §"Our benchmark emphasizes mapping abstract linguistic rules to concrete sentences. Yet in actual fieldwork, it is also important to induce linguistic rules from linguistic samples … we will extend our work to … low-resource and endangered languages"；Limitations §"Our study only analyzes 18 languages … Grambank … records reference grammar books or papers for around 2400 languages" |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |
 
 **🔍 深入分析**
-LingGym 用行间注释文本（IGT）构造任务，测试 LLM 能否像田野语言学家一样从少量标注样本中归纳未知语言的形态句法规则，结果显示即便前沿模型也远落后于人类语言学家，尤其在需要**多步归纳与验证假设**时。其设定是被动的：所有数据一次给定。而真实的田野工作是**主动的**：语言学家提出假设，设计最小对立对（minimal pairs），向母语者（informant）提问，根据回答修正假设。这个"主动询问"的闭环正是 LLM 当前最弱、而 RL 又最擅长训练的能力。空隙：没有一个让 LLM 与"母语者模拟器"交互、以归纳出的语法规则的正确性为奖励的训练环境。同时这是一个有真实社会价值的问题：全球约 3000 种语言濒危，文档化人力严重不足。
+LingGym 从 18 种低资源语言的参考语法中抽取知识点（KP），测试 LLM 能否把抽象的语言学规则映射到具体句子上做元语言推理；结果显示 LLM 具备一定能力、可以辅助语言分析，但作者在结论里明确指出基准只覆盖了"规则→句子"这一方向，而真实田野工作更关键的是**从语料样本中归纳出规则**。其设定是被动的：所有数据一次给定。而真实的田野工作是**主动的**：语言学家提出假设，设计最小对立对（minimal pairs），向母语者（informant）提问，根据回答修正假设。这个"主动询问"的闭环正是 LLM 当前最弱、而 RL 又最擅长训练的能力。空隙：没有一个让 LLM 与"母语者模拟器"交互、以归纳出的语法规则的正确性为奖励的训练环境。同时这是一个有真实社会价值的问题：全球约 3000 种语言濒危，文档化人力严重不足。
 
 **💡 一句话 Idea**
 构建一个"母语者模拟器"环境，让 LLM 智能体通过主动设计询问（翻译请求、可接受性判断、最小对立对）来归纳未知语言的语法，并以归纳规则对留出句子的预测准确率为可验证奖励进行 RL 训练，从被动阅读 IGT 走向主动田野语言学。
@@ -78,7 +78,7 @@ LingGym 用行间注释文本（IGT）构造任务，测试 LLM 能否像田野�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Fairness through Difference Awareness: Measuring Desired Group Discrimination in LLMs** · Wang et al. · 🏆 ACL 2025 Best Paper · [arXiv:2502.01926](https://arxiv.org/abs/2502.01926) |
+| 🎯 **源论文** | **Fairness through Difference Awareness: Measuring Desired Group Discrimination in LLMs** · Wang et al. · 🏆 ACL 2025 Best Paper· [arXiv:2502.01926](https://arxiv.org/abs/2502.01926) |
 | 📌 **线索来源** | Finding §"models trained for group-blindness fail on tasks where treating groups differently is legally/normatively required; existing bias mitigation worsens difference awareness" + Future Work §"alignment methods that are difference-aware" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -150,7 +150,7 @@ AdAEM 把"价值测量"从静态题库变成一个自扩展的优化过程：用
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **BOOKCOREF: Coreference Resolution at Book Scale** · Giuliano Martinelli et al. · 🏆 ACL 2025 Award Paper · [arXiv:2507.12075](https://arxiv.org/abs/2507.12075) |
+| 🎯 **源论文** | **BOOKCOREF: Coreference Resolution at Book Scale** · Giuliano Martinelli et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2507.12075](https://arxiv.org/abs/2507.12075) |
 | 📌 **线索来源** | Appendix E §"An additional limitation is inherently implied by their application to the coreference task, which requires re-generating the full input text with the addition of special tokens that denote coreference" + Limitations §"we could not benchmark large generative models as we did with encoder-only systems" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -189,7 +189,7 @@ BookCoref 首次把共指消解推到平均 20 万 token 的整本书规模，�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **NormGenesis: Multicultural Dialogue Generation via Exemplar-Guided Social Norm Modeling and Violation Recovery** · Minki Hong et al. · 🏆 EMNLP 2025 SAC Highlights Award · [arXiv:2509.18395](https://arxiv.org/abs/2509.18395) |
+| 🎯 **源论文** | **NormGenesis: Multicultural Dialogue Generation via Exemplar-Guided Social Norm Modeling and Violation Recovery** · Minki Hong et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2509.18395](https://arxiv.org/abs/2509.18395) |
 | 📌 **线索来源** | Limitations §"The iterative refinement process relies on a small number of manually revised exemplars... scaling to a large number of new norms or domains could still be resource-intensive" + §"future work will explore active learning for efficient exemplar selection, a structured norm-centric repository for retrieval-based reuse, and clustering of culturally aligned regions (e.g., via World Values Survey) to enable exemplar transfer" |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -228,7 +228,7 @@ NormGenesis 的核心发现是：只靠 prompt 让 LLM 生成韩语/中文的规
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Comparing human and LLM politeness strategies in free production** · Haoran Zhao et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2506.09391](https://arxiv.org/abs/2506.09391) |
+| 🎯 **源论文** | **Comparing human and LLM politeness strategies in free production** · Haoran Zhao et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2506.09391](https://arxiv.org/abs/2506.09391) |
 | 📌 **线索来源** | Discussion §"in open-ended production, LLMs continue to rely on negative politeness strategies (hedging, indirectness) even in positive contexts where humans shift toward positive strategies (rapport-building)" + Limitations §"the preferences given by human evaluators were from a third-person perspective, which may underestimate the effects of politeness strategies" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -267,7 +267,7 @@ NormGenesis 的核心发现是：只靠 prompt 让 LLM 生成韩语/中文的规
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Discriminating Form and Meaning in Multilingual Models with Minimal-Pair ABX Tasks** · Maureen de Seyssel et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2505.17747](https://arxiv.org/abs/2505.17747) |
+| 🎯 **源论文** | **Discriminating Form and Meaning in Multilingual Models with Minimal-Pair ABX Tasks** · Maureen de Seyssel et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2505.17747](https://arxiv.org/abs/2505.17747) |
 | 📌 **线索来源** | 5.4 Discussion §"when a language is highly discriminable from others, its representations may become more isolated, reducing structural sharing and hindering transfer" + Limitations §"it remains an open question whether similar dynamics hold for decoder-only or encoder–decoder models" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -345,7 +345,7 @@ p-less 用整个 token 分布的信息量动态设定截断阈值，去掉了 to
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Liaozhai through the Looking-Glass: On Paratextual Explicitation of Culture-Bound Terms in Machine Translation** · Sherrie Shen et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2509.23395](https://arxiv.org/abs/2509.23395) |
+| 🎯 **源论文** | **Liaozhai through the Looking-Glass: On Paratextual Explicitation of Culture-Bound Terms in Machine Translation** · Sherrie Shen et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2509.23395](https://arxiv.org/abs/2509.23395) |
 | 📌 **线索来源** | 8 Conclusion §"in personalized applications, paratexts can be tuned to a reader's prior knowledge, interests, or expertise. These fine-grained levels of tailoring are impractical for human translators yet may be achievable through computational methods" + Limitations §"Paratextual explicitation involves free-form generation rather than constrained translation, meaning that multiple formulations of the same information can be valid" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -384,7 +384,7 @@ p-less 用整个 token 分布的信息量动态设定截断阈值，去掉了 to
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Randomly Removing 50% of Dimensions in Text Embeddings has Minimal Impact on Retrieval and Classification Tasks** · Sotaro Takeshita et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2508.17744](https://arxiv.org/abs/2508.17744) |
+| 🎯 **源论文** | **Randomly Removing 50% of Dimensions in Text Embeddings has Minimal Impact on Retrieval and Classification Tasks** · Sotaro Takeshita et al. · 🏆 EMNLP 2025 People's Choice Award· [arXiv:2508.17744](https://arxiv.org/abs/2508.17744) |
 | 📌 **线索来源** | Limitations §"The cause of the degrading dimensions is still unknown... identifying in which stage of model construction (e.g., early stage of pre-training) such degrading dimensions start to appear remains as future work" + §"The relation to models trained with the Matryoshka Representation Learning (MRL) method is not explored" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -422,7 +422,7 @@ p-less 用整个 token 分布的信息量动态设定截断阈值，去掉了 to
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **AccessEval: Benchmarking Disability Bias in Large Language Models** · Srikant Panda et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2509.22703](https://arxiv.org/abs/2509.22703) |
+| 🎯 **源论文** | **AccessEval: Benchmarking Disability Bias in Large Language Models** · Srikant Panda et al. · 🏆 EMNLP 2025 Social Impact Award· [arXiv:2509.22703](https://arxiv.org/abs/2509.22703) |
 | 📌 **线索来源** | 6 Conclusion §"a systematic bias in disability aware queries, with higher negative social perception, increased negative sentiment, and more factually incorrect and denial responses" + Appendix F §"The effectiveness of reinforcement learning with human feedback (RLHF) and adversarial fine-tuning for disability fairness remains uncertain and warrants further study" |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -461,7 +461,7 @@ AccessEval 用成对的"中性查询 / 残障感知查询"（同一需求，只�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Lost in Multilinguality: Dissecting Cross-lingual Factual Inconsistency in Transformer Language Models** · Mingyang Wang et al. · 🏆 ACL 2025 Award Paper · [arXiv:2504.04264](https://arxiv.org/abs/2504.04264) ＋ **Do Llamas Work in English? On the Latent Language of Multilingual Transformers** · Chris Wendler et al. · 🏆 ACL 2024 Award Paper · [arXiv:2402.10588](https://arxiv.org/abs/2402.10588) |
+| 🎯 **源论文** | **Lost in Multilinguality: Dissecting Cross-lingual Factual Inconsistency in Transformer Language Models** · Mingyang Wang et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2504.04264](https://arxiv.org/abs/2504.04264) ＋ **Do Llamas Work in English? On the Latent Language of Multilingual Transformers** · Chris Wendler et al. · 🏆 ACL 2024 Outstanding Paper· [arXiv:2402.10588](https://arxiv.org/abs/2402.10588) |
 | 📌 **线索来源** | Lost in Multilinguality Limitations §"our shortcut method relies on linear approximation for simplicity. Investigating non-linear approaches could better capture complex transformations during language switching" + Conclusion §"Errors in this transition often lead to incorrect predictions despite accurate object extraction"；Do Llamas Limitations §"we have limited understanding of the structure of this space in its original high-dimensional form" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -500,7 +500,7 @@ AccessEval 用成对的"中性查询 / 残障感知查询"（同一需求，只�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **KidLM: Advancing Language Models for Children – Early Insights and Future Directions** · Mir Tafseer Nayeem et al. · 🏆 EMNLP 2024 Award Paper · [arXiv:2410.03884](https://arxiv.org/abs/2410.03884) |
+| 🎯 **源论文** | **KidLM: Advancing Language Models for Children – Early Insights and Future Directions** · Mir Tafseer Nayeem et al. · 🏆 EMNLP 2024 Best Resource Paper· [arXiv:2410.03884](https://arxiv.org/abs/2410.03884) |
 | 📌 **线索来源** | 5 Discussion and Future Directions §"Fine-tuning is essential, but using existing SFT data can compromise the kid-specific properties developed during pre-training stage (Table 1). Furthermore, MTurk is unsuitable for collecting such data due to age demographic restrictions" + Limitations §"we were unable to explore other harm categories such as hate speech, sexual content, and violent crimes from the MLCommons taxonomy of hazards" |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -539,7 +539,7 @@ KidLM 从数据入手：用以用户为中心的流程收集"为儿童写、有�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Mind the Blind Spots: A Focus-Level Evaluation Framework for LLM Reviews** · Hyungyu Shin et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2502.17086](https://arxiv.org/abs/2502.17086) |
+| 🎯 **源论文** | **Mind the Blind Spots: A Focus-Level Evaluation Framework for LLM Reviews** · Hyungyu Shin et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2502.17086](https://arxiv.org/abs/2502.17086) |
 | 📌 **线索来源** | 6 Discussion §"LLMs exhibit a more biased focus, primarily assessing technical validity without contextual consideration, compared to human experts. While fine-tuning yielded closer focus with human experts, the alignment of review points remained low" + Limitation §"we did not explore possible prompt engineering strategies that could mitigate the limitations of LLMs in paper review" |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |

@@ -51,7 +51,7 @@ AfriMed-QA 收集了 16 个国家、60 余所医学院的 15k 道题（MCQ/SAQ/C
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Pattern Recognition or Medical Knowledge? The Problem with Multiple-Choice Questions in Medicine** · Griot et al. · 🏆 ACL 2025 Best Paper · [arXiv:2406.02394](https://arxiv.org/abs/2406.02394) |
+| 🎯 **源论文** | **Pattern Recognition or Medical Knowledge? The Problem with Multiple-Choice Questions in Medicine** · Griot et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2406.02394](https://arxiv.org/abs/2406.02394) |
 | 📌 **线索来源** | Conclusion §"models of different architectures, sizes, and specializations outperform physicians on this benchmark, suggesting that pattern recognition and test-taking strategies may play a larger role for LLMs than for humans" + Limitations §"future work should evaluate models on multiple-choice questions covering clinical knowledge published after the training cut-off date" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |

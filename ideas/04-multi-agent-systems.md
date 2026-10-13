@@ -143,7 +143,7 @@ AFlow 把工作流表示为代码（节点 = LLM 调用，边 = 控制流），�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **OMAC: A Holistic Optimization Framework for LLM-Based Multi-Agent Collaboration** · Shijun Li et al. · 🎤 ICML 2026 Oral · [arXiv:2505.11765](https://arxiv.org/abs/2505.11765) ＋ **ReSo: A Reward-driven Self-organizing LLM-based Multi-Agent System for Reasoning Tasks** · Heng Zhou et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2503.02390](https://arxiv.org/abs/2503.02390) |
+| 🎯 **源论文** | **OMAC: A Holistic Optimization Framework for LLM-Based Multi-Agent Collaboration** · Shijun Li et al. · 🎤 ICML 2026 Oral · [arXiv:2505.11765](https://arxiv.org/abs/2505.11765) ＋ **ReSo: A Reward-driven Self-organizing LLM-based Multi-Agent System for Reasoning Tasks** · Heng Zhou et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2503.02390](https://arxiv.org/abs/2503.02390) |
 | 📌 **线索来源** | OMAC §D.6 Discussion of Future Work："Gradient-based optimization may enable more controllable, integrated, and efficient optimization processes. In particular, extending current RL-based methods for agentic optimization, such as Spiral or MHGPO, into the problem setting and methodological framework of OMAC represents a valuable research avenue." ＋ ReSo §7 Limitations："can the reward signal given to the model by our CRM in each step of cooperation be combined with the reinforcement learning-based post-training of a single model to further optimize MAS at both the macro and micro levels?" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
@@ -183,7 +183,7 @@ OMAC 把 MAS 优化拆成五个维度（增强现有 agent、创建新 agent、�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Prototypical Human-AI Collaboration Behaviors from LLM-Assisted Writing in the Wild** · Sheshera Mysore et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2505.16023](https://arxiv.org/abs/2505.16023) |
+| 🎯 **源论文** | **Prototypical Human-AI Collaboration Behaviors from LLM-Assisted Writing in the Wild** · Sheshera Mysore et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2505.16023](https://arxiv.org/abs/2505.16023) |
 | 📌 **线索来源** | §7 Discussion："Future work may explore building and learning from simulators that follow realistic user behaviors captured in existing log datasets or the design of reward models trained on implicit user feedback." ＋ §8 Limitations："our analysis (§4) does not model the order of follow-ups in a session and uses linear PCA to identify PATHs." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -221,7 +221,7 @@ OMAC 把 MAS 优化拆成五个维度（增强现有 agent、创建新 agent、�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **CoMet: Metaphor-Driven Covert Communication for Multi-Agent Language Games** · Shuhang Xu et al. · 🏆 ACL 2025 Award Paper · [arXiv:2505.18218](https://arxiv.org/abs/2505.18218) |
+| 🎯 **源论文** | **CoMet: Metaphor-Driven Covert Communication for Multi-Agent Language Games** · Shuhang Xu et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2505.18218](https://arxiv.org/abs/2505.18218) |
 | 📌 **线索来源** | §A.2 Future works："We believe that a key to covert communication lies in the information gap. Only by relying on information that is known to both parties but unknown to others can metaphors be created that are understood by the two parties but not by others" ＋ §Limitations："extending metaphor strategies to more complex games, such as diplomacy or embodied multi-modal multi-agent games, presents an area for further research." |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★☆☆ |
@@ -261,7 +261,7 @@ CoMet 让 LLM agent 用"假设式隐喻推理器 + 自反思隐喻生成器"在 
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Collab-Overcooked: Benchmarking and Evaluating Large Language Models as Collaborative Agents** · Haochen Sun et al. · 🏆 EMNLP 2025 Award Paper · [arXiv:2502.20073](https://arxiv.org/abs/2502.20073) |
+| 🎯 **源论文** | **Collab-Overcooked: Benchmarking and Evaluating Large Language Models as Collaborative Agents** · Haochen Sun et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2502.20073](https://arxiv.org/abs/2502.20073) |
 | 📌 **线索来源** | §6 Conclusion："Experiments across 13 LLMs reveal significant performance gaps, with attention misalignment to collaboration-relevant instructions emerging as a key bottleneck." ＋ §C.2.2 Discussion："LLM-based agents exhibited a more pronounced gap between IC and RC, consistent with prior findings that highlight their difficulty in initiating collaboration" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -341,7 +341,7 @@ AppWorld 提供了 9 个 app、457 个 API、约 100 个虚拟用户的可控执
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **A Troublemaker with Contagious Jailbreak Makes Chaos in Honest Towns** · Tianyi Men et al. · 🏆 ACL 2025 Award Paper · [arXiv:2410.16155](https://arxiv.org/abs/2410.16155) |
+| 🎯 **源论文** | **A Troublemaker with Contagious Jailbreak Makes Chaos in Honest Towns** · Tianyi Men et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2410.16155](https://arxiv.org/abs/2410.16155) |
 | 📌 **线索来源** | §Limitations："our method works for agent designed with an explicit retriever, instead of more complex settings like letting agents deal with their memories themselves with reflection or llama-guard." ＋ §A.15 Analysis of Failure Cases："if the adversarial suffix is not successfully copied, it will cause the optimized suffix to disappear. The missing of the retrieval suffix will make misleading samples difficult to retrieve." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |

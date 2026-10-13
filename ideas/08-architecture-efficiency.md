@@ -151,7 +151,7 @@ NSA 的贡献是把稀疏注意力做成**可从头训练、硬件对齐**的三
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Beyond Position: the Emergence of Wavelet-like Properties in Transformers** · Ruscio et al. · 🏆 ACL 2025 SAC Highlights · [arXiv:2410.18067](https://arxiv.org/abs/2410.18067) |
+| 🎯 **源论文** | **Beyond Position: the Emergence of Wavelet-like Properties in Transformers** · Ruscio et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2410.18067](https://arxiv.org/abs/2410.18067) |
 | 📌 **线索来源** | Limitations §"Our primary analysis, like much of the field, examines model properties at inference time after training is complete." + Conclusion §"understanding that these optimal structures are emergent rather than designed could inspire new architectural innovations, potentially leading to models that are either explicitly guided towards these solutions or are built with more efficient, innate multi-scale processing capabilities from the start." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -468,7 +468,7 @@ TokSuite 训练了 14 个除分词器外完全相同的模型，并用母语者�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Adapt Once, Thrive with Updates: Transferable Parameter-Efficient Fine-Tuning on Evolving Base Models** · Gu et al. · 🏆 ACL 2025 SAC Highlights · [arXiv:2506.06844](https://arxiv.org/abs/2506.06844) ＋ **Generalized Linear Mode Connectivity for Transformers** · Theus et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2506.22712](https://arxiv.org/abs/2506.22712) |
+| 🎯 **源论文** | **Adapt Once, Thrive with Updates: Transferable Parameter-Efficient Fine-Tuning on Evolving Base Models** · Gu et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2506.06844](https://arxiv.org/abs/2506.06844) ＋ **Generalized Linear Mode Connectivity for Transformers** · Theus et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2506.22712](https://arxiv.org/abs/2506.22712) |
 | 📌 **线索来源** | Trans-PEFT · Limitations §"Since PEFT operates within a specific parameter space Aghajanyan et al. (2021), transferring parameters across completely distinct spaces remains infeasible. Exploring ways to adapt our method to these conditions represents a direction for future research." + GLMC · Limitations §"The current scope is focused on aligning pairs of models that have been pretrained on the same task" |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★★☆ |
@@ -508,7 +508,7 @@ Trans-PEFT 发现基座模型的**继续训练**主要改变 FFN 中的任务知
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Retrofitting Large Language Models with Dynamic Tokenization** · Feher et al. · 🏆 ACL 2025 SAC Highlights · [arXiv:2411.18553](https://arxiv.org/abs/2411.18553) |
+| 🎯 **源论文** | **Retrofitting Large Language Models with Dynamic Tokenization** · Feher et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2411.18553](https://arxiv.org/abs/2411.18553) |
 | 📌 **线索来源** | Limitations §"our current dynamic tokenization approach is primarily designed for settings where the full sequence is known in advance (e.g., scoring and prefilling in decoder models)." + §"Closing this gap by integrating 'true' dynamic tokenization into autoregressive generation remains an open challenge for future research." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -547,7 +547,7 @@ Trans-PEFT 发现基座模型的**继续训练**主要改变 FFN 中的任务知
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **NuWa: Deriving Lightweight Class-Specific Vision Transformers for Edge Devices** · Wei et al. · 🎤 CVPR 2026 Oral · [arXiv:2504.03118](https://arxiv.org/abs/2504.03118) |
+| 🎯 **源论文** | **NuWa: Deriving Lightweight Class-Specific Vision Transformers for Edge Devices** · Wei et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2504.03118](https://arxiv.org/abs/2504.03118) |
 | 📌 **线索来源** | Limitations and Future Works §"However, when the pruning rate exceeds 70%, noticeable accuracy degradation still occurs." + §"an offline-trained hypernetwork could be developed to predict weight updates, enabling the online derivation process to efficiently map task specifications, such as model architecture, sub-task, and pruning rate, to corresponding pruned weights." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -627,7 +627,7 @@ NuWa 针对"边缘设备只需要部分类别"的现实，发现基座 ViT 中�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **LaTIM: Measuring Latent Token-to-Token Interactions in Mamba Models** · Pitorro & Treviso · 🏆 ACL 2025 Outstanding Paper · [arXiv:2502.15612](https://arxiv.org/abs/2502.15612) ＋ **Mamba Knockout for Unraveling Factual Information Flow** · Endy et al. · 🏆 ACL 2025 SAC Highlights · [arXiv:2505.24244](https://arxiv.org/abs/2505.24244) |
+| 🎯 **源论文** | **LaTIM: Measuring Latent Token-to-Token Interactions in Mamba Models** · Pitorro & Treviso · 🏆 ACL 2025 Outstanding Paper· [arXiv:2502.15612](https://arxiv.org/abs/2502.15612) ＋ **Mamba Knockout for Unraveling Factual Information Flow** · Endy et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2505.24244](https://arxiv.org/abs/2505.24244) |
 | 📌 **线索来源** | LaTIM · Conclusion §"our findings suggest that Mamba's recall limitations in long-context tasks may stem from its sparse and decaying focus on relevant tokens." + Limitations §"while LaTIM helps visualize token interactions, its impact on improving model robustness and trustworthiness remains an open question." ；Mamba Knockout · Limitations §"Future works should attempt to explain the inductive-biases of the different architectures that drive these differences in information flow." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -666,7 +666,7 @@ LaTIM 为 Mamba-1/2 给出 token 级的交互分解（类似注意力图），�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Between Circuits and Chomsky: Pre-pretraining on Formal Languages Imparts Linguistic Biases** · Hu et al. · 🏆 ACL 2025 Outstanding Paper · [arXiv:2502.19249](https://arxiv.org/abs/2502.19249) |
+| 🎯 **源论文** | **Between Circuits and Chomsky: Pre-pretraining on Formal Languages Imparts Linguistic Biases** · Hu et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2502.19249](https://arxiv.org/abs/2502.19249) |
 | 📌 **线索来源** | Limitations §"it is possible that the optimal training regimen involves mixing formal and natural language during training" + §"our work only considers transformers. Circuit complexity has also quantified the expressive power of neural networks like RNNs and state-space models ... and it would be interesting to extend our results to these architectures." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |

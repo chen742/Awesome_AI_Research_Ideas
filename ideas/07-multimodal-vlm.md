@@ -168,7 +168,7 @@ SpatioLM 用一个即插即用的 Spatio-Vision 模块，以伪深度与相机�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Teaching Vision-Language Models to Ask: Resolving Ambiguity in Visual Questions** · Jian et al. · 🏆 ACL 2025 SAC Highlight · [arXiv:2507.13773](https://arxiv.org/abs/2507.13773) |
+| 🎯 **源论文** | **Teaching Vision-Language Models to Ask: Resolving Ambiguity in Visual Questions** · Jian et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2507.13773](https://arxiv.org/abs/2507.13773) |
 | 📌 **线索来源** | Limitations §"we focus on user responses limited to 'yes' or 'no' for simplicity … This may not fully capture the complexity of interactive clarification in real-world scenes." + §"they seldom generate truly new clarification questions after misreading user intent." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -363,7 +363,7 @@ SAVVY-Bench 是首个带同步空间音频的动态 3D 空间推理基准，SAVV
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **MMToM-QA: Multimodal Theory of Mind Question Answering** · Jin et al. · 🏆 ACL 2024 Outstanding Paper · [arXiv:2401.08743](https://arxiv.org/abs/2401.08743) |
+| 🎯 **源论文** | **MMToM-QA: Multimodal Theory of Mind Question Answering** · Jin et al. · 🏆 ACL 2024 Outstanding Paper· [arXiv:2401.08743](https://arxiv.org/abs/2401.08743) |
 | 📌 **线索来源** | Discussion & Conclusion §"First, BIP-ALM cannot imagine missing state information from videos. Second, it uses symbolic state representations and only conducts symbolic planning. However, in Type 2.4, one needs to imagine the future path of a person given continuous spatial information such as the current path, facing direction" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |

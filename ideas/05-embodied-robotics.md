@@ -8,45 +8,48 @@
 
 ---
 
-## 💡 Idea 5.1 — *Learned Potentials for Dynamically Composed Control: Bridging Feedback Composition and Foundation Policies*
+## 💡 Idea 5.1 — *Plan Only When You Must: Conflict-Triggered Subgoal Re-Hierarchization for Dynamically Composed Gradient Control*
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **No Plan but Everything under Control: Robustly Solving Sequential Tasks with Dynamically Composed Gradient Descent** · Mengers & Brock · 🏆 ICRA 2025 Best Paper (Planning & Control) |
-| 📌 **线索来源** | Limitation §"requires hand-specified differentiable task models / sub-objectives" + Future Work §"learning the components" |
+| 🎯 **源论文** | **No Plan but Everything under Control: Robustly Solving Sequential Tasks with Dynamically Composed Gradient Descent** · Mengers & Brock · 🏆 ICRA 2025 Best Paper (Planning & Control) · [arXiv:2503.01732](https://arxiv.org/abs/2503.01732) |
+| 📌 **线索来源** | §"Solvable Problem Classes and Limitations": "tasks involving irreversible actions, e.g., destroying objects, or conflicting subgoals that require temporary setbacks, e.g., Towers of Hanoi, still require planning. Future research could explore adaptive methods for modifying subgoal hierarchies during execution, reducing the need for explicit planning." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
-| 🧗 Difficulty | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
 
 **🔍 深入分析**
-该论文反对"先规划后执行"的范式：把顺序任务表示为一组可微子目标（势函数），运行时根据感知状态**动态组合**这些势的梯度做下降，从而在扰动下无需重规划就能完成多步任务（如开门、取物），显示出极强的鲁棒性。其 Limitation 很诚实：子目标的可微模型是手工设计的，这限制了任务种类；而当前的通用机器人策略（π0、OpenVLA、Diffusion Policy）恰恰相反——能从数据学到广泛技能，但是黑盒、无法在执行中按反馈组合。两条线的交点是空白：**把基础策略蒸馏成一组可组合的、可微的势函数**，让 VLA 的广度与动态组合的鲁棒性结合。扩散/流匹配策略提供了天然入口：其学到的 score 函数本身就是动作空间上的梯度场。
+论文反对"先规划后执行"：把顺序任务表示为一组世界规律/子目标的可微项，运行时根据感知反馈**动态组合**它们的梯度做下降，子目标被隐式地按需激活，从而在扰动下无需重规划就能完成多步任务（开门取物等），并能从错误中恢复。作者在 Limitation 里划清了边界：当子目标**直接冲突、需要暂时倒退**（汉诺塔、Blocks World 中先拆再搭）或存在**不可逆动作**时，纯反馈式梯度组合会陷入次优或死锁，仍需要规划；他们提出的未来方向是"在执行过程中自适应地修改子目标层级"。这里的空隙很具体：现有做法在"完全不规划"与"完整规划"之间没有中间态。而梯度组合框架本身就提供了一个廉价的冲突信号——两个被激活子目标的梯度方向相反、组合梯度范数趋零、或进度指标停滞——这些信号恰好可以用来**只在需要时触发一次局部的子目标重排**，而不是回到全局规划。
 
 **💡 一句话 Idea**
-把流匹配/扩散类机器人策略分解为按子目标条件化的 score 场，使之成为可动态组合的学习型"势"，在执行期按感知反馈加权组合这些场，实现无需重规划的鲁棒长程操作。
+给动态梯度组合控制器加一个"冲突检测—局部重排—回到反馈控制"的最小规划回路：用梯度冲突与进度停滞在线检测子目标冲突，仅在检测到时用短视野搜索修改子目标层级（插入临时倒退子目标或改变优先级），从而把可解问题类扩展到汉诺塔式的冲突任务而保持零规划的常态开销。
 
 **🛠️ 可能的解决方法**
-1. **子目标条件化训练**：对示教数据用 VLM 自动切分为语义子目标（"够到把手"、"旋转"、"拉开"），训练一个子目标条件化的流匹配策略 v_θ(a, o, g)，每个 g 对应一个动作空间上的向量场。
-2. **组合规则**：运行时维护每个子目标的"激活度" w_g(o)（由一个小的进度估计器从观测预测，类似论文中的"everything under control"的反馈门控），执行动作场 Σ_g w_g·v_θ(·, o, g)；向量场的加权和在 score 组合意义下近似产品分布采样（compositional diffusion 的已有理论可直接套用）。
-3. **稳定性约束**：对每个 g 加入 Lyapunov 风格的正则（场在子目标完成区域附近收敛），保证组合后不会在两个子目标之间振荡；可用 contrastive 的成功/失败片段训练。
-4. **恢复行为天然出现**：当扰动使进度回退，w_g 自动重新激活早期子目标的场，无需显式重规划。
+1. **冲突探测器**：定义被激活子目标集合 A 的两两梯度余弦 c_ij 与组合梯度范数 ‖Σ w_i ∇φ_i‖；当存在 c_ij < −τ 且范数低于阈值、或任务进度 Φ 在 T 步内无改善时判定"冲突"。该探测只用控制器已经计算的量，零额外成本。
+2. **局部重排搜索**：冲突时在子目标层级上做深度 ≤ d 的搜索（d=2–3 足以覆盖汉诺塔/Blocks World 的单次倒退），候选操作包括：临时降低某子目标权重、插入"清障"子目标（把阻挡物移到自由位置）、交换两个子目标的优先级；用梯度组合控制器自身做快速前瞻仿真评估每个候选（仿真步数很少），选进度增益最大者。
+3. **不可逆动作守门**：为标注为不可逆的动作（破坏、释放易碎物）加入"必须先验证后续子目标仍可达"的前置检查，用同一前瞻仿真实现。
+4. **学习冲突先验（可选）**：记录每次触发重排的状态与所选操作，训练一个小分类器预测"何时会冲突、如何重排"，逐步把搜索替换为学到的层级修改策略——这正是论文所说的"adaptive methods for modifying subgoal hierarchies"。
+
+**🧭 与最接近工作的区别**
+- 原论文完全不规划；经典任务与运动规划（TAMP）总是规划。本 idea 是事件触发的最小规划，保留反馈控制的鲁棒性与低开销。
+- 行为树/HTN 的层级修改依赖人工规则；本 idea 的触发信号来自梯度组合的内在量。
 
 **🧪 验证方案**
-- LIBERO-long、RoboCasa 的长程任务 + 真实机械臂上的扰动实验（抽走物体、推门回去）；
-- 指标：成功率、扰动下的恢复率、无需重规划的比例；
-- 对比：π0 / Diffusion Policy 直接执行、LLM 重规划、原论文手工势。
+- 任务：论文原任务（扰动下的开门取物）+ 汉诺塔（3–5 盘）、Blocks World（需倒退）、含不可逆动作的整理任务；仿真 + 真实机械臂。
+- 指标：成功率、触发重排的次数与耗时占比（预期 <5% 的步数）、扰动恢复率。
+- 对比：原方法、全程 TAMP 规划、LLM 重规划。
 
-🔑 `compositional control` `flow matching policy` `potential fields` `robust manipulation` `VLA`
+🔑 `feedback control` `subgoal hierarchy` `conflict detection` `minimal planning` `sequential manipulation`
 
 [🔝 top](#top)
-
 ---
 
 ## 💡 Idea 5.2 — *Which Demonstrations Matter? In-Run Data Shapley for Curating Cross-Embodiment Robot Pretraining Mixtures*
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Robo-DM: Data Management for Large Robot Datasets** · Chen et al. (Goldberg Lab) · 🏆 ICRA 2025 Best Paper (Robot Learning) ＋ **Data Shapley in One Training Run** · Wang et al. · 🏅 ICLR 2025 Honorable Mention · [arXiv:2406.11011](https://arxiv.org/abs/2406.11011) |
-| 📌 **线索来源** | Robo-DM Future Work §"dataset selection and curation beyond storage/compression"；In-Run Shapley Limitation §"only tested on LM pretraining; extension to other modalities" |
+| 🎯 **源论文** | **Data Shapley in One Training Run** · Wang et al. · 🏅 ICLR 2025 Honorable Mention · [arXiv:2406.11011](https://arxiv.org/abs/2406.11011) ＋ 动机来源 **Robo-DM: Data Management for Large Robot Datasets** · Chen et al. · 🏆 ICRA 2025 Best Paper (Robot Learning) · [arXiv:2505.15558](https://arxiv.org/abs/2505.15558) |
+| 📌 **线索来源** | In-Run Data Shapley 仅在语言模型预训练上验证（Limitation）；Robo-DM Conclusion §"Robo-DM reduces dataset size with minimal training performance and accuracy degradation … in future work, we will integrate and evaluate Robo-DM with larger-scale of existing and prospective Open-X-Embodiment datasets"——数据能被大幅压缩而几乎不掉点，说明机器人数据集中存在大量低价值/冗余示教，但"哪些示教有价值"没有被量化 |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |

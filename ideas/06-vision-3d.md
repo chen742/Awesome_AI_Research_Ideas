@@ -13,7 +13,7 @@
 | | |
 |:--|:--|
 | 🎯 **源论文** | **VGGT: Visual Geometry Grounded Transformer** · Wang et al. · 🏆 CVPR 2025 Best Paper · [arXiv:2503.11651](https://arxiv.org/abs/2503.11651) ＋ **MAC-VO: Metrics-Aware Covariance for Learning-Based Stereo Visual Odometry** · Qiu et al. · 🏆 ICRA 2025 Best Conference Paper · [arXiv:2409.09479](https://arxiv.org/abs/2409.09479) |
-| 📌 **线索来源** | VGGT Limitation §"confidence maps are heuristic; no uncertainty for downstream optimization; degrades under extreme rotation / dynamic scenes"；MAC-VO Future Work §"extend metrics-aware covariance beyond stereo VO" |
+| 📌 **线索来源** | VGGT 的置信度图仅用于加权损失、非度量协方差；MAC-VO Conclusion §"the model focuses on the two-frame pose optimization. We believe our accuracy will further benefit from bundle adjustment, multi-frame optimization, and loop closure … we plan to apply our metrics-aware covariance model in multi-sensor fusion" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -79,7 +79,7 @@ SAM 2 的流式记忆把可提示分割扩展到视频，但 Limitation 明确�
 | | |
 |:--|:--|
 | 🎯 **源论文** | **Generating Physically Stable and Buildable Brick Structures from Text (BrickGPT)** · Pun et al. · 🏆 ICCV 2025 Best Paper (Marr Prize) · [arXiv:2505.05469](https://arxiv.org/abs/2505.05469) |
-| 📌 **线索来源** | Limitation §"restricted brick library and 20³ grid; stability enforced by physics-aware rollback at inference" + Future Work §"more brick types, colors, textures; other assembly domains" |
+| 📌 **线索来源** | Appendix D Limitations §"our method is restricted to producing designs within a 20×20×20 grid across 21 categories … our method currently supports a fixed set of commonly used toy bricks. In future work, we plan to expand the brick library"；稳定性仅靠推理期的 physics-aware rollback 保证 |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -220,7 +220,7 @@ Matcher (Liu et al., 2024) 与 PerSAM (Zhang et al., 2023) 都依赖 SAM 生成�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Hearing the Room Through the Shape of the Drum: Modal-Guided Sound Recovery from Multi-Point Surface Vibrations** · Bagon et al. · 🎤 CVPR 2026 Oral · [arXiv:2604.26678](https://arxiv.org/abs/2604.26678) |
+| 🎯 **源论文** | **Hearing the Room Through the Shape of the Drum: Modal-Guided Sound Recovery from Multi-Point Surface Vibrations** · Bagon et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2604.26678](https://arxiv.org/abs/2604.26678) |
 | 📌 **线索来源** | Discussion and limitations (§8) §"Softer objects, such as a loose canvas painting, primarily exhibit low-frequency modes, which degrade performance." + §"However, larger baselines on non-planar objects may degrade the captured speckle vibrations in our current camera due to geometric distortions of the 2D speckle grid" |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -294,7 +294,7 @@ Self-Forcing (Huang et al., 2025) 使用固定 sink；LongLive (Yang et al., 202
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **GLINT: Modeling Scene-Scale Transparency via Gaussian Radiance Transport** · Na et al. · 🎤 CVPR 2026 Oral · [arXiv:2603.26181](https://arxiv.org/abs/2603.26181) |
+| 🎯 **源论文** | **GLINT: Modeling Scene-Scale Transparency via Gaussian Radiance Transport** · Na et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2603.26181](https://arxiv.org/abs/2603.26181) |
 | 📌 **线索来源** | Limitations and Future Work (Appendix G) §"Consequently, in scenarios with sparse viewpoints or limited parallax, where a surface is observed from a stationary angle, the problem becomes inherently ill-posed." + §"Future work could leverage vision-language models (VLMs) or unprojecting semantic features to enforce physically and semantically plausible decomposition, ensuring that regions identified as glass (e.g., windows vs. mirrors) adhere to their expected optical behaviors even under constrained observation." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -331,7 +331,7 @@ NeRFReN (Guo et al., 2022) 做反射/透射 NeRF 分解但依赖深度平滑先�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **VGGT-Ω** · Wang et al. · 🎤 CVPR 2026 Oral · [arXiv:2605.15195](https://arxiv.org/abs/2605.15195) |
+| 🎯 **源论文** | **VGGT-Ω** · Wang et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2605.15195](https://arxiv.org/abs/2605.15195) |
 | 📌 **线索来源** | Limitations (Appendix C) §"For example, the model's performance drops significantly in the presence of strong motion blur." + §"Meanwhile, reconstruction quality often degrades if the field of view changes abruptly (e.g., shifting from 10° to 160° in a few seconds) or the camera is highly distorted." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -443,7 +443,7 @@ ProHMR (Kolotouros et al., 2021) 用归一化流输出多假设但无扩散先�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **PhyGaP: Physically-Grounded Gaussians with Polarization Cues** · Wu et al. · 🎤 CVPR 2026 Oral · [arXiv:2603.14001](https://arxiv.org/abs/2603.14001) |
+| 🎯 **源论文** | **PhyGaP: Physically-Grounded Gaussians with Polarization Cues** · Wu et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2603.14001](https://arxiv.org/abs/2603.14001) |
 | 📌 **线索来源** | Limitation and Future Works §"We also observe that reconstruction results on real-world data can be heavily affected by the disparity between actual 3D environments and our environment map formulation which assumes infinite depth of incident light." + §"Metal surfaces, whose pBRDFs involve complex-valued indices and phase terms, may lead to inaccurate reconstructions." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
@@ -554,7 +554,7 @@ Generative Inbetweening (Wang et al., 2025) 只做单目 2D 插值，无 3D 一�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **SAM 3D: 3Dfy Anything in Images** · Chen et al. · 🎤 CVPR 2026 Oral · [arXiv:2511.16624](https://arxiv.org/abs/2511.16624) |
+| 🎯 **源论文** | **SAM 3D: 3Dfy Anything in Images** · Chen et al. · 🏆 CVPR 2026 Best Paper Honorable Mention · [arXiv:2511.16624](https://arxiv.org/abs/2511.16624) |
 | 📌 **线索来源** | Limitations (Appendix F) §"SAM 3D predicts objects one at a time, and isn't trained to reason about physical interactions, such as contact, physical stability, interpenetration, or co-alignment (e.g. on the same ground plane)." + §"Multi-object prediction combined with appropriate losses would allow joint reasoning about multiple objects in a scene." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★★ |
@@ -665,7 +665,7 @@ BA-Track 使用平滑尺度图；MegaSaM (Li et al., 2024) 在可微 BA 中可�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Native and Compact Structured Latents for 3D Generation** · Xiang et al. · 🎤 CVPR 2026 Oral · [arXiv:2512.14692](https://arxiv.org/abs/2512.14692) |
+| 🎯 **源论文** | **Native and Compact Structured Latents for 3D Generation** · Xiang et al. · 🏆 CVPR 2026 Best Student Paper · [arXiv:2512.14692](https://arxiv.org/abs/2512.14692) |
 | 📌 **线索来源** | Limitation Discussion and Future Work (Appendix F) §"Finally, our O-Voxel is currently focused on geometry and material and it does not explicitly encode higher-level structural or semantic information." + §"For example, when two parallel surfaces that are very close to each other intersect the same voxel, the QEF solver, by design, will place the dual vertex at a position that minimizes the error to both surfaces, often resulting in a vertex located between them rather than accurately on one." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |

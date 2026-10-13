@@ -113,7 +113,7 @@ Nagarajan 等在精心设计的算法任务上证明：next-token prediction 在
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Measuring Chain of Thought Faithfulness by Unlearning Reasoning Steps** · Tutek et al. · 🏆 EMNLP 2025 Outstanding Paper · [arXiv:2502.14829](https://arxiv.org/abs/2502.14829) |
+| 🎯 **源论文** | **Measuring Chain of Thought Faithfulness by Unlearning Reasoning Steps** · Tutek et al. · 🏆 EMNLP 2025 Outstanding Paper· [arXiv:2502.14829](https://arxiv.org/abs/2502.14829) |
 | 📌 **线索来源** | Limitations §"By eliminating the contextual confounder, we limit ourselves to studying cases in which the CoT and no-CoT predictions of the models agree" + 7 Discussion and Future Outlook §"(1) fully fine-tuning all second feed-forward layers of the model involves updating a large number of parameters, and (2) intervening on each CoT step can be time-consuming." + 8 Conclusion §"CoT steps identified as highly relevant are not considered plausible by humans, higlighting the need for specialized alignment." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -152,7 +152,7 @@ FUR 的核心思想是把"忠实性"从上下文层面搬到参数层面：对�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Autoformalization in the Wild: Assessing LLMs on Real-World Mathematical Definitions** · Zhang et al. · 🏆 EMNLP 2025 Outstanding Paper · [arXiv:2502.12065](https://arxiv.org/abs/2502.12065) |
+| 🎯 **源论文** | **Autoformalization in the Wild: Assessing LLMs on Real-World Mathematical Definitions** · Zhang et al. · 🏆 EMNLP 2025 Best Resource Paper· [arXiv:2502.12065](https://arxiv.org/abs/2502.12065) |
 | 📌 **线索来源** | 6 Limitations §"while the proposed refinements improve formalization performance, they do not fully eliminate semantic inconsistencies between natural language definitions and their formalized counterparts. More advanced methods are still needed to be developed." + 5 Conclusion §"Future research could focus on improving self-correction capabilities and integrating more robust contextual understanding into LLM-based formalization systems." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -191,7 +191,7 @@ FUR 的核心思想是把"忠实性"从上下文层面搬到参数层面：对�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Rethinking the Role of Prompting Strategies in LLM Test-Time Scaling: A Perspective of Probability Theory** · Liu et al. · 🏆 ACL 2025 Outstanding Paper · [arXiv:2505.10981](https://arxiv.org/abs/2505.10981) |
+| 🎯 **源论文** | **Rethinking the Role of Prompting Strategies in LLM Test-Time Scaling: A Perspective of Probability Theory** · Liu et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2505.10981](https://arxiv.org/abs/2505.10981) |
 | 📌 **线索来源** | Limitations §"However, our experiment results indicate that LLMs alone cannot readily achieve the intended effects, pushing us to explore more practicable and effective methods in our future work." + Limitations §"In this paper, we mainly focus on majority voting, which is a simple but effective scaling approach." |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
@@ -230,7 +230,7 @@ FUR 的核心思想是把"忠实性"从上下文层面搬到参数层面：对�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Same Task, More Tokens: the Impact of Input Length on the Reasoning Performance of Large Language Models** · Levy et al. · 🏆 ACL 2024 Outstanding Paper · [arXiv:2402.14848](https://arxiv.org/abs/2402.14848) |
+| 🎯 **源论文** | **Same Task, More Tokens: the Impact of Input Length on the Reasoning Performance of Large Language Models** · Levy et al. · 🏆 ACL 2024 Outstanding Paper· [arXiv:2402.14848](https://arxiv.org/abs/2402.14848) |
 | 📌 **线索来源** | Limitations §"Because of the nature of behavioral testing, the observed drop in performance with varying input lengths remains unexplained" + Limitations §"Finally, our study did not test the distance between key paragraphs, leaving an aspect of LLM performance unexplored that we leave for future research." + 9 Discussion §"we identified specific failure modes, including difficulties in following extended instructions and biases towards less relevant information." |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
