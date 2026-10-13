@@ -24,12 +24,14 @@ CATS = [  # (id, name, regex over title+abstract)
 ]
 SEC_PRIORITY = re.compile(r"limitation|future|open problem|open question|failure", re.I)
 
+WEIGHT = {"06-vision-3d": 0.6, "09-nlp-language": 0.45, "10-theory-optimization": 0.6, "08-architecture-efficiency": 0.8, "11-ai4science-other": 0.8}
+
 def classify(r):
     text = " ".join([r["title"], r.get("abstract") or "", " ".join(list(r.get("sections", {}).keys()))])
     scores = {}
     for cid, name, rx in CATS:
         n = len(re.findall(rx, text, re.I)); n_title = len(re.findall(rx, r["title"], re.I))
-        scores[cid] = n + 3 * n_title
+        scores[cid] = WEIGHT.get(cid, 1.0) * (n + 3 * n_title)
     best = max(scores, key=scores.get)
     return best if scores[best] > 0 else "11-ai4science-other"
 
