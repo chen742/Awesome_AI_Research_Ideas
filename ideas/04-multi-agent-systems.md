@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Why Do Multi-Agent LLM Systems Fail?** · Cemri et al. · 📈 高引用 · 2025 · [arXiv:2503.13657](https://arxiv.org/abs/2503.13657) ＋ **Which Agent Causes Task Failures and Where?** · Zhang et al. · ICML 2025 |
 | 📌 **线索来源** | MAST Discussion §"prompt-level and topology fixes yield only modest gains; structural redesign needed" + Who&When §"automated failure attribution remains far from reliable" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -47,6 +48,7 @@ MAST 在 7 个主流 MAS 框架、200+ 条轨迹上人工标注出 14 种失败�
 |:--|:--|
 | 🎯 **源论文** | **CollabLLM: From Passive Responders to Active Collaborators** · Wu et al. · 🏆 ICML 2025 Outstanding Paper · [arXiv:2502.00640](https://arxiv.org/abs/2502.00640) |
 | 📌 **线索来源** | Limitation §"relies on a single simulated user; fidelity of the simulator" + Future Work §"multi-party collaboration" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -80,6 +82,7 @@ CollabLLM 的核心是 **Multiturn-aware Reward（MR）**：评估一个回复�
 |:--|:--|
 | 🎯 **源论文** | **Improving Factuality and Reasoning in Language Models through Multiagent Debate** · Du et al. · ICML 2024 · 📈 高引用 · [arXiv:2305.14325](https://arxiv.org/abs/2305.14325) ＋ **Artificial Hivemind** · 🏆 NeurIPS 2025 Best Paper |
 | 📌 **线索来源** | Debate Limitation §"agents converge to the same wrong answer; gains diminish with homogeneous agents"；Hivemind §"跨模型回答高度同质" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -112,6 +115,7 @@ CollabLLM 的核心是 **Multiturn-aware Reward（MR）**：评估一个回复�
 |:--|:--|
 | 🎯 **源论文** | **AFlow: Automating Agentic Workflow Generation** · Zhang et al. · 🏆 ICLR 2025 Oral · [arXiv:2410.10762](https://arxiv.org/abs/2410.10762) |
 | 📌 **线索来源** | Limitation §"search is per-task and expensive; fixed operator set" + Future Work §"transfer across tasks; cost-aware optimization" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🧩 AI · AAAI |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -145,6 +149,7 @@ AFlow 把工作流表示为代码（节点 = LLM 调用，边 = 控制流），�
 |:--|:--|
 | 🎯 **源论文** | **OMAC: A Holistic Optimization Framework for LLM-Based Multi-Agent Collaboration** · Shijun Li et al. · 🎤 ICML 2026 Oral · [arXiv:2505.11765](https://arxiv.org/abs/2505.11765) ＋ **ReSo: A Reward-driven Self-organizing LLM-based Multi-Agent System for Reasoning Tasks** · Heng Zhou et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2503.02390](https://arxiv.org/abs/2503.02390) |
 | 📌 **线索来源** | OMAC §D.6 Discussion of Future Work："Gradient-based optimization may enable more controllable, integrated, and efficient optimization processes. In particular, extending current RL-based methods for agentic optimization, such as Spiral or MHGPO, into the problem setting and methodological framework of OMAC represents a valuable research avenue." ＋ ReSo §7 Limitations："can the reward signal given to the model by our CRM in each step of cooperation be combined with the reinforcement learning-based post-training of a single model to further optimize MAS at both the macro and micro levels?" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML ＋ 🗣️ NLP · EMNLP |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -185,6 +190,7 @@ OMAC 把 MAS 优化拆成五个维度（增强现有 agent、创建新 agent、�
 |:--|:--|
 | 🎯 **源论文** | **Prototypical Human-AI Collaboration Behaviors from LLM-Assisted Writing in the Wild** · Sheshera Mysore et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2505.16023](https://arxiv.org/abs/2505.16023) |
 | 📌 **线索来源** | §7 Discussion："Future work may explore building and learning from simulators that follow realistic user behaviors captured in existing log datasets or the design of reward models trained on implicit user feedback." ＋ §8 Limitations："our analysis (§4) does not model the order of follow-ups in a session and uses linear PCA to identify PATHs." |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP ＋ 🧑‍💻 HCI · CHI ＋ 🌐 WWW · WWW |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -223,6 +229,7 @@ OMAC 把 MAS 优化拆成五个维度（增强现有 agent、创建新 agent、�
 |:--|:--|
 | 🎯 **源论文** | **CoMet: Metaphor-Driven Covert Communication for Multi-Agent Language Games** · Shuhang Xu et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2505.18218](https://arxiv.org/abs/2505.18218) |
 | 📌 **线索来源** | §A.2 Future works："We believe that a key to covert communication lies in the information gap. Only by relying on information that is known to both parties but unknown to others can metaphors be created that are understood by the two parties but not by others" ＋ §Limitations："extending metaphor strategies to more complex games, such as diplomacy or embodied multi-modal multi-agent games, presents an area for further research." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧩 AI · AAAI |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -263,6 +270,7 @@ CoMet 让 LLM agent 用"假设式隐喻推理器 + 自反思隐喻生成器"在 
 |:--|:--|
 | 🎯 **源论文** | **Collab-Overcooked: Benchmarking and Evaluating Large Language Models as Collaborative Agents** · Haochen Sun et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2502.20073](https://arxiv.org/abs/2502.20073) |
 | 📌 **线索来源** | §6 Conclusion："Experiments across 13 LLMs reveal significant performance gaps, with attention misalignment to collaboration-relevant instructions emerging as a key bottleneck." ＋ §C.2.2 Discussion："LLM-based agents exhibited a more pronounced gap between IC and RC, consistent with prior findings that highlight their difficulty in initiating collaboration" |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP ＋ 🧩 AI · AAAI ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -303,6 +311,7 @@ Collab-Overcooked 在 Overcooked-AI 上构建了需要自然语言协作的任�
 |:--|:--|
 | 🎯 **源论文** | **AppWorld: A Controllable World of Apps and People for Benchmarking Interactive Coding Agents** · Harsh Trivedi et al. · 🏆 ACL 2024 Best Resource Paper · [arXiv:2407.18901](https://arxiv.org/abs/2407.18901) |
 | 📌 **线索来源** | §7 Limitations："We did not explore multi-agent tasks, where one supervisor assigns a task to its assistant that involves coordinating with another supervisor's assistant. E.g., scheduling a calendar meeting that works for both, coordinated via email." ＋ §7 Limitations："a carefully crafted benchmarking dataset, albeit with not enough instances for training models. Future work can explore techniques like bootstrapping ... for cheap, though noisy, data augmentation using LLMs." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · NeurIPS (D&B) ＋ 🌐 WWW · WWW |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -343,6 +352,7 @@ AppWorld 提供了 9 个 app、457 个 API、约 100 个虚拟用户的可控执
 |:--|:--|
 | 🎯 **源论文** | **A Troublemaker with Contagious Jailbreak Makes Chaos in Honest Towns** · Tianyi Men et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2410.16155](https://arxiv.org/abs/2410.16155) |
 | 📌 **线索来源** | §Limitations："our method works for agent designed with an explicit retriever, instead of more complex settings like letting agents deal with their memories themselves with reflection or llama-guard." ＋ §A.15 Analysis of Failure Cases："if the adversarial suffix is not successfully copied, it will cause the optimized suffix to disappear. The missing of the retrieval suffix will make misleading samples difficult to retrieve." |
+| 📮 **投稿建议** | 🔐 **Security** · USENIX Security / CCS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -383,6 +393,7 @@ AppWorld 提供了 9 个 app、457 个 API、约 100 个虚拟用户的可控执
 |:--|:--|
 | 🎯 **源论文** | **RedTeamCUA: Realistic Adversarial Testing of Computer-Use Agents in Hybrid Web-OS Environments** · Zeyi Liao et al. · 🎤 ICLR 2026 Oral · [arXiv:2505.21936](https://arxiv.org/abs/2505.21936) |
 | 📌 **线索来源** | §8 Conclusion："we have further evaluated four representative defense strategies from both the system and model levels, and find that none of them offer sufficient protection." ＋ §H.4 Discussions on Defenses for CUAs："Even methods we tested (LlamaFirewall and Meta SecAlign) are text-only methods, and are neither fully suitable nor efficient in multimodal, interactive computer-use scenarios." |
+| 📮 **投稿建议** | 🔐 **Security** · USENIX Security / S&P ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -423,6 +434,7 @@ RedTeamCUA 构建了 VM 操作系统 + Docker 网页平台的混合沙箱和 RTC
 |:--|:--|
 | 🎯 **源论文** | **Strategic Navigation or Stochastic Search? How Agents and Humans Reason Over Document Collections** · Łukasz Borchmann et al. · 🎤 ICML 2026 Oral · [arXiv:2603.12180](https://arxiv.org/abs/2603.12180) |
 | 📌 **线索来源** | §6 Conclusion："Even when frontier MLLM agents can answer challenging document-grounded questions, they expend substantial effort without reliably recognizing if and what additional exploration is beneficial." ＋ §6 Conclusion："First, episodic memory could help agents learn corpus-specific terminology and document structure across queries. Second, reinforcement learning with search tool feedback could significantly improve exploration policies." |
+| 📮 **投稿建议** | 🌐 **WWW** · SIGIR / WWW ＋ 🗣️ NLP · ACL ＋ 🧪 ML · ICML |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -463,6 +475,7 @@ MADQA 用 2,250 个人工问题、800 份异构 PDF 和经典测验理论设计�
 |:--|:--|
 | 🎯 **源论文** | **SimuHome: A Temporal- and Environment-Aware Benchmark for Smart Home LLM Agents** · Gyuhyeon Seo et al. · 🎤 ICLR 2026 Oral · [arXiv:2509.24282](https://arxiv.org/abs/2509.24282) |
 | 📌 **线索来源** | §6 Conclusion："By contrast, workflow scheduling offers no such corrective signal, and agents cannot detect their own mistakes (§5.3). Supervised fine-tuning improves infeasible request detection but sees limited gains on feasible workflow scheduling, where the time calculations vary across episodes and cannot be learned by imitating past solutions" ＋ §6 Conclusion："SimuHome's time-accelerated simulation could serve as an environment for agents to test their plans before committing them to the real world. Second, agents may benefit from learning through trial and error inside the simulator rather than imitating recorded examples." |
+| 📮 **投稿建议** | 🧩 **AI** · AAAI ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -503,6 +516,7 @@ SimuHome 基于 Matter 协议构建高保真智能家居模拟器，设备操作
 |:--|:--|
 | 🎯 **源论文** | **Shoot First, Ask Questions Later? Building Rational Agents that Explore and Act Like People** · Gabriel Grand et al. · 🎤 ICLR 2026 Oral · [arXiv:2510.20886](https://arxiv.org/abs/2510.20886) |
 | 📌 **线索来源** | §6.1 Limitations and Future Work："people are highly sensitive to the reliability of information ... In place of a fixed ε, a more robust approach would be to infer ε to account for the differences in reliability across individual Spotters." ＋ §6.1："Our Bayesian strategies rely on the ability to efficiently draw conditional samples ... from a generative 'world model.' While implementable by hand in a domain like Battleship, in more general settings, we may wish to learn a generative model of world states represented as code" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🧩 AI · IJCAI |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -543,6 +557,7 @@ SimuHome 基于 Matter 协议构建高保真智能家居模拟器，设备操作
 |:--|:--|
 | 🎯 **源论文** | **Measuring Agents in Production** · Melissa Z. Pan et al. · 🎤 ICML 2026 Oral · [arXiv:2512.04123](https://arxiv.org/abs/2512.04123) |
 | 📌 **线索来源** | §8 Discussions & Conclusion："Model brittleness under provider updates drives practitioners away from post-training (F7) despite strong research results. This suggests opportunities in sample-efficient post-training and learning methods that transfer learned behaviors or preserve performance when base models update." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML ＋ 🌐 WWW · KDD |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -583,6 +598,7 @@ MAP 通过 20 个深度案例与 86 个已部署系统的调查给出了生产 a
 |:--|:--|
 | 🎯 **源论文** | **Unsupervised Partner Design Enables Robust Ad-hoc Teamwork** · Constantin Ruhdorfer et al. · 🎤 ICML 2026 Oral · [arXiv:2508.06336](https://arxiv.org/abs/2508.06336) |
 | 📌 **线索来源** | §7 Discussion and Limitations："in principle other UED methods could be used and the partner space could also be defined by partner populations or latent partner spaces when these are available. Exploring richer partner spaces within our framework is an interesting direction for future work." ＋ §7："While UPD avoids explicit population pretraining, it shifts computation toward large-scale online partner evaluation ... may be less advantageous in settings where environment interaction is expensive." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -623,6 +639,7 @@ UPD 把无监督环境设计的思想搬到队友设计：不再预训练队友�
 |:--|:--|
 | 🎯 **源论文** | **VS-Bench: Evaluating VLMs for Strategic Abilities in Multi-Agent Environments** · Zelai Xu et al. · 🎤 CVPR 2026 Oral · [arXiv:2506.02387](https://arxiv.org/abs/2506.02387) |
 | 📌 **线索来源** | §4.5 Failure cases："VLMs often overlook this information asymmetry and incorrectly use their private information to predict the next actions of others. In decision-making, a common failure case is focusing excessively on one's own actions while ignoring those of others." ＋ §Appendix B Limitations："Incorporating results against a population of diverse opponents provides a more comprehensive assessment of the generalization and adaptability of VLM agents." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -663,6 +680,7 @@ VS-Bench 用 10 个视觉接地的多智能体环境（合作、竞争、混合�
 |:--|:--|
 | 🎯 **源论文** | **Do as We Do, Not as You Think: the Conformity of Large Language Models** · Zhiyuan Weng et al. · 🎤 ICLR 2025 Oral · [arXiv:2501.13381](https://arxiv.org/abs/2501.13381) |
 | 📌 **线索来源** | §5.3 Discussion of Mitigation Strategies："designing prompts that encourage reasonable doubt in credulous models like Qwen2-7B, or promoting trust in inherently suspicious models like the Llama3 series, proves difficult ... ii) exploring alignment strategies that can make LLMs aware of conformity." ＋ §7 Discussion："It is of importance to develop methods that harness the benefits of conformity for consensus-building while mitigating its potential to homogenize outputs in scenarios that require independent judgments." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -703,6 +721,7 @@ BenchForm 用推理密集任务与五种交互协议（含多数错误的"诱导
 |:--|:--|
 | 🎯 **源论文** | **CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale** · Zhun Wang et al. · 🎤 ICLR 2026 Oral · [arXiv:2506.02548](https://arxiv.org/abs/2506.02548) ＋ **CVE-Factory: Scaling Expert-Level Agentic Tasks for Code Security Vulnerability** · Xianzhen Luo et al. · 🎤 ICML 2026 Oral · [arXiv:2602.03012](https://arxiv.org/abs/2602.03012) |
 | 📌 **线索来源** | CyberGym §Future Work on Agent Development："current agents primarily succeed on tasks with short ground truth PoCs and fewer reasoning steps, while exhibiting complementary capabilities and distinct behavioral patterns. These findings suggest several promising directions: ... designing ensemble frameworks that combine agents' complementary strengths" ＋ CVE-Factory §Appendix G Limitations："due to the high cost of maintaining thousands of interactive vulnerability environments, we do not perform reinforcement learning directly in executable CVE environments. Such online training could further improve exploration, debugging, and test-driven repair" |
+| 📮 **投稿建议** | 🔐 **Security** · USENIX Security / CCS ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |

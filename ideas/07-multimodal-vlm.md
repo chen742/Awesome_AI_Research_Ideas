@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Visual symbolic mechanisms: Emergent symbol processing in Vision Language Models** · Assouel et al. · 🎤 ICLR 2026 Oral · [arXiv:2506.15871](https://arxiv.org/abs/2506.15871) |
 | 📌 **线索来源** | Conclusion and Future Work §"position IDs are less accurately represented in conditions that typically lead to binding errors, such as images where multiple objects share features" + §"binding performance may be improved either via architectural innovations that better support spatial indexing … or training strategies that explicitly strengthen these symbolic mechanisms" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -53,6 +54,7 @@
 |:--|:--|
 | 🎯 **源论文** | **SpatioLM: Towards General Physical Spatial Intelligence in Vision-Language Models** · Wu et al. · 🎤 ICML 2026 Oral · [arXiv:2608.01899](https://arxiv.org/abs/2608.01899) |
 | 📌 **线索来源** | Limitations §"geometric supervision emphasizes static spatial structure, which partially competes with temporal-dynamic cues. This leads to degradation on motion-intensive subtasks" + C.4 §"This motivates future work that augments the SV-Module with explicit temporal-dynamic supervision, such as optical flow or motion-aware objectives." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🧪 ML · ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -92,6 +94,7 @@ SpatioLM 用一个即插即用的 Spatio-Vision 模块，以伪深度与相机�
 |:--|:--|
 | 🎯 **源论文** | **Understanding Task Transfer in Vision-Language Models** · Sachdeva et al. · 🎤 CVPR 2026 Oral · [arXiv:2511.18787](https://arxiv.org/abs/2511.18787) |
 | 📌 **线索来源** | Discussion §"our framework allows the discovery of negative cliques. This provides a unique understanding on the nature of deteriorative relationships between the considered tasks" + Broader Impact §"naively finetuning VLMs for specialized capabilities can silently degrade other perception abilities … We encourage practitioners to apply transferability analyses before deploying VLMs" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -131,6 +134,7 @@ SpatioLM 用一个即插即用的 Spatio-Vision 模块，以伪深度与相机�
 |:--|:--|
 | 🎯 **源论文** | **Scaling Laws for Native Multimodal Models** · Shukor et al. · 🎤 ICCV 2025 Oral · [arXiv:2504.07951](https://arxiv.org/abs/2504.07951) |
 | 📌 **线索来源** | Appendix D §"Training early-fusion models with high-resolution inputs leads to a significant increase in vision tokens. While pooling techniques have been widely adopted for late-fusion models, alternative approaches may be necessary for early fusion … techniques for extending context length could be beneficial." + Limitations §"the extent to which this correlates with downstream performance remains unclear" |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -170,6 +174,7 @@ SpatioLM 用一个即插即用的 Spatio-Vision 模块，以伪深度与相机�
 |:--|:--|
 | 🎯 **源论文** | **Teaching Vision-Language Models to Ask: Resolving Ambiguity in Visual Questions** · Jian et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2507.13773](https://arxiv.org/abs/2507.13773) |
 | 📌 **线索来源** | Limitations §"we focus on user responses limited to 'yes' or 'no' for simplicity … This may not fully capture the complexity of interactive clarification in real-world scenes." + §"they seldom generate truly new clarification questions after misreading user intent." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🎬 MM · ACM MM |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -209,6 +214,7 @@ SpatioLM 用一个即插即用的 Spatio-Vision 模块，以伪深度与相机�
 |:--|:--|
 | 🎯 **源论文** | **Scaling Text-Rich Image Understanding via Code-Guided Synthetic Multimodal Data Generation** · Yang et al. · 🏆 ACL 2025 SAC Highlight · [arXiv:2502.14846](https://arxiv.org/abs/2502.14846) |
 | 📌 **线索来源** | Limitation §"For highly specialized or underrepresented domains, generating sufficiently diverse data remains challenging and may require careful prompt engineering or additional customization of rendering tools." + §"improving the diversity and realism of synthetic data to better support models in highly variable or evolving domains is a reasonable avenue for future research." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -248,6 +254,7 @@ CoSyn 让纯文本 LLM 写 Python/HTML/LaTeX 代码渲染图表、文档、表�
 |:--|:--|
 | 🎯 **源论文** | **PhysBench: Benchmarking and Enhancing Vision-Language Models for Physical World Understanding** · Chow et al. · 🎤 ICLR 2025 Oral · [arXiv:2501.16411](https://arxiv.org/abs/2501.16411) |
 | 📌 **线索来源** | J.1 Limitation §"assessing open-ended formats is particularly difficult … Moreover, automatically evaluating the quality of reasoning processes presents additional challenges. To address these difficulties and simplify testing, we adopted a multiple-choice format." + §"We believe that exploring more complex evaluation formats is a crucial direction for future research." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -287,6 +294,7 @@ PhysBench 用 10,002 条视频–图像–文本交错数据，在物体属性�
 |:--|:--|
 | 🎯 **源论文** | **On Path to Multimodal Generalist: General-Level and General-Bench** · Fei et al. · 🎤 ICML 2025 Oral · [arXiv:2505.04620](https://arxiv.org/abs/2505.04620) |
 | 📌 **线索来源** | Discussions and Future Investigation §"we have relaxed the measurement of synergy by assuming that a model's synergy capability is reflected in its ability to surpass SoTA specialists in task performance, avoiding a direct measurement of the synergy effect. Future work will consider optimizing this aspect to provide a more robust definition." + §"it is necessary to support some coding capabilities, which, in turn, could theoretically improve the model's understanding and reasoning in other modalities" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML ＋ 🎬 MM · ACM MM |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -326,6 +334,7 @@ PhysBench 用 10,002 条视频–图像–文本交错数据，在物体属性�
 |:--|:--|
 | 🎯 **源论文** | **SAVVY: Spatial Awareness via Audio-Visual LLMs through Seeing and Hearing** · Chen et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2506.05414](https://arxiv.org/abs/2506.05414) |
 | 📌 **线索来源** | Appendix H Limitations §"the spatial audio tracking module uses rule-based signal processing: while effective for direction estimation, distance estimation remains challenging, particularly given the wide variance of near- and far-field cases" + Conclusion §"Future work includes adapting our pipeline to generate spatial reasoning traces for AV-LLM fine-tuning and enhancing spatial audio understanding through real-world audio-visual pretraining." |
+| 📮 **投稿建议** | 🎬 **MM** · ACM MM ＋ 🧪 ML · NeurIPS ＋ 🎙️ Speech · ICASSP |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -365,6 +374,7 @@ SAVVY-Bench 是首个带同步空间音频的动态 3D 空间推理基准，SAVV
 |:--|:--|
 | 🎯 **源论文** | **MMToM-QA: Multimodal Theory of Mind Question Answering** · Jin et al. · 🏆 ACL 2024 Outstanding Paper· [arXiv:2401.08743](https://arxiv.org/abs/2401.08743) |
 | 📌 **线索来源** | Discussion & Conclusion §"First, BIP-ALM cannot imagine missing state information from videos. Second, it uses symbolic state representations and only conducts symbolic planning. However, in Type 2.4, one needs to imagine the future path of a person given continuous spatial information such as the current path, facing direction" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧩 AI · AAAI |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -404,6 +414,7 @@ MMToM-QA 是首个多模态心智理论基准，在家庭环境中给出视频 +
 |:--|:--|
 | 🎯 **源论文** | **PathMMU: A Massive Multimodal Expert-Level Benchmark for Understanding and Reasoning in Pathology** · Sun et al. · 🎤 ECCV 2024 Oral · [arXiv:2401.16355](https://arxiv.org/abs/2401.16355) |
 | 📌 **线索来源** | Conclusion §"Current multimodal models … tend to over-rely on textual information while neglecting visual data … There's a tendency for models to take shortcuts, solving problems in a 'lazy' manner." + §"pathologists often analyze samples at various magnifications and from different perspectives, underscoring the importance of developing LMMs capable of handling multi-image inputs." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / MICCAI ＋ 🎬 MM · ACM MM |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -443,6 +454,7 @@ PathMMU 用 GPT-4V 级联生成、七位病理学家审核，构建 33,428 道�
 |:--|:--|
 | 🎯 **源论文** | **BRAVE: Broadening the visual encoding of vision-language models** · Kar et al. · 🎤 ECCV 2024 Oral · [arXiv:2404.07204](https://arxiv.org/abs/2404.07204) ＋ **Cambrian-1: A Fully Open, Vision-Centric Exploration of Multimodal LLMs** · Tong et al. · 🎤 NeurIPS 2024 Oral · [arXiv:2406.16860](https://arxiv.org/abs/2406.16860) |
 | 📌 **线索来源** | BRAVE Conclusions and Limitations §"it still needs forward passes from all the encoders. A future direction could be to explore adaptive mechanisms to pre-select which encoders to resample from" + §"strengthen vision encoders by distilling the MEQ-Former-combined features back into a single encoder"；Cambrian-1 Discussion §"features of language-supervised models behave like a bag-of-words, underscoring the need for advancements in vision-only models" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ECCV ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |

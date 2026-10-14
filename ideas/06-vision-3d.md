@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **VGGT: Visual Geometry Grounded Transformer** · Wang et al. · 🏆 CVPR 2025 Best Paper · [arXiv:2503.11651](https://arxiv.org/abs/2503.11651) ＋ **MAC-VO: Metrics-Aware Covariance for Learning-Based Stereo Visual Odometry** · Qiu et al. · 🏆 ICRA 2025 Best Conference Paper · [arXiv:2409.09479](https://arxiv.org/abs/2409.09479) |
 | 📌 **线索来源** | VGGT 的置信度图仅用于加权损失、非度量协方差；MAC-VO Conclusion §"the model focuses on the two-frame pose optimization. We believe our accuracy will further benefit from bundle adjustment, multi-frame optimization, and loop closure … we plan to apply our metrics-aware covariance model in multi-sensor fusion" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · ICRA |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -47,6 +48,7 @@ VGGT 用一个前馈 Transformer 一次性回归相机参数、深度、点图�
 |:--|:--|
 | 🎯 **源论文** | **SAM 2: Segment Anything in Images and Videos** · Ravi et al. · 🏅 ICLR 2025 Honorable Mention · [arXiv:2408.00714](https://arxiv.org/abs/2408.00714) |
 | 📌 **线索来源** | Limitation §"loses track in crowded scenes with similar objects; each object is processed independently without inter-object communication" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV / ECCV |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -80,6 +82,7 @@ SAM 2 的流式记忆把可提示分割扩展到视频，但 Limitation 明确�
 |:--|:--|
 | 🎯 **源论文** | **Generating Physically Stable and Buildable Brick Structures from Text (BrickGPT)** · Pun et al. · 🏆 ICCV 2025 Best Paper (Marr Prize) · [arXiv:2505.05469](https://arxiv.org/abs/2505.05469) |
 | 📌 **线索来源** | Appendix D Limitations §"our method is restricted to producing designs within a 20×20×20 grid across 21 categories … our method currently supports a fixed set of commonly used toy bricks. In future work, we plan to expand the brick library"；稳定性仅靠推理期的 physics-aware rollback 保证 |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR ＋ 🎨 Graphics · SIGGRAPH Asia |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -113,6 +116,7 @@ BrickGPT 把 3D 生成"接地"到一个可物理验证的离散世界：自回�
 |:--|:--|
 | 🎯 **源论文** | **Minimalist Vision with Freeform Pixels** · Klotz & Nayar · 🏆 ECCV 2024 Best Paper |
 | 📌 **线索来源** | Limitation §"each task requires training its own set of freeform pixels; evaluated on simple tasks (counting, flow, lighting)" + Future Work §"generalizing across tasks" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ECCV ＋ 👁️ CV · ICCP（计算成像） |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -146,6 +150,7 @@ BrickGPT 把 3D 生成"接地"到一个可物理验证的离散世界：自回�
 |:--|:--|
 | 🎯 **源论文** | **LVSM: A Large View Synthesis Model with Minimal 3D Inductive Bias** · Jin et al. · 🎤 ICLR 2025 Oral · [arXiv:2410.17242](https://arxiv.org/abs/2410.17242) |
 | 📌 **线索来源** | Limitations (A.7) §"they struggle to produce high-quality results in unseen regions. Previous 3D-based deterministic models typically generate blurry artifacts for those regions due to uncertainty, whereas our model often generates noisy and flickering artifacts with fixed patterns." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -184,6 +189,7 @@ CAT3D (Gao et al., 2024) 与 Stable Virtual Camera (Zhou et al., 2025) 是纯多
 |:--|:--|
 | 🎯 **源论文** | **INSID3: Training-Free In-Context Segmentation with DINOv3** · Cuttano et al. · 🎤 CVPR 2026 Oral · [arXiv:2603.28480](https://arxiv.org/abs/2603.28480) |
 | 📌 **线索来源** | Limitations and Future Work (F) §"First, INSID3 currently handles one target concept at a time, requiring separate reference prompts when multiple concepts are present in the target image." + §"one could instead provide an example object in the reference image and ask the model to segment the corresponding instances in the target image separately, rather than merging them into a single semantic mask." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -222,6 +228,7 @@ Matcher (Liu et al., 2024) 与 PerSAM (Zhang et al., 2023) 都依赖 SAM 生成�
 |:--|:--|
 | 🎯 **源论文** | **Hearing the Room Through the Shape of the Drum: Modal-Guided Sound Recovery from Multi-Point Surface Vibrations** · Bagon et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2604.26678](https://arxiv.org/abs/2604.26678) |
 | 📌 **线索来源** | Discussion and limitations (§8) §"Softer objects, such as a loose canvas painting, primarily exhibit low-frequency modes, which degrade performance." + §"However, larger baselines on non-planar objects may degrade the captured speckle vibrations in our current camera due to geometric distortions of the 2D speckle grid" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCP |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★★☆（需要激光散斑成像硬件与 FEM 数据） |
@@ -259,6 +266,7 @@ Visual Microphone (Davis et al., 2014) 与 Visual Vibrometry (Davis et al., 2015
 |:--|:--|
 | 🎯 **源论文** | **MotionStream: Real-Time Video Generation with Interactive Motion Controls** · Shin et al. · 🎤 ICLR 2026 Oral · [arXiv:2511.01266](https://arxiv.org/abs/2511.01266) |
 | 📌 **线索来源** | Limitation and Future Work (Appendix F) §"However, when presented with trajectories from game engines or other sources where environments change continuously, the model exhibits a tendency to preserve the initial scene rather than adapting to new contexts." + §"Future work could explore dynamic attention sinking strategies that adaptively refresh anchor frames for world modeling applications." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -296,6 +304,7 @@ Self-Forcing (Huang et al., 2025) 使用固定 sink；LongLive (Yang et al., 202
 |:--|:--|
 | 🎯 **源论文** | **GLINT: Modeling Scene-Scale Transparency via Gaussian Radiance Transport** · Na et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2603.26181](https://arxiv.org/abs/2603.26181) |
 | 📌 **线索来源** | Limitations and Future Work (Appendix G) §"Consequently, in scenarios with sparse viewpoints or limited parallax, where a surface is observed from a stationary angle, the problem becomes inherently ill-posed." + §"Future work could leverage vision-language models (VLMs) or unprojecting semantic features to enforce physically and semantically plausible decomposition, ensuring that regions identified as glass (e.g., windows vs. mirrors) adhere to their expected optical behaviors even under constrained observation." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🎨 Graphics · SIGGRAPH |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -333,6 +342,7 @@ NeRFReN (Guo et al., 2022) 做反射/透射 NeRF 分解但依赖深度平滑先�
 |:--|:--|
 | 🎯 **源论文** | **VGGT-Ω** · Wang et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2605.15195](https://arxiv.org/abs/2605.15195) |
 | 📌 **线索来源** | Limitations (Appendix C) §"For example, the model's performance drops significantly in the presence of strong motion blur." + §"Meanwhile, reconstruction quality often degrades if the field of view changes abruptly (e.g., shifting from 10° to 160° in a few seconds) or the camera is highly distorted." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆（需在大规模前馈模型上继续训练） |
@@ -370,6 +380,7 @@ Depth Anything AC (Sun et al., 2025) 对单目深度在恶劣天气下做一致�
 |:--|:--|
 | 🎯 **源论文** | **Multi-View 3D Point Tracking** · Rajič et al. · 🎤 ICCV 2025 Oral · [arXiv:2508.21060](https://arxiv.org/abs/2508.21060) |
 | 📌 **线索来源** | Discussion and Future Work (§5) §"If no sensor depth is available, the approach assumes a reasonably accurate estimated depth. However, in sparse camera setups, such estimation can be unreliable or fail entirely, making tracking infeasible." + §"a more principled solution would involve jointly estimating depth and tracking for potential mutual refinement" |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -407,6 +418,7 @@ MVTracker 需要深度输入；SpatialTrackerV2 (Xiao et al., 2025) 与 St4RTrac
 |:--|:--|
 | 🎯 **源论文** | **DPoser-X: Diffusion Model as Robust 3D Whole-body Human Pose Prior** · Lu et al. · 🎤 ICCV 2025 Oral · [arXiv:2508.00599](https://arxiv.org/abs/2508.00599) |
 | 📌 **线索来源** | Limitation and future work (K) §"The low recall, compared to standard generative diffusion samplers (see Table 1 in the main text), indicates that the optimization framework captures the primary modes of the data distribution accurately but lacks diversity." + §"To address this, future research could explore techniques like particle-based variational inference to enhance solution diversity." |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -445,6 +457,7 @@ ProHMR (Kolotouros et al., 2021) 用归一化流输出多假设但无扩散先�
 |:--|:--|
 | 🎯 **源论文** | **PhyGaP: Physically-Grounded Gaussians with Polarization Cues** · Wu et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2603.14001](https://arxiv.org/abs/2603.14001) |
 | 📌 **线索来源** | Limitation and Future Works §"We also observe that reconstruction results on real-world data can be heavily affected by the disparity between actual 3D environments and our environment map formulation which assumes infinite depth of incident light." + §"Metal surfaces, whose pBRDFs involve complex-valued indices and phase terms, may lead to inaccurate reconstructions." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🎨 Graphics · SIGGRAPH |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -482,6 +495,7 @@ TransparentGS (Cai et al., 2025) 的 GaussProbe 提供深度感知环境但面�
 |:--|:--|
 | 🎯 **源论文** | **Stable Video Infinity: Infinite-Length Video Generation with Error Recycling** · Li et al. · 🎤 ICLR 2026 Oral · [arXiv:2510.09212](https://arxiv.org/abs/2510.09212) |
 | 📌 **线索来源** | Limitation and Future Work (B.4) §"We observe that when test-time image styles diverge from the training distribution, adjacent clips can exhibit color shifts. A likely cause is that the model incorrectly treats test-time low-level style as an error and "corrects" it." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -519,6 +533,7 @@ Self-Forcing (Huang et al., 2025) 与 CausVid (Yin et al., 2025) 通过自回放
 |:--|:--|
 | 🎯 **源论文** | **RetimeGS: Continuous-Time Reconstruction of 4D Gaussian Splatting** · Wang et al. · 🎤 CVPR 2026 Oral · [arXiv:2603.13783](https://arxiv.org/abs/2603.13783) |
 | 📌 **线索来源** | More Discussion of Limitations (B) §"our method fails when the inter-frame motion is excessively large or when videos are captured at extremely low frame rates, causing off-the-shelf optical flow estimators to become unreliable for establishing coarse correspondences." + §"A promising direction for future work is to incorporate stronger motion priors or adopt alternative 4D representations that can robustly operate under such conditions, effectively treating the task as a 4D multi-frame start-end interpolation problem." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🎨 Graphics · SIGGRAPH Asia |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -556,6 +571,7 @@ Generative Inbetweening (Wang et al., 2025) 只做单目 2D 插值，无 3D 一�
 |:--|:--|
 | 🎯 **源论文** | **SAM 3D: 3Dfy Anything in Images** · Chen et al. · 🏆 CVPR 2026 Best Paper Honorable Mention · [arXiv:2511.16624](https://arxiv.org/abs/2511.16624) |
 | 📌 **线索来源** | Limitations (Appendix F) §"SAM 3D predicts objects one at a time, and isn't trained to reason about physical interactions, such as contact, physical stability, interpenetration, or co-alignment (e.g. on the same ground plane)." + §"Multi-object prediction combined with appropriate losses would allow joint reasoning about multiple objects in a scene." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆（需要在 SAM 3D 规模的数据引擎上扩展场景级标注） |
@@ -593,6 +609,7 @@ MIDI (Huang et al., 2025) 多实例扩散有跨实例注意力但无物理约束
 |:--|:--|
 | 🎯 **源论文** | **Counting Stacked Objects** · Dumery et al. · 🎤 ICCV 2025 Oral · [arXiv:2411.19149](https://arxiv.org/abs/2411.19149) |
 | 📌 **线索来源** | Limitations and Future Work (4.5) §"Thus another possible direction for further enhancements lies in integrating a robust localization of visible instances, and an estimation of a possible configuration of invisible instances." + Conclusion (5) §"Our experiments show that the performance of our approach can degrade with increased geometric complexity or visually complex scenes." |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -630,6 +647,7 @@ MIDI (Huang et al., 2025) 多实例扩散有跨实例注意力但无物理约束
 |:--|:--|
 | 🎯 **源论文** | **Back on Track: Bundle Adjustment for Dynamic Scene Reconstruction** · Chen et al. · 🎤 ICCV 2025 Oral · [arXiv:2504.14516](https://arxiv.org/abs/2504.14516) |
 | 📌 **线索来源** | Limitations and Discussion (Appendix D) §"While effective, the scale map has limitations in handling complex error patterns present in monocular depth estimates. Future work could explore refinement models based on dense vector fields, which may improve continuity and smoothness." + §"One way to address this limitation is to extend our framework to jointly optimize camera intrinsics along with pose and point depths." |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR ＋ 🤖 Robotics · ICRA |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -667,6 +685,7 @@ BA-Track 使用平滑尺度图；MegaSaM (Li et al., 2024) 在可微 BA 中可�
 |:--|:--|
 | 🎯 **源论文** | **Native and Compact Structured Latents for 3D Generation** · Xiang et al. · 🏆 CVPR 2026 Best Student Paper · [arXiv:2512.14692](https://arxiv.org/abs/2512.14692) |
 | 📌 **线索来源** | Limitation Discussion and Future Work (Appendix F) §"Finally, our O-Voxel is currently focused on geometry and material and it does not explicitly encode higher-level structural or semantic information." + §"For example, when two parallel surfaces that are very close to each other intersect the same voxel, the QEF solver, by design, will place the dual vertex at a position that minimizes the error to both surfaces, often resulting in a vertex located between them rather than accurately on one." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🎨 Graphics · SIGGRAPH |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆（需要大规模原生 3D 数据与流匹配训练） |

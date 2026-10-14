@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **AfriMed-QA: A Pan-African, Multi-Specialty, Medical Question-Answering Benchmark Dataset** · Olatunji et al. · 🏆 ACL 2025 Best Paper · [arXiv:2411.15640](https://arxiv.org/abs/2411.15640) |
 | 📌 **线索来源** | Limitations of automated metrics §"no single automated metric reliably captures both the correctness and completeness of free-text medical responses ... even when metrics are combined" + §"We therefore defer analysis of open-ended answers to future human evaluations where clinicians can better discriminate between semantically similar and clinically correct answers" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🔬 Science · ML4H / Nature Medicine |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -53,6 +54,7 @@ AfriMed-QA 收集了 16 个国家、60 余所医学院的 15k 道题（MCQ/SAQ/C
 |:--|:--|
 | 🎯 **源论文** | **Pattern Recognition or Medical Knowledge? The Problem with Multiple-Choice Questions in Medicine** · Griot et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2406.02394](https://arxiv.org/abs/2406.02394) |
 | 📌 **线索来源** | Conclusion §"models of different architectures, sizes, and specializations outperform physicians on this benchmark, suggesting that pattern recognition and test-taking strategies may play a larger role for LLMs than for humans" + Limitations §"future work should evaluate models on multiple-choice questions covering clinical knowledge published after the training cut-off date" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🔬 Science · ML4H |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -92,6 +94,7 @@ AfriMed-QA 收集了 16 个国家、60 余所医学院的 15k 道题（MCQ/SAQ/C
 |:--|:--|
 | 🎯 **源论文** | **TabStruct: Measuring Structural Fidelity of Tabular Data** · Xiangjian Jiang et al. · 🎤 ICLR 2026 Oral · [arXiv:2509.11950](https://arxiv.org/abs/2509.11950) |
 | 📌 **线索来源** | Conclusion §"we find that existing evaluation methods often favour models that capture local causal interactions while neglecting global structure" + Future Work §"acts as an independent benchmark to assess whether a generator is underfitting or overfitting the training data" + §"SMOTE generally overfits to the training data ... rather than learning truly generalisable distributions" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🌐 WWW · KDD |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -131,6 +134,7 @@ TabStruct 提出在没有 ground-truth SCM 的情况下也能评估合成表格�
 |:--|:--|
 | 🎯 **源论文** | **DR Tulu: Reinforcement Learning with Evolving Rubrics for Deep Research** · Rulin Shao et al. · 🎤 ICML 2026 Oral · [arXiv:2511.19399](https://arxiv.org/abs/2511.19399) |
 | 📌 **线索来源** | Discussion §"we adapt the environment by updating the verifier (rubrics). Future work may consider jointly adapting both prompts and rubric criteria to further improve training efficiency" + §"scaling up this information often increases context length and compute costs" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -170,6 +174,7 @@ DR Tulu 把长文本深度研究的奖励从"可验证短答案"换成**随训�
 |:--|:--|
 | 🎯 **源论文** | **Sundial: A Family of Highly Capable Time Series Foundation Models** · Yong Liu et al. · 🎤 ICML 2025 Oral · [arXiv:2502.00816](https://arxiv.org/abs/2502.00816) |
 | 📌 **线索来源** | Limitations §"we only adopt a naïve sampling strategy that begins with random Gaussian noise, it leaves much room for future improvement in sampling strategy and post-processing" + §"multiple steps of autoregression may still lead to over-smooth predictions and unreliable results" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🌐 WWW · KDD |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -209,6 +214,7 @@ Sundial 用 TimeFlow Loss（基于 flow matching 的 next-patch 分布预测）�
 |:--|:--|
 | 🎯 **源论文** | **Fast training of accurate physics-informed neural networks without gradient descent** · Chinmay Datar et al. · 🎤 ICLR 2026 Oral · [arXiv:2405.20836](https://arxiv.org/abs/2405.20836) |
 | 📌 **线索来源** | Conclusion §"While Frozen-PINNs efficiently deal with extreme temporal complexity ... dealing with spatial complexity encountered while solving PDEs like Navier–Stokes is an exciting next step, where one could leverage domain decomposition" + §"understanding the role of re-sampling network parameters in overcoming the Kolmogorov n-width barrier" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔬 Science · J. Comput. Phys. |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -248,6 +254,7 @@ Frozen-PINN 用空间-时间分离 + 随机特征（ELM / SWIM 采样）把 PINN
 |:--|:--|
 | 🎯 **源论文** | **dnaHNet: A Scalable and Hierarchical Foundation Model for Genomic Sequence Learning** · Arnav Shah et al. · 🎤 ICML 2026 Oral · [arXiv:2602.10603](https://arxiv.org/abs/2602.10603) |
 | 📌 **线索来源** | Limitations §"The fixed target compression ratios, while biologically motivated, may be suboptimal for non-coding or eukaryotic sequences" + Future Directions §"extending pretraining to eukaryotic genomes to test whether dynamic chunking discovers structures such as splice sites and enhancers" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML ＋ 🔬 Science · Bioinformatics / ISMB |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -287,6 +294,7 @@ dnaHNet 用可微动态分块把原始核苷酸端到端压缩成潜 token，摆
 |:--|:--|
 | 🎯 **源论文** | **Scaling Atomistic Protein Binder Design with Generative Pretraining and Test-Time Compute** · Kieran Didi et al. · 🎤 ICLR 2026 Oral · [arXiv:2603.27950](https://arxiv.org/abs/2603.27950) |
 | 📌 **线索来源** | Limitations and Future Work §"While our evaluations are limited to in-silico success metrics, an important next step will be experimental validation" + §"could also target additional molecular properties—such as specificity or thermostability—by integrating suitable computational predictors into Complexa" (Appendix A) |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🔬 Science · ISMB / Nature Methods |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -326,6 +334,7 @@ Proteína-Complexa 用 AFDB 域-域相互作用构造的大规模合成二聚体
 |:--|:--|
 | 🎯 **源论文** | **The dark side of the forces: assessing non-conservative force models for atomistic machine learning** · Filippo Bigi et al. · 🎤 ICML 2025 Oral · [arXiv:2412.11569](https://arxiv.org/abs/2412.11569) |
 | 📌 **线索来源** | Discussion §"Non-conservative behavior also results in molecular dynamics trajectories exhibiting a spontaneous drift away from the desired thermodynamic conditions. Controlling this effect with thermostats requires careful tuning, and disrupts both time-dependent properties and the sampling efficiency" + §"assessing non-conservative behavior requires the explicit evaluation of the Jacobian both as diagnostics and as additional loss term" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🔬 Science · JCTC / Nature Comm. |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -365,6 +374,7 @@ Proteína-Complexa 用 AFDB 域-域相互作用构造的大规模合成二聚体
 |:--|:--|
 | 🎯 **源论文** | **Rethinking the generalization of drug target affinity prediction algorithms via similarity aware evaluation** · Chenbin Zhang et al. · 🎤 ICLR 2025 Oral · [arXiv:2504.09481](https://arxiv.org/abs/2504.09481) |
 | 📌 **线索来源** | Conclusion §"we show the generality of the imbalanced distribution of samples by randomized split and the consequent overshadowing of low-similarity samples" + §"split to create a “mimic split”, splitting the training set and internal test set by replicating the distribution found in an external test set" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🔬 Science · Bioinformatics / ISMB |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |

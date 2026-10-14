@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **No Plan but Everything under Control: Robustly Solving Sequential Tasks with Dynamically Composed Gradient Descent** · Mengers & Brock · 🏆 ICRA 2025 Best Paper (Planning & Control) · [arXiv:2503.01732](https://arxiv.org/abs/2503.01732) |
 | 📌 **线索来源** | §"Solvable Problem Classes and Limitations": "tasks involving irreversible actions, e.g., destroying objects, or conflicting subgoals that require temporary setbacks, e.g., Towers of Hanoi, still require planning. Future research could explore adaptive methods for modifying subgoal hierarchies during execution, reducing the need for explicit planning." |
+| 📮 **投稿建议** | 🤖 **Robotics** · ICRA / RSS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -50,6 +51,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Data Shapley in One Training Run** · Wang et al. · 🏅 ICLR 2025 Honorable Mention · [arXiv:2406.11011](https://arxiv.org/abs/2406.11011) ＋ 动机来源 **Robo-DM: Data Management for Large Robot Datasets** · Chen et al. · 🏆 ICRA 2025 Best Paper (Robot Learning) · [arXiv:2505.15558](https://arxiv.org/abs/2505.15558) |
 | 📌 **线索来源** | In-Run Data Shapley 仅在语言模型预训练上验证（Limitation）；Robo-DM Conclusion §"Robo-DM reduces dataset size with minimal training performance and accuracy degradation … in future work, we will integrate and evaluate Robo-DM with larger-scale of existing and prospective Open-X-Embodiment datasets"——数据能被大幅压缩而几乎不掉点，说明机器人数据集中存在大量低价值/冗余示教，但"哪些示教有价值"没有被量化 |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL / ICRA ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -83,6 +85,7 @@ Robo-DM 解决的是"机器人数据太大"（OXE 级别数据的存储、压缩
 |:--|:--|
 | 🎯 **源论文** | **Learning Interactive Real-World Simulators (UniSim)** · Yang et al. · 🏆 ICLR 2024 Outstanding Paper · [arXiv:2310.06114](https://arxiv.org/abs/2310.06114) ＋ **Genie: Generative Interactive Environments** · Bruce et al. · 🏆 ICML 2024 Best Paper · [arXiv:2402.15391](https://arxiv.org/abs/2402.15391) |
 | 📌 **线索来源** | UniSim Limitation §"hallucinated physics; limited memory / long-horizon consistency"；Genie Limitation §"hallucinates unrealistic futures; 16-frame memory" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / ICML ＋ 🤖 Robotics · CoRL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -116,6 +119,7 @@ UniSim 与 Genie 展示了视频生成模型可以作为可交互的世界模拟
 |:--|:--|
 | 🎯 **源论文** | **Achieving Human Level Competitive Robot Table Tennis** · D'Ambrosio et al. · 🏆 ICRA 2025 Best Paper Finalist (Robot Learning) · [arXiv:2408.03906](https://arxiv.org/abs/2408.03906) |
 | 📌 **线索来源** | Limitations §"the inherent latency in the system (∼100ms) significantly restricts the number of actionable decisions… exacerbated by the fact that the robot was reset to the same initial pose… between each ball hit to account for the single ball training" + Future Work §"training the policy to choose the reset pose, or simply removing between-shot resets altogether… training on scenarios that last an entire rally… potentially even exploring self-play techniques" |
+| 📮 **投稿建议** | 🤖 **Robotics** · ICRA / RSS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★★（需要真实高速机械臂与人类对手） |
@@ -155,6 +159,7 @@ UniSim 与 Genie 展示了视频生成模型可以作为可交互的世界模拟
 |:--|:--|
 | 🎯 **源论文** | **RoboCrowd: Scaling Robot Data Collection through Crowdsourcing** · Mirchandani et al. · 🏆 ICRA 2025 Best Paper Finalist (Best Conference Paper / Best Student Paper) · [arXiv:2411.01915](https://arxiv.org/abs/2411.01915) |
 | 📌 **线索来源** | Discussion and Limitations §"it also presents challenges of data quality control and heterogeneity, especially as tasks increase in complexity" + §"what the most effective ways are to leverage crowdsourced data during downstream policy learning" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL / ICRA |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -194,6 +199,7 @@ RoboCrowd 在 ALOHA 上用三类激励（物质奖励、内在动机、社会比
 |:--|:--|
 | 🎯 **源论文** | **UAD: Unsupervised Affordance Distillation for Generalization in Robotic Manipulation** · Tang et al. · 🏆 ICRA 2025 Best Paper Finalist (Robot Perception) · [arXiv:2506.09284](https://arxiv.org/abs/2506.09284) |
 | 📌 **线索来源** | Conclusion & Limitations §"it does not immediately provide generalization at the motion level. Second, we only consider the interpretation of affordance for a single static frame" + §"the extracted training dataset contains only single objects renderings" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL / ICRA ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -233,6 +239,7 @@ UAD 用大视觉模型（DINOv2 聚类）与 VLM 自动生成 ⟨指令, 视觉�
 |:--|:--|
 | 🎯 **源论文** | **SELP: Generating Safe and Efficient Task Plans for Robot Agents with Large Language Models** · Wu et al. · 🏆 ICRA 2025 Best Paper Finalist (Planning & Control) · [arXiv:2409.19471](https://arxiv.org/abs/2409.19471) |
 | 📌 **线索来源** | Conclusion and Future Work §"(1) we only consider generating task plans with finite steps despite LTL's capability to express plans with infinite steps; (2) we do not design a feedback mechanism" + §"include vision information and expand on multi-modality" |
+| 📮 **投稿建议** | 🤖 **Robotics** · ICRA / IROS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -272,6 +279,7 @@ SELP 的三件套——LTL 等价投票翻译、LTL 约束解码、领域微调�
 |:--|:--|
 | 🎯 **源论文** | **PolyTouch: A Robust Multi-Modal Tactile Sensor for Contact-Rich Manipulation Using Tactile-Diffusion Policies** · Zhao et al. · 🏆 ICRA 2025 Best Paper Award (Field and Service Robotics) · [arXiv:2504.19341](https://arxiv.org/abs/2504.19341) |
 | 📌 **线索来源** | Limitations and future works §"the hysteresis introduced by the viscosity of the acrylic foam base material used in VHB tapes could lead to slower response or ambiguity in dynamic manipulation tasks. This issue could be alleviated on the software side, by taking temporal difference images and cross-checking the peripheral vision signal." |
+| 📮 **投稿建议** | 🤖 **Robotics** · ICRA / IROS / RSS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -311,6 +319,7 @@ PolyTouch 把相机式触觉、声学与外周视觉集成到一个寿命提升 
 |:--|:--|
 | 🎯 **源论文** | **TinySense: A Lighter Weight and More Power-Efficient Avionics System for Flying Insect-Scale Robots** · Yu et al. · 🏆 ICRA 2025 Best Student Paper Award · [arXiv:2501.03416](https://arxiv.org/abs/2501.03416) |
 | 📌 **线索来源** | Results and discussion §"Lucas-Kanade cannot detect motion accurately if the displacement between frames is greater than a half pixel… This limits optic flow measurement to Ω_m < 0.5αF = 1.4 rad/s" + §"We believe that the lateral velocity estimate diverges during these fast maneuvers because it depends on erroneous optic flow readings." |
+| 📮 **投稿建议** | 🤖 **Robotics** · ICRA / IROS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★★★（亚克级硬件与 MCU 级实现） |
@@ -350,6 +359,7 @@ TinySense 把亚克飞行昆虫机器人的航电套件压到 78.4 mg、约 5 mW
 |:--|:--|
 | 🎯 **源论文** | **PRIMT: Preference-based Reinforcement Learning with Multimodal Feedback and Trajectory Synthesis from Foundation Models** · Wang et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2509.15607](https://arxiv.org/abs/2509.15607) |
 | 📌 **线索来源** | Appendix A §"their reliance on discrete visual frames makes them highly effective at capturing spatial relationships but poorly suited for interpreting task intent, motion quality, or temporal consistency… Without direct visual input, LLMs can miss critical spatial alignments, physical contacts, and fine-grained task completion" + Conclusion §"A limitation of this study involves the increased cost associated with foundation-model usage due to the multimodal components of the framework" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -389,6 +399,7 @@ PRIMT 用 VLM（看帧序列）与 LLM（读结构化状态序列）分别评判
 |:--|:--|
 | 🎯 **源论文** | **World-In-World: World Models in a Closed-Loop World** · Zhang et al. · 🎤 ICLR 2026 Oral · [arXiv:2510.18135](https://arxiv.org/abs/2510.18135) |
 | 📌 **线索来源** | Discussion and Future Directions §"In unseen embodied environments, they may revert to training priors or ignore action controls, yielding plausible but physically or semantically inconsistent rollouts… These deviations mislead planning and reduce success." + §"Future work should prioritize strategies and action representations to improve transfer to novel environments" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🤖 Robotics · CoRL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -428,6 +439,7 @@ World-In-World 第一次把各种生成式世界模型放进**闭环**（提议�
 |:--|:--|
 | 🎯 **源论文** | **RoboMME: Benchmarking and Understanding Memory for Robotic Generalist Policies** · Dai et al. · 🎤 ICML 2026 Oral · [arXiv:2603.04639](https://arxiv.org/abs/2603.04639) |
 | 📌 **线索来源** | Conclusion §"no single design consistently dominates: symbolic memory excels at counting and short-horizon reasoning, while perceptual memory is crucial for motion-centric and time-sensitive behaviors… memory representations are complementary rather than exclusive, motivating unified frameworks" + Appendix C.5 §"memory is mainly needed at key decision points where historical information disambiguates the correct behavior" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL ＋ 🧪 ML · ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -467,6 +479,7 @@ RoboMME 把机器人记忆拆成时间、空间、物体、程序四个维度，
 |:--|:--|
 | 🎯 **源论文** | **From Abstraction to Instantiation: Learning Behavioral Representation for Vision-Language-Action Model** · Hu et al. · 🎤 ICML 2026 Oral · [arXiv:2605.22671](https://arxiv.org/abs/2605.22671) |
 | 📌 **线索来源** | Limitation and Future Work §"When a novel task substantially departs from the learned behavior manifold, the retrieved structural skeleton may be ill-posed, potentially guiding the PBD toward geometrically consistent but functionally incorrect actions." + §"A natural direction is to develop online manifold expansion mechanisms, where the prototype memory bank can be dynamically updated through self-supervised exploration and interaction feedback" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL / ICRA ＋ 🧪 ML · ICML |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -506,6 +519,7 @@ BehaviorVLA 用 Mamba 式的视觉运动行为编码器把长程轨迹压缩成�
 |:--|:--|
 | 🎯 **源论文** | **Differentiable Model Predictive Control on the GPU** · Adabag et al. · 🎤 ICLR 2026 Oral · [arXiv:2510.06179](https://arxiv.org/abs/2510.06179) |
 | 📌 **线索来源** | Discussion and Limitations §"Handling such inequality constraints via augmented Lagrangian or interior-point methods… might lead to more reliable convergence and higher-quality solutions. However, reliably differentiating through such problems remains challenging, since gradients can be discontinuous at the boundary of the constraints." + §"DiffMPC does not explicitly support tuning solver hyperparameters such as the maximum number of iterations or the PCG tolerance" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🤖 Robotics · ICRA |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -545,6 +559,7 @@ DiffMPC 用 SQP + 三对角预条件的共轭梯度把可微 MPC 搬上 GPU，�
 |:--|:--|
 | 🎯 **源论文** | **Instant Policy: In-Context Imitation Learning via Graph Diffusion** · Vosylius & Johns · 🎤 ICLR 2025 Oral · [arXiv:2411.12633](https://arxiv.org/abs/2411.12633) |
 | 📌 **线索来源** | Appendix G §"other failure modes usually included policy stalling at a certain point or oscillating between two configurations. We hypothesise that such behaviour is caused by conflicting information in the provided demonstrations and violating the Markovian assumption." + Discussion §"our generated pseudo-demonstrations do not include any collision avoidance… many of these limitations can be addressed primarily through improvements in generation of the pseudo-demonstrations" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -584,6 +599,7 @@ Instant Policy 把上下文模仿学习建模为图生成：示教、当前观�
 |:--|:--|
 | 🎯 **源论文** | **Moto: Latent Motion Token as the Bridging Language for Learning Robot Manipulation from Videos** · Chen et al. · 🎤 ICCV 2025 Oral · [arXiv:2412.04445](https://arxiv.org/abs/2412.04445) |
 | 📌 **线索来源** | Limitations & Future Work §"while Moto is primarily utilized to enhance imitation learning for robot manipulation tasks, it shows potential as a reward model for measuring trajectory rationality and as a vivid environment simulator. Future research could explore Moto's use in improving the robustness of reinforcement learning agents" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL ＋ 👁️ CV · ICCV |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -623,6 +639,7 @@ Moto 先训练一个潜在运动分词器把视频帧间变化离散成"运动 t
 |:--|:--|
 | 🎯 **源论文** | **Data Scaling Laws in Imitation Learning for Robotic Manipulation** · Lin et al. · 🎤 ICLR 2025 Oral · [arXiv:2410.18647](https://arxiv.org/abs/2410.18647) |
 | 📌 **线索来源** | Discussion, Limitations, & Future Works §"our use of UMI for data collection introduces inherent small errors in the demonstrations, and we model the data using only Diffusion Policy algorithm. Future research can investigate how data quality and policy learning algorithms affect data scaling laws." + §"Rather than blindly increasing data quantity, emphasis should be placed on data quality." |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL / RSS ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆（需大量真实采集与评测） |
@@ -662,6 +679,7 @@ Moto 先训练一个潜在运动分词器把视频帧间变化离散成"运动 t
 |:--|:--|
 | 🎯 **源论文** | **RoboSpatial: Teaching Spatial Understanding to 2D and 3D Vision-Language Models for Robotics** · Song et al. · 🎤 CVPR 2025 Oral · [arXiv:2411.16537](https://arxiv.org/abs/2411.16537) |
 | 📌 **线索来源** | Appendix A Limitations §"it currently does not support spatial questions involving containment—such as whether an object can fit inside or under another object—which would require more detailed volumetric modeling. Second, although the models are deployed on a real robot using a modular approach, we do not yet explore tighter forms of integration such as training it jointly with robot trajectories" |
+| 📮 **投稿建议** | 🤖 **Robotics** · CoRL ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |

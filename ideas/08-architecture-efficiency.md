@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free** · Qiu et al. (Qwen) · 🏆 NeurIPS 2025 Best Paper · [arXiv:2505.06708](https://arxiv.org/abs/2505.06708) |
 | 📌 **线索来源** | Discussion §"gates are sparse and query-dependent; attention sinks disappear" + Future Work §"interplay with KV-cache compression and sparse attention" |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICLR ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -47,6 +48,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention** · Yuan et al. (DeepSeek) · 🏆 ACL 2025 Best Paper · [arXiv:2502.11089](https://arxiv.org/abs/2502.11089) |
 | 📌 **线索来源** | Limitation §"designed for causal autoregressive decoding; block selection relies on causal compressed keys" + dLLM 领域的共识痛点 §"bidirectional attention prevents KV caching; every denoising step recomputes full attention" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -81,6 +83,7 @@ NSA 的贡献是把稀疏注意力做成**可从头训练、硬件对齐**的三
 |:--|:--|
 | 🎯 **源论文** | **Transformers are Inherently Succinct** · Bergsträßer, Cotterell & Lin · 🏆 ICLR 2026 Outstanding Paper · [arXiv:2510.19315](https://arxiv.org/abs/2510.19315) |
 | 📌 **线索来源** | Discussion §"succinctness is an expressivity statement; whether gradient descent finds these succinct solutions is open" + Future Work §"learnability of succinct constructions" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -114,6 +117,7 @@ NSA 的贡献是把稀疏注意力做成**可从头训练、硬件对齐**的三
 |:--|:--|
 | 🎯 **源论文** | **Expressivity-Efficiency Tradeoffs for Hybrid Sequence Models** · Cooper et al. · 🎤 ICML 2026 Oral · [arXiv:2603.08859](https://arxiv.org/abs/2603.08859) |
 | 📌 **线索来源** | Conclusion §"Limitations include our focus on synthetic tasks and restricted Transformer attention mechanisms; extending the theory to broader attention patterns, external memory, identification of real function-composition datasets, and naturalistic long-context workloads is an important direction for future work." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -153,6 +157,7 @@ NSA 的贡献是把稀疏注意力做成**可从头训练、硬件对齐**的三
 |:--|:--|
 | 🎯 **源论文** | **Beyond Position: the Emergence of Wavelet-like Properties in Transformers** · Ruscio et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2410.18067](https://arxiv.org/abs/2410.18067) |
 | 📌 **线索来源** | Limitations §"Our primary analysis, like much of the field, examines model properties at inference time after training is complete." + Conclusion §"understanding that these optimal structures are emergent rather than designed could inspire new architectural innovations, potentially leading to models that are either explicitly guided towards these solutions or are built with more efficient, innate multi-scale processing capabilities from the start." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -192,6 +197,7 @@ NSA 的贡献是把稀疏注意力做成**可从头训练、硬件对齐**的三
 |:--|:--|
 | 🎯 **源论文** | **Byte Latent Transformer: Patches Scale Better Than Tokens** · Pagnoni et al. (Meta) · 🏆 ACL 2025 Outstanding Paper · [arXiv:2412.09871](https://arxiv.org/abs/2412.09871) |
 | 📌 **线索来源** | Limitations and Future Work §"While BLT uses a separately trained entropy model for patching, learning the patching model in an end-to-end fashion can be an interesting direction for future work." + §"Further work in this direction may uncover methods that not only retain the benefits of bytefying, but also push performance beyond that of these tokenizer-based models without training them from scratch." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -232,6 +238,7 @@ BLT 用一个小型字节熵模型把字节流切成动态 patch，局部编码�
 |:--|:--|
 | 🎯 **源论文** | **Why Low-Precision Transformer Training Fails: An Analysis on Flash Attention** · Qiu & Yao · 🎤 ICLR 2026 Oral · [arXiv:2510.04212](https://arxiv.org/abs/2510.04212) |
 | 📌 **线索来源** | Limitations §"The generalizability of our findings to other architectures, larger scales, or different low-precision formats like FP8 requires further investigation." + Future Work §"developing automated tools to detect and mitigate such numerical instabilities during training would be valuable for the community." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS / MLSys |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -272,6 +279,7 @@ BLT 用一个小型字节熵模型把字节流切成动态 patch，局部编码�
 |:--|:--|
 | 🎯 **源论文** | **Unlocking State-Tracking in Linear RNNs Through Negative Eigenvalues** · Grazzi et al. · 🎤 ICLR 2025 Oral · [arXiv:2411.12537](https://arxiv.org/abs/2411.12537) |
 | 📌 **线索来源** | Conclusion (Limitations and Future work) §"Our modification is not directly compatible with a numerical technique used by some diagonal LRNNs such as Mamba2, GLA and mLSTM. In particular, these models rely on positive state-transition matrices to compute cumulative products in log space" + §"we hypothesize a fundamental trade-off between state-tracking and associative recall, which is also of theoretical interest and could guide hybrid model design." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -312,6 +320,7 @@ BLT 用一个小型字节熵模型把字节流切成动态 patch，局部编码�
 |:--|:--|
 | 🎯 **源论文** | **ThinKV: Thought-Adaptive KV Cache Compression for Efficient Reasoning Models** · Ramachandran et al. (NVIDIA / Georgia Tech) · 🎤 ICLR 2026 Oral · [arXiv:2510.01290](https://arxiv.org/abs/2510.01290) |
 | 📌 **线索来源** | Discussions and Ablations §"TBQ, operating at an average precision of 3.5 bits, maintains accuracy comparable to FullKV. However, as shown in Figure 10 (d), its substantial generation-length inflation negates most of the compression gains" + Appendix F Limitations §"While ThinKV demonstrates strong performance for long-output reasoning tasks, it is not directly applicable to settings dominated by long input contexts." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -352,6 +361,7 @@ ThinKV 发现推理模型的 CoT 可按注意力稀疏模式分为推理、执�
 |:--|:--|
 | 🎯 **源论文** | **ParaRNN: Unlocking Parallel Training of Nonlinear RNNs for Large Language Models** · Danieli et al. (Apple) · 🎤 ICLR 2026 Oral · [arXiv:2510.21450](https://arxiv.org/abs/2510.21450) |
 | 📌 **线索来源** | §2.1 Limitations §"In practice, we need convergence in a small O(1) number of iterations. Fortunately, for the RNN considered in this work, three iterations proved to be sufficient in all cases, but this must be verified for newly defined RNN wanting to leverage ParaRNN." + §"In practice, then, one should inject some additional structure in the Jacobians definition, so to make these operations more tractable." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -392,6 +402,7 @@ ParaRNN 把整段非线性递推 h_t = f(h_{t−1}, x_t) 写成一个大方程�
 |:--|:--|
 | 🎯 **源论文** | **Optimal Sparsity of Mixture-of-Experts Language Models for Reasoning Tasks** · Nakamura et al. · 🎤 ICLR 2026 Oral · [arXiv:2508.18672](https://arxiv.org/abs/2508.18672) ＋ **OLMoE: Open Mixture-of-Experts Language Models** · Muennighoff et al. · 🎤 ICLR 2025 Oral · [arXiv:2409.02060](https://arxiv.org/abs/2409.02060) |
 | 📌 **线索来源** | Nakamura · Discussion and Limitations §"with larger training corpora, one could train larger models at higher tokens-per-parameter, potentially shifting the optimal sparsity toward sparser configurations, even for reasoning skills. We leave this as a direction for future work." + OLMoE · Limitations and Future Work §"to what degree overtraining is effective for MoEs and how it differs from dense models still requires more research" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -431,6 +442,7 @@ Nakamura 等在固定 125B token 预算下系统扫描 MoE 的总参数、激活
 |:--|:--|
 | 🎯 **源论文** | **TokSuite: Measuring the Impact of Tokenizer Choice on Language Model Behavior** · Altıntaş et al. · 🎤 ICML 2026 Oral · [arXiv:2512.20757](https://arxiv.org/abs/2512.20757) |
 | 📌 **线索来源** | Discussion §"We speculate this is driven by TokenMonster's tokenization consistency, the degree to which the same surface form maps to the same token sequence" + §"A fully controlled factorial study, training tokenizers from scratch while varying one design factor at a time, is beyond the scope of our work." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -470,6 +482,7 @@ TokSuite 训练了 14 个除分词器外完全相同的模型，并用母语者�
 |:--|:--|
 | 🎯 **源论文** | **Adapt Once, Thrive with Updates: Transferable Parameter-Efficient Fine-Tuning on Evolving Base Models** · Gu et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2506.06844](https://arxiv.org/abs/2506.06844) ＋ **Generalized Linear Mode Connectivity for Transformers** · Theus et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2506.22712](https://arxiv.org/abs/2506.22712) |
 | 📌 **线索来源** | Trans-PEFT · Limitations §"Since PEFT operates within a specific parameter space Aghajanyan et al. (2021), transferring parameters across completely distinct spaces remains infeasible. Exploring ways to adapt our method to these conditions represents a direction for future research." + GLMC · Limitations §"The current scope is focused on aligning pairs of models that have been pretrained on the same task" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -510,6 +523,7 @@ Trans-PEFT 发现基座模型的**继续训练**主要改变 FFN 中的任务知
 |:--|:--|
 | 🎯 **源论文** | **Retrofitting Large Language Models with Dynamic Tokenization** · Feher et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2411.18553](https://arxiv.org/abs/2411.18553) |
 | 📌 **线索来源** | Limitations §"our current dynamic tokenization approach is primarily designed for settings where the full sequence is known in advance (e.g., scoring and prefilling in decoder models)." + §"Closing this gap by integrating 'true' dynamic tokenization into autoregressive generation remains an open challenge for future research." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -549,6 +563,7 @@ Trans-PEFT 发现基座模型的**继续训练**主要改变 FFN 中的任务知
 |:--|:--|
 | 🎯 **源论文** | **NuWa: Deriving Lightweight Class-Specific Vision Transformers for Edge Devices** · Wei et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2504.03118](https://arxiv.org/abs/2504.03118) |
 | 📌 **线索来源** | Limitations and Future Works §"However, when the pruning rate exceeds 70%, noticeable accuracy degradation still occurs." + §"an offline-trained hypernetwork could be developed to predict weight updates, enabling the online derivation process to efficiently map task specifications, such as model architecture, sub-task, and pruning rate, to corresponding pruned weights." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -589,6 +604,7 @@ NuWa 针对"边缘设备只需要部分类别"的现实，发现基座 ViT 中�
 |:--|:--|
 | 🎯 **源论文** | **Faster Cascades via Speculative Decoding** · Narasimhan et al. (Google) · 🎤 ICLR 2025 Oral · [arXiv:2405.19261](https://arxiv.org/abs/2405.19261) |
 | 📌 **线索来源** | Appendix F Limitations §"the optimization objectives we seek to minimize are local objectives that seek to make the best deferral decision at the current position t. In doing so, they ignore the downstream effects of choosing a particular model in the current step." + Conclusions §"we wish to replace our plug-in estimators with a router model ... and to extend our proposal to more than two models." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -629,6 +645,7 @@ NuWa 针对"边缘设备只需要部分类别"的现实，发现基座 ViT 中�
 |:--|:--|
 | 🎯 **源论文** | **LaTIM: Measuring Latent Token-to-Token Interactions in Mamba Models** · Pitorro & Treviso · 🏆 ACL 2025 Outstanding Paper· [arXiv:2502.15612](https://arxiv.org/abs/2502.15612) ＋ **Mamba Knockout for Unraveling Factual Information Flow** · Endy et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2505.24244](https://arxiv.org/abs/2505.24244) |
 | 📌 **线索来源** | LaTIM · Conclusion §"our findings suggest that Mamba's recall limitations in long-context tasks may stem from its sparse and decaying focus on relevant tokens." + Limitations §"while LaTIM helps visualize token interactions, its impact on improving model robustness and trustworthiness remains an open question." ；Mamba Knockout · Limitations §"Future works should attempt to explain the inductive-biases of the different architectures that drive these differences in information flow." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -668,6 +685,7 @@ LaTIM 为 Mamba-1/2 给出 token 级的交互分解（类似注意力图），�
 |:--|:--|
 | 🎯 **源论文** | **Between Circuits and Chomsky: Pre-pretraining on Formal Languages Imparts Linguistic Biases** · Hu et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2502.19249](https://arxiv.org/abs/2502.19249) |
 | 📌 **线索来源** | Limitations §"it is possible that the optimal training regimen involves mixing formal and natural language during training" + §"our work only considers transformers. Circuit complexity has also quantified the expressive power of neural networks like RNNs and state-space models ... and it would be interesting to extend our results to these architectures." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |

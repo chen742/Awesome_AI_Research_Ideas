@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **On The Surprising Effectiveness of a Single Global Merging in Decentralized Learning** · Tongtian Zhu et al. · 🎤 ICLR 2026 Oral · [arXiv:2507.06542](https://arxiv.org/abs/2507.06542) |
 | 📌 **线索来源** | Implications & Discussions §"our findings could directly motivate a new class of adaptive, communication-efficient decentralized learning algorithms, which dynamically allocate their communication budget by monitoring training dynamics to satisfy the critical consensus edge condition in Eq. 11." + Appendix A Limitations §"Our empirical findings primarily focus on tasks within the vision domain." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（8 卡模拟 16–64 agent，外加一个小规模 LM 预训练） |
@@ -54,6 +55,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Non-Euclidean Gradient Descent Operates at the Edge of Stability** · Rustem Islamov et al. · 🎤 ICML 2026 Oral · [arXiv:2603.05002](https://arxiv.org/abs/2603.05002) |
 | 📌 **线索来源** | Conclusion and Future Work §"non-Euclidean methods can exhibit a pre-EoS oscillatory regime in which directional smoothness increases before generalized sharpness reaches the threshold" + §"extending the framework beyond full-batch non-Euclidean GD to stochastic, momentum-based, and adaptive optimizers would clarify how geometry-aware EoS diagnostics should be used in practical large-scale training." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆（需在 100M–1B 级 LM 预训练上验证） |
@@ -94,6 +96,7 @@
 |:--|:--|
 | 🎯 **源论文** | **To Grok Grokking: Provable Grokking in Ridge Regression** · Mingyue Xu et al. · 🎤 ICML 2026 Oral · [arXiv:2601.19791](https://arxiv.org/abs/2601.19791) |
 | 📌 **线索来源** | Discussion and Future Directions §"can we show end-to-end provable grokking results for non-realizable ridge regression? ... choosing an arbitrarily small weight decay parameter in the agnostic learning setting may impede generalization entirely." + §"in our setting grokking corresponds to a transition from a misspecified to a well-specified prior." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS / COLT |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆（理论为主，实验单卡可完成） |
@@ -133,6 +136,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Can Neural Networks Achieve Optimal Computational-statistical Tradeoff? An Analysis on Single-Index Model** · Siyu Chen et al. · 🎤 ICLR 2025 Oral · [arXiv:2606.15219](https://arxiv.org/abs/2606.15219) |
 | 📌 **线索来源** | Conclusions and Future Directions §"our dense-prior algorithm uses fresh weight perturbations at each step to realize the smoothing effect needed in the proof. We expect that, at least in the nonsparse setting, sufficiently overparameterized random initialization may already contain enough exploratory directions, so that explicit resampling of perturbation noise is not essential." + §"whether the same optimal rates can be obtained by genuinely single-pass SGD, by fixed mini-batch protocols with more data reuse, or by full-batch gradient descent." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS / COLT |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆（理论为主，数值实验单卡） |
@@ -171,6 +175,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Learning (Approximately) Equivariant Networks via Constrained Optimization** · Andrei Manolache et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2505.13631](https://arxiv.org/abs/2505.13631) |
 | 📌 **线索来源** | Limitations and Further Work §"one avenue for future research is to 'break' equivariance without adding any auxiliary parameters, e.g., by integrating constraint enforcement directly into existing layers" + §"the dual variables learned by our algorithm encode where and when symmetry is most beneficial; exploiting these variables for adaptive pruning or sparsification of non-equivariant components could also lead to more efficient models." |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICML |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆（分子/点云/图像任务，单机 8 卡足够） |
@@ -211,6 +216,7 @@ ACE 用同伦思想把等变性当作**可协商的归纳偏置**：每层加一
 |:--|:--|
 | 🎯 **源论文** | **Theoretical Limitations of Ensembles in the Age of Overparameterization** · Niclas Dern et al. · 🎤 ICML 2025 Oral · [arXiv:2410.16201](https://arxiv.org/abs/2410.16201) |
 | 📌 **线索来源** | Conclusion §"With more realistic feature distributions, the ensemble variance does not correspond to any conventional notion of uncertainty" + Appendix B.2 Limitations §"The lower variance in predictions across multiple ensembles compared to a single large model does not align with our theoretical expectations ... We hypothesize that this discrepancy arises from large single models being more unstable to train but did not investigate this limitation of our experiments in more detail." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -249,6 +255,7 @@ ACE 用同伦思想把等变性当作**可协商的归纳偏置**：每层加一
 |:--|:--|
 | 🎯 **源论文** | **Asymmetric Perturbation in Solving Bilinear Saddle-Point Optimization** · Kenshi Abe et al. · 🎤 ICML 2026 Oral · [arXiv:2506.05747](https://arxiv.org/abs/2506.05747) |
 | 📌 **线索来源** | Conclusion and Limitations §"Corollary 3.2 only guarantees equilibrium invariance for one player. Hence, recovering a strategy pair for both players in the original game requires running AsymP-GDA twice, once for each player." + §"We believe that an analogous formulation can be posed beyond bilinear games, including two-player zero-sum Markov games." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🧩 AI · AAAI |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆（理论 + 小规模博弈/Markov 博弈实验） |
@@ -288,6 +295,7 @@ ACE 用同伦思想把等变性当作**可协商的归纳偏置**：每层加一
 |:--|:--|
 | 🎯 **源论文** | **Characterizing the Discrete Geometry of ReLU Networks** · Blake B. Gaines et al. · 🎤 ICLR 2026 Oral · [arXiv:2606.07728](https://arxiv.org/abs/2606.07728) |
 | 📌 **线索来源** | Discussion and Future Work §"Further investigation is needed to fully explain why training tends to put data points in regions with higher numbers of faces, and how this phenomenon is related to the network's behavior." + §"the length of the shortest path between two polyhedra in the connectivity graph is a more suitable metric. If path length is used, Theorem 3.8 allows us to bound the empirical error based on the network architecture and independently of the input dimension." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆（小网络可精确计算，大网络用采样估计） |
@@ -326,6 +334,7 @@ ACE 用同伦思想把等变性当作**可协商的归纳偏置**：每层加一
 |:--|:--|
 | 🎯 **源论文** | **Navigating the Latent Space Dynamics of Neural Models** · Marco Fumero et al. · 🎤 ICLR 2026 Oral · [arXiv:2505.22785](https://arxiv.org/abs/2505.22785) |
 | 📌 **线索来源** | Limitations and future works §"Eq. 3 cannot be directly generalized to model trained with discriminative objectives such as a deep classifiers, or self supervised models, as the network is not invertible." + §"An alternative intriguing idea is the one to train a surrogate AE model in the latent space of the model of interest, which would be agnostic from the pretraining objective." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -366,6 +375,7 @@ ACE 用同伦思想把等变性当作**可协商的归纳偏置**：每层加一
 |:--|:--|
 | 🎯 **源论文** | **AI Engram: In Search of Memory Traces in Artificial Intelligence** · Jea Kwon et al. · 🎤 ICML 2026 Oral · [arXiv:2606.14997](https://arxiv.org/abs/2606.14997) |
 | 📌 **线索来源** | Appendix H Limitations §"The current framework operates retrospectively on fully trained models. It cannot be integrated into the training loop for online engram tracking or applied in streaming/incremental learning scenarios where real-time memory isolation might be desirable." + §"our framework requires explicit construction of target (X+) and reference (X−) datasets. This necessitates human labeling or domain knowledge to define concepts" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（需在 1B–8B LLM 的持续学习上验证） |

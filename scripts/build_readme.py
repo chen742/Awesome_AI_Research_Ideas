@@ -48,8 +48,11 @@ def parse(md):
         def cell(label):
             mm = re.search(r"\|\s*" + re.escape(label) + r"\s*\|\s*(.+?)\s*\|\s*$", b, re.M)
             return mm.group(1).strip() if mm else ""
+        venue = cell("📮 **投稿建议**")
+        fields = re.findall(r"(🧪|👁️|🗣️|🎬|🌐|🤖|🧩|🔐|🎨|🎙️|🧑‍💻|🔬)\s*\**([A-Za-z]+)\**", venue)
         ideas.append(dict(num=num, title=title, anchor=slug(b.split("\n")[0][3:]),
-                          source=short_source(cell("🎯 **源论文**")), nov=cell("⭐ Novelty")[:5], imp=cell("🚀 Impact")[:5], dif=cell("🧗 Difficulty")[:5]))
+                          source=short_source(cell("🎯 **源论文**")), nov=cell("⭐ Novelty")[:5], imp=cell("🚀 Impact")[:5], dif=cell("🧗 Difficulty")[:5],
+                          venue=venue, fields=[f"{e} {l}" for e, l in fields], primary=(fields[0][0] + " " + fields[0][1]) if fields else ""))
     return ideas
 
 def link_title(t):
@@ -58,17 +61,35 @@ def link_title(t):
         a, b = t.split(":", 1); return f"**{a.strip()}**:{b}"
     return f"**{t}**"
 
-toc, sections, total = [], [], 0
+toc, sections, total, by_field = [], [], 0, {}
 for f in sorted((ROOT / "ideas").glob("*.md")):
     cid = f.stem; name = CAT_NAMES.get(cid, cid)
     ideas = parse(f.read_text(encoding="utf-8"))
     if not ideas: continue
     total += len(ideas); n = int(cid.split("-")[0])
     toc.append(f"| {n} | {name} | {len(ideas)} | [ideas/{cid}](ideas/{f.name}) |")
-    rows = "\n".join(f"| [{link_title(i['title'])}](ideas/{f.name}#{i['anchor']}) | {i['source']} | {i['nov']} | {i['imp']} | {i['dif']} |" for i in ideas)
-    sections.append(f"## {name.split(' ',1)[0]} {n} · {name.split(' ',1)[1]}\n\n| 💡 Idea（点击查看完整分析） | 🎯 源论文 | ⭐ | 🚀 | 🧗 |\n|:--|:--|:--:|:--:|:--:|\n{rows}\n\n<div align=\"right\"><a href=\"#top\">🔝</a></div>\n")
+    rows = "\n".join(f"| [{link_title(i['title'])}](ideas/{f.name}#{i['anchor']}) | {i['source']} | {' · '.join(i['fields'])} | {i['nov']} | {i['imp']} | {i['dif']} |" for i in ideas)
+    sections.append(f"## {name.split(' ',1)[0]} {n} · {name.split(' ',1)[1]}\n\n| 💡 Idea（点击查看完整分析） | 🎯 源论文 | 📮 投稿领域 | ⭐ | 🚀 | 🧗 |\n|:--|:--|:--|:--:|:--:|:--:|\n{rows}\n\n<div align=\"right\"><a href=\"#top\">🔝</a></div>\n")
+    for i in ideas:
+        for k, fl in enumerate(i["fields"]):
+            by_field.setdefault(fl, []).append((i["num"], f"ideas/{f.name}#{i['anchor']}", k == 0, i["title"]))
 
-index = ("## 🗂️ 目录\n\n| # | 类别 | 💡 数量 | 直达 |\n|:--:|:--|:--:|:--|\n" + "\n".join(toc) + "\n\n---\n\n" + "\n".join(sections))
+FIELD_ORDER = ["🧪 ML", "👁️ CV", "🗣️ NLP", "🎬 MM", "🌐 WWW", "🤖 Robotics", "🧩 AI", "🔐 Security", "🎨 Graphics", "🎙️ Speech", "🧑‍💻 HCI", "🔬 Science"]
+FIELD_VENUES = {"🧪 ML": "ICLR / ICML / NeurIPS", "👁️ CV": "CVPR / ICCV / ECCV", "🗣️ NLP": "ACL / EMNLP / NAACL", "🎬 MM": "ACM MM",
+                "🌐 WWW": "WWW / KDD / SIGIR", "🤖 Robotics": "ICRA / IROS / RSS / CoRL", "🧩 AI": "AAAI / IJCAI", "🔐 Security": "USENIX Security / S&P / CCS",
+                "🎨 Graphics": "SIGGRAPH / SIGGRAPH Asia", "🎙️ Speech": "ICASSP / Interspeech", "🧑‍💻 HCI": "CHI / CSCW", "🔬 Science": "领域期刊 / ML4H / Bioinformatics"}
+field_rows = []
+field_lists = []
+for fl in FIELD_ORDER:
+    items = by_field.get(fl, [])
+    if not items: continue
+    prim = [x for x in items if x[2]]; sec = [x for x in items if not x[2]]
+    field_rows.append(f"| {fl} | {FIELD_VENUES[fl]} | **{len(prim)}** | {len(sec)} | {len(items)} |")
+    links = lambda xs: " · ".join(f"[{num}]({href} \"{t}\")" for num, href, _, t in xs)
+    field_lists.append(f"<details>\n<summary><b>{fl}</b> · {FIELD_VENUES[fl]} — 首选 {len(prim)} 条，备选 {len(sec)} 条</summary>\n\n**首选投稿**：{links(prim) or '—'}\n\n**备选投稿**：{links(sec) or '—'}\n\n</details>\n")
+field_index = ("## 📮 按投稿领域索引\n\n每条 idea 的表格里都有一行 **📮 投稿建议**（加粗者为首选领域）。下表按领域汇总，展开可见各条编号（悬停显示标题）。\n\n"
+               "| 领域 | 代表会议 | 首选 | 备选 | 合计 |\n|:--|:--|:--:|:--:|:--:|\n" + "\n".join(field_rows) + "\n\n" + "\n".join(field_lists))
+index = ("## 🗂️ 目录\n\n| # | 类别 | 💡 数量 | 直达 |\n|:--:|:--|:--:|:--|\n" + "\n".join(toc) + "\n\n" + field_index + "\n---\n\n" + "\n".join(sections))
 md = README.read_text(encoding="utf-8")
 new = re.sub(r"<!-- INDEX:START -->.*?<!-- INDEX:END -->", "<!-- INDEX:START -->\n" + index + "<!-- INDEX:END -->", md, flags=re.S)
 new = re.sub(r"💡_Ideas-\d+-", f"💡_Ideas-{total}-", new)

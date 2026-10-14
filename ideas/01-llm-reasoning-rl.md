@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?** · Yue et al. · 🥈 NeurIPS 2025 Best Paper Runner-Up · [arXiv:2504.13837](https://arxiv.org/abs/2504.13837) |
 | 📌 **线索来源** | Limitation §"RLVR narrows the reasoning boundary" + Future Work §"better RL paradigms to elicit capability beyond the base model" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆（需要大规模采样与 7B–32B 级训练） |
@@ -48,6 +49,7 @@
 |:--|:--|
 | 🎯 **源论文** | **LLMs Get Lost In Multi-Turn Conversation** · Laban et al. · 🏆 ICLR 2026 Outstanding Paper · [arXiv:2505.06120](https://arxiv.org/abs/2505.06120) |
 | 📌 **线索来源** | Limitation §"simulation of sharded instructions" + Discussion §"models make premature assumptions and cannot recover" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · EMNLP |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -82,6 +84,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Roll the Dice & Look Before You Leap: Going Beyond the Creative Limits of Next-Token Prediction** · Nagarajan et al. · 🏆 ICML 2025 Outstanding Paper · [arXiv:2504.15266](https://arxiv.org/abs/2504.15266) ＋ **Artificial Hivemind: The Open-Ended Homogeneity of Language Models** · Jiang et al. · 🏆 NeurIPS 2025 Best Paper |
 | 📌 **线索来源** | Future Work §"scale seed-conditioning to real LLMs and combine with RL"；Hivemind §"RLHF 加剧 intra-model mode collapse" |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -115,6 +118,7 @@ Nagarajan 等在精心设计的算法任务上证明：next-token prediction 在
 |:--|:--|
 | 🎯 **源论文** | **Measuring Chain of Thought Faithfulness by Unlearning Reasoning Steps** · Tutek et al. · 🏆 EMNLP 2025 Outstanding Paper· [arXiv:2502.14829](https://arxiv.org/abs/2502.14829) |
 | 📌 **线索来源** | Limitations §"By eliminating the contextual confounder, we limit ourselves to studying cases in which the CoT and no-CoT predictions of the models agree" + 7 Discussion and Future Outlook §"(1) fully fine-tuning all second feed-forward layers of the model involves updating a large number of parameters, and (2) intervening on each CoT step can be time-consuming." + 8 Conclusion §"CoT steps identified as highly relevant are not considered plausible by humans, higlighting the need for specialized alignment." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（需对 7B–14B 模型做可微反学习探针，训练循环中多一次反传） |
@@ -154,6 +158,7 @@ FUR 的核心思想是把"忠实性"从上下文层面搬到参数层面：对�
 |:--|:--|
 | 🎯 **源论文** | **Autoformalization in the Wild: Assessing LLMs on Real-World Mathematical Definitions** · Zhang et al. · 🏆 EMNLP 2025 Best Resource Paper· [arXiv:2502.12065](https://arxiv.org/abs/2502.12065) |
 | 📌 **线索来源** | 6 Limitations §"while the proposed refinements improve formalization performance, they do not fully eliminate semantic inconsistencies between natural language definitions and their formalized counterparts. More advanced methods are still needed to be developed." + 5 Conclusion §"Future research could focus on improving self-correction capabilities and integrating more robust contextual understanding into LLM-based formalization systems." |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP / ACL ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（需要 Isabelle/Lean REPL 批量执行与 7B 级 RL） |
@@ -193,6 +198,7 @@ FUR 的核心思想是把"忠实性"从上下文层面搬到参数层面：对�
 |:--|:--|
 | 🎯 **源论文** | **Rethinking the Role of Prompting Strategies in LLM Test-Time Scaling: A Perspective of Probability Theory** · Liu et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2505.10981](https://arxiv.org/abs/2505.10981) |
 | 📌 **线索来源** | Limitations §"However, our experiment results indicate that LLMs alone cannot readily achieve the intended effects, pushing us to explore more practicable and effective methods in our future work." + Limitations §"In this paper, we mainly focus on majority voting, which is a simple but effective scaling approach." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆（标准 GRPO 代价，7B 单机可做） |
@@ -232,6 +238,7 @@ FUR 的核心思想是把"忠实性"从上下文层面搬到参数层面：对�
 |:--|:--|
 | 🎯 **源论文** | **Same Task, More Tokens: the Impact of Input Length on the Reasoning Performance of Large Language Models** · Levy et al. · 🏆 ACL 2024 Outstanding Paper· [arXiv:2402.14848](https://arxiv.org/abs/2402.14848) |
 | 📌 **线索来源** | Limitations §"Because of the nature of behavioral testing, the observed drop in performance with varying input lengths remains unexplained" + Limitations §"Finally, our study did not test the distance between key paragraphs, leaving an aspect of LLM performance unexplored that we leave for future research." + 9 Discussion §"we identified specific failure modes, including difficulties in following extended instructions and biases towards less relevant information." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（长序列 RL，需 8 卡与高效注意力） |
@@ -271,6 +278,7 @@ FLenQA 的设计很巧妙：同一道两跳推理题，用不同长度、不同�
 |:--|:--|
 | 🎯 **源论文** | **Visual Planning: Let's Think Only with Images** · Xu et al. · 🎤 ICLR 2026 Oral · [arXiv:2505.11409](https://arxiv.org/abs/2505.11409) |
 | 📌 **线索来源** | Appendix D Limitations and future work §"For simplicity, we adopt the rule-based approach that compares pixel-wise features between the current state and the previous state" + §"the underlying reward formulation remains extensible, but the primary challenge lies in defining reliable progress signals as visual transitions become more complex." + §"explicitly generating images introduces computational overhead during inference compared to a textual response." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（需训练 IDM 与距离函数，LVM 7B 级 GRPO） |
@@ -310,6 +318,7 @@ FLenQA 的设计很巧妙：同一道两跳推理题，用不同长度、不同�
 |:--|:--|
 | 🎯 **源论文** | **The Coverage Principle: How Pre-Training Enables Post-Training** · Chen et al. · 🎤 ICLR 2026 Oral · [arXiv:2510.15020](https://arxiv.org/abs/2510.15020) |
 | 📌 **线索来源** | 7.2 Future Work §"The notion of coverage we focus on, the coverage profile, is mathematically convenient but may be conservative in regard to downstream performance, since it only depends on the model through its predicted probabilities. An important direction for future work is to understand pre-training and post-training through fine-grained “semantic” notions of coverage" + §"More ambitiously, one could imagine re-structuring the entire language modeling pipeline itself around coverage." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★☆（需 1B–7B 级中期训练与多次 RLVR 对照） |
@@ -349,6 +358,7 @@ FLenQA 的设计很巧妙：同一道两跳推理题，用不同长度、不同�
 |:--|:--|
 | 🎯 **源论文** | **Energy-Based Transformers are Scalable Learners and Thinkers** · Gladstone et al. · 🎤 ICLR 2026 Oral · [arXiv:2507.02092](https://arxiv.org/abs/2507.02092) |
 | 📌 **线索来源** | 7 Limitations and Conclusion §"EBTs currently struggle with data distributions that have many modes, such as class conditional image generation, likely due to the convex energy landscape assumption made during training." + B.2 EBT Failure Cases §"when there are many different modes within the same region (same condition), this convex energy landscape “merges” to one landscape averaged around the different modes, resulting in blurriness." + 7 §"Tuning these hyperparameters is crucial for training stability, as we found poorly chosen values often lead to unstable training." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆（需复现 EBT 预训练并做 100M–800M 规模扩展实验） |
@@ -388,6 +398,7 @@ EBT 把"思考"重构为对学习到的能量（验证器）做梯度下降：�
 |:--|:--|
 | 🎯 **源论文** | **Modeling Hierarchical Thinking in Large Reasoning Models** · Shahariar et al. · 🎤 ICML 2026 Oral · [arXiv:2510.22437](https://arxiv.org/abs/2510.22437) |
 | 📌 **线索来源** | Appendix E Limitations and Future Work §"We model long reasoning as a memoryless FSM over six discrete states. This makes the analysis and control tractable, but it cannot capture finer-grained skills (e.g., algebraic manipulation vs. proof search) or longer-range dependencies where the best next move depends on earlier context, not just the current state." + §"if the model lacks the underlying domain knowledge to rectify its error, steering it into a Backtracking state may merely result in “hallucinated corrections” or repetitive loops." + §"identifying a more robust and reliable reward signal beyond the empirical R matrix remains a compelling future research direction." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（反事实采样昂贵但可离线摊销，7B–14B 推理模型） |
@@ -428,6 +439,7 @@ EBT 把"思考"重构为对学习到的能量（验证器）做梯度下降：�
 |:--|:--|
 | 🎯 **源论文** | **Monitoring Monitorability** · Guan et al. · 🎤 ICML 2026 Oral · [arXiv:2512.18311](https://arxiv.org/abs/2512.18311) |
 | 📌 **线索来源** | 9 Discussion and Conclusion §"Our evaluations do not disentangle the propensity to verbalize versus the necessity to verbalize, and so it could very well be that sycophantic tendencies (if any) are “baked in” into the model weights such that they do not need to be verbalized." + E.4 Limitations and Future Directions §"many of the negative examples are manually constructed, rather than being naturally occurring failures of the base model whose CoT is being monitored." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆（主要是大规模采样与干预评测，可在开源推理模型上做） |
@@ -467,6 +479,7 @@ EBT 把"思考"重构为对学习到的能量（验证器）做梯度下降：�
 |:--|:--|
 | 🎯 **源论文** | **Verifying Chain-of-Thought Reasoning via Its Computational Graph** · Zhao et al. · 🎤 ICLR 2026 Oral · [arXiv:2510.09312](https://arxiv.org/abs/2510.09312) |
 | 📌 **线索来源** | Appendix E Limitations §"CRV in its current form is positioned as a scientific tool for deep analysis, not as a scalable, real-time verifier for production systems." + §"The feature set used by CRV is primarily aggregative; it captures statistical and topological properties of the graph, such as node counts, influence scores, and density. As an early work, it does not yet fully exploit the semantic content of the individual transcoder features that constitute the graph’s nodes." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · EMNLP |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（需训练 transcoder 与构图作教师，一次性成本高） |
@@ -506,6 +519,7 @@ CRV 用 transcoder 替换 Llama-3.1-8B 的模块，对每个推理步构建归�
 |:--|:--|
 | 🎯 **源论文** | **Overthinking Reduction with Decoupled Rewards and Curriculum Data Scheduling** · Jiang et al. · 🎤 ICLR 2026 Oral · [arXiv:2509.25827](https://arxiv.org/abs/2509.25827) |
 | 📌 **线索来源** | Appendix E Limitation & Future Work §"First, the NRP detector is implemented as a small auxiliary model (1.5B parameters)." + §"Integrating NRP detection directly into the policy, e.g., via confidence (Yan et al., 2025) or entropy signals (Cui et al., 2025), is a promising future direction but not required for the current solution to work well." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆（7B 级 GRPO，额外开销小） |
@@ -545,6 +559,7 @@ DeCS 从理论上指出长度奖励在 GRPO 下的两个缺陷：轨迹级优势
 |:--|:--|
 | 🎯 **源论文** | **Characterizing, Evaluating, and Optimizing Complex Reasoning** · Zhang et al. · 🎤 ICML 2026 Oral · [arXiv:2602.08498](https://arxiv.org/abs/2602.08498) |
 | 📌 **线索来源** | C.2 Discussion on Self-Refine §"Explicitly modeling cyclic structures would require recovering fully general graphs from arbitrary free-form reasoning traces. This is difficult and brittle in practice, as it demands reliably identifying revisited latent states and long-range dependencies across the trace" + Limitations of Direct Prompt-Based Evaluation §"many reasoning trace pairs differ primarily in how reasoning steps are organized and consolidated, rather than in local step content." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -584,6 +599,7 @@ DeCS 从理论上指出长度奖励在 GRPO 下的两个缺陷：轨迹级优势
 |:--|:--|
 | 🎯 **源论文** | **RAGEN-2: Reasoning Collapse in Agentic RL** · Wang et al. · 🎤 ICML 2026 Oral · [arXiv:2604.06268](https://arxiv.org/abs/2604.06268) |
 | 📌 **线索来源** | 7 Conclusions and Limitations §"A capable model could game the filtering criterion by artificially inflating reward variance, a risk worth monitoring over long training horizons. The method requires reward variance to be a reliable signal proxy, which degrades in sparse or noisy reward environments." + §"Aggressive filtering may narrow exploration coverage; the kept mass requires per-task tuning." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆（标准多轮 RL 流水线上加一个对比 critic） |
@@ -623,6 +639,7 @@ RAGEN-2 发现多轮智能体 RL 的"安静失败"：熵稳定，推理却退化
 |:--|:--|
 | 🎯 **源论文** | **miniCTX: Neural Theorem Proving with (Long-)Contexts** · Hu et al. · 🎤 ICLR 2025 Oral · [arXiv:2408.03350](https://arxiv.org/abs/2408.03350) |
 | 📌 **线索来源** | 5 Discussion and future challenges §"Our file-tuning method simply truncates contexts to be within a token budget (1024), which can discard useful contextual information." + §"Although we incorporated premise selection as a means of leveraging cross-file context, our experiments indicate that it does not consistently improve performance, even on datasets with high cross-file dependencies." + §"Models have a tendency to invoke these powerful tactics, and struggle with more explicit step-by-step proofs." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（Lean REPL 多轮环境 + 7B 级多轮 RL） |
@@ -662,6 +679,7 @@ miniCTX 指出真实的形式化证明依赖**新的上下文**——同一仓�
 |:--|:--|
 | 🎯 **源论文** | **Learning Formal Mathematics From Intrinsic Motivation** · Poesia et al. · 🎤 NeurIPS 2024 Oral · [arXiv:2407.00695](https://arxiv.org/abs/2407.00695) |
 | 📌 **线索来源** | 5 Limitations and Conclusion §"First, even if the agent’s policy improves, its library remains fixed to the definitions and axioms that it starts with. Proofs that do not use lemmas (cut-free proofs in logic) can be exponentially longer than equivalent ones that do, and thus quickly grow beyond the reach of search." + §"With this constraint, our agent most often finds harder conjectures by making the statements longer and more complicated." + Appendix F §"eventually being able to invent new definitions and accumulate a growing library (which Minimo does not, yet)" |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆（Peano 环境开源，单机可做；扩展到 Lean 需更多工程） |

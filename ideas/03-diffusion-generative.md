@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **The Flexibility Trap: Rethinking the Value of Arbitrary Order in Diffusion Language Models** · Ni et al. · 🏆 ICML 2026 Outstanding Paper · [arXiv:2601.15165](https://arxiv.org/abs/2601.15165) ＋ **Train for the Worst, Plan for the Best: Understanding Token Ordering in Masked Diffusions** · Kim et al. · 🏆 ICML 2025 Outstanding Paper · [arXiv:2502.06768](https://arxiv.org/abs/2502.06768) |
 | 📌 **线索来源** | Flexibility Trap, Conclusion §"the flexibility of arbitrary order in general reasoning tasks may inadvertently favor inference-time exploitation over exploration … by prioritizing low-uncertainty decisions, the model implicitly anchors its trajectory to specific outcomes early in the generation process" §"Standard AR ordering … retains the high-entropy nature of logical forks … which helps preserve the solution coverage essential for reinforcement learning"；Train-for-the-Worst §"adaptive inference-time ordering" 在 Sudoku 等逻辑任务上的巨大收益 |
+| 📮 **投稿建议** | 🧪 **ML** · ICML / ICLR ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -52,6 +53,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Generalization in Diffusion Models Arises from Geometry-Adaptive Harmonic Representations** · Kadkhodaie et al. · 🏆 ICLR 2024 Outstanding Paper · [arXiv:2310.02557](https://arxiv.org/abs/2310.02557) |
 | 📌 **线索来源** | Finding §"two denoisers trained on disjoint subsets converge to the same density when data is sufficient" + Limitation §"analysis limited to small UNets; transition not controllable" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -85,6 +87,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Visual Autoregressive Modeling: Scalable Image Generation via Next-Scale Prediction** · Tian et al. · 🏆 NeurIPS 2024 Best Paper · [arXiv:2404.02905](https://arxiv.org/abs/2404.02905) |
 | 📌 **线索来源** | Limitation §"fixed coarse-to-fine scale schedule shared by all images" + Future Work §"better tokenizer; video; text-to-image" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -118,6 +121,7 @@ VAR 把"下一 token"改为"下一尺度"，使自回归图像生成首次在 Im
 |:--|:--|
 | 🎯 **源论文** | **TRACE: Your Diffusion Model is Secretly an Instance Edge Detector** · Jo et al. · 🎤 ICLR 2026 Oral · [arXiv:2503.07982](https://arxiv.org/abs/2503.07982) |
 | 📌 **线索来源** | E.4 Limitations and Future Directions §"We attribute this failure mode to the resolution loss inherent in latent diffusion models: before denoising, all images are encoded by a VAE into a low-resolution latent grid (up to a 16× spatial downsampling), as shown in Fig. 4, which severely compresses tiny structures." + §"Addressing this limitation likely requires diffusion backbones with higher-resolution latents or hybrid schemes that combine TRACE with high-resolution, task-specific feature extractors for small-object regimes." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV / ECCV |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -156,6 +160,7 @@ TRACE 发现文生图扩散模型的自注意力在去噪过程中存在一个"�
 |:--|:--|
 | 🎯 **源论文** | **Evaluation Agent: Efficient and Promptable Evaluation Framework for Visual Generative Models** · Zhang et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2412.09645](https://arxiv.org/abs/2412.09645) |
 | 📌 **线索来源** | Limitations §"While we can integrate state-of-the-art (SOTA) toolkits, they may not always perfectly align with human perception, particularly when evaluating visual generative models. This misalignment can negatively impact the accuracy of evaluation results when the Evaluation Agent relies on these tools." + §"We found that even the most advanced LLMs occasionally fall short, such as producing inconsistent output formats or struggling with numerical comparisons." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · NeurIPS (D&B) |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -195,6 +200,7 @@ Evaluation Agent 让 LLM 像人类一样"看几张就下判断"：多轮规划�
 |:--|:--|
 | 🎯 **源论文** | **Deciphering Oracle Bone Language with Diffusion Models** · Guan et al. · 🏆 ACL 2024 Best Paper· [arXiv:2406.00684](https://arxiv.org/abs/2406.00684) |
 | 📌 **线索来源** | Limitations §"However, these methods cannot be directly applied to evaluate truly undeciphered OBS, where the absence of ground truth necessitates expert validation." + §"Evaluating the decipherment results of entirely unknown OBS characters presents a unique challenge that goes beyond the capabilities of OCR technology." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -234,6 +240,7 @@ OBSD 把甲骨文破译建模为条件图像生成：输入甲骨文字形，用
 |:--|:--|
 | 🎯 **源论文** | **Full-Order Sampling-Based MPC for Torque-Level Locomotion Control via Diffusion-Style Annealing** · Xue et al. · 🏆 ICRA 2025 Best Paper Award Finalist (Robot Learning) · [arXiv:2409.15610](https://arxiv.org/abs/2409.15610) |
 | 📌 **线索来源** | Conclusion §"One limitation is that DIAL-MPC requires fast simulation to generate samples, which limits the application of DIAL-MPC in longer planning horizon tasks." + §"In the future, we plan to further accelerate and improve the sample efficiency by learning a nominal policy, value function and model as what has been done in model-base RL." |
+| 📮 **投稿建议** | 🤖 **Robotics** · ICRA / RSS / CoRL |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -273,6 +280,7 @@ DIAL-MPC 把 MPPI 与扩散式退火联系起来：在噪声水平与时间视�
 |:--|:--|
 | 🎯 **源论文** | **Influence Functions for Scalable Data Attribution in Diffusion Models** · Mlodozeniec et al. · 🎤 ICLR 2025 Oral · [arXiv:2410.13850](https://arxiv.org/abs/2410.13850) |
 | 📌 **线索来源** | Discussion §"On the other hand, they fall short of accurately predicting the numerical changes in measurements after retraining. This appears to be especially the case for measurement functions we would argue are most relevant in the image generative modelling setting – proxies for marginal probability of sampling a particular example." + §"we believe more work is required into 1) finding better proxies for marginal probability, and 2) even further improving the influence functions approximation." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -312,6 +320,7 @@ DIAL-MPC 把 MPPI 与扩散式退火联系起来：在噪声水平与时间视�
 |:--|:--|
 | 🎯 **源论文** | **Improving Probabilistic Diffusion Models With Optimal Diagonal Covariance Matching** · Ou et al. · 🎤 ICLR 2025 Oral · [arXiv:2406.10808](https://arxiv.org/abs/2406.10808) |
 | 📌 **线索来源** | Related Work and Future Directions §"However, for high-dimensional problems, the quadratic growth in parameter scale makes a full covariance approach computationally impractical. To address this, low-rank or block-diagonal covariance approximations offer promising alternatives. Developing effective training objectives for flexible covariance structures remains a compelling direction for future research." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / ICML |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -351,6 +360,7 @@ OCM 指出去噪分布 p(x_{t−1}|x_t) 的最优协方差有解析形式（由 
 |:--|:--|
 | 🎯 **源论文** | **Motion Attribution for Video Generation** · Wu et al. · 🎤 ICML 2026 Oral · [arXiv:2601.08828](https://arxiv.org/abs/2601.08828) |
 | 📌 **线索来源** | G.2 Limitations §"Highly informative intervals can be diluted when averaged with static or redundant portions of the same clip. This suggests an open direction toward finer-grained attribution at the motion-segment or motion-event level" + §"our framework does not explicitly account for classifier-free guidance (CFG), which is widely used in practice to steer video generation but introduces discrepancies between training-time attribution and inference-time dynamics." |
+| 📮 **投稿建议** | 🧪 **ML** · ICML ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -390,6 +400,7 @@ Motive 是第一个面向"运动"的视频扩散数据归因框架：用点跟�
 |:--|:--|
 | 🎯 **源论文** | **PAI-Bench: A Comprehensive Benchmark For Physical AI** · Zhou et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2512.01989](https://arxiv.org/abs/2512.01989) ＋ **PhyWorldBench: A Comprehensive Evaluation of Physical Realism in Text-to-Video Models** · Gu et al. · 🎤 ICLR 2026 Oral · [arXiv:2507.13428](https://arxiv.org/abs/2507.13428) |
 | 📌 **线索来源** | PAI-Bench Appendix E §"We observe that some models tend to adopt a conservative strategy that prioritizing static fidelity (e.g., holding a racket) over complex, high-risk dynamics (e.g., rapidly swinging it) to avoid artifacts." + §"developing methods that encourage risk-taking in motion generation without compromising visual quality remains a vital direction"；PhyWorldBench Appendix I §"our CAP evaluator generally provides balanced feedback, yet it can display a slight preference for videos with particularly polished visual presentation, such as smooth lighting or dynamic camera movement." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -429,6 +440,7 @@ Motive 是第一个面向"运动"的视频扩散数据归因框架：用点跟�
 |:--|:--|
 | 🎯 **源论文** | **Guiding a Diffusion Model with a Bad Version of Itself** · Karras et al. · 🎤 NeurIPS 2024 Oral · [arXiv:2406.02507](https://arxiv.org/abs/2406.02507) |
 | 📌 **线索来源** | Discussion and Future Work §"Our suggestion — an early snapshot of a smaller model — is easy to satisfy in principle, but these are not available for current large-scale image generators in practice." + §"Such generators are also often trained in successive stages where the training data may change at some point, causing potential distribution shifts between snapshots that would violate our assumptions." |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICLR ＋ 👁️ CV · CVPR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -468,6 +480,7 @@ Autoguidance 用"同任务、更小、训练更少"的模型替代 CFG 中的无
 |:--|:--|
 | 🎯 **源论文** | **Detecting, Explaining, and Mitigating Memorization in Diffusion Models** · Wen et al. · 🎤 ICLR 2024 Oral · [arXiv:2407.21720](https://arxiv.org/abs/2407.21720) |
 | 📌 **线索来源** | Limitations and Future Work §"This requires model owners to first compute metrics over non-memorized prompts and then select an empirical threshold based on a predetermined false positive rate. However, the outcomes generated by this detection approach lack interpretability." + §"the development of a method producing interpretable p-values could significantly assist model owners by providing a confidence score that quantifies the likelihood of memorization" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★☆☆☆☆ |
@@ -507,6 +520,7 @@ Wen 等发现：被记忆的 prompt 会让文本条件噪声预测与无条件�
 |:--|:--|
 | 🎯 **源论文** | **Quotient-Space Diffusion Models** · Xu et al. · 🎤 ICLR 2026 Oral · [arXiv:2604.21809](https://arxiv.org/abs/2604.21809) |
 | 📌 **线索来源** | G.5 Discussion on Transition Probability for Reward-Guided Generation §"Calculating transition probability is required in sampling from a reward-tilted distribution. It is a common need with significant practical relevance ... We treat it also as an important future extension of our quotient-diffusion framework." + §"A consequence of this operation is that the transition probability density function would be ill-defined if viewed as a distribution on the total space" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔬 Science · 分子/材料领域期刊 |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -546,6 +560,7 @@ Quotient-Space Diffusion 把等变扩散过程投影到商空间 M/G 再拉回�
 |:--|:--|
 | 🎯 **源论文** | **SeaCache: Spectral-Evolution-Aware Cache for Accelerating Diffusion Models** · Chung et al. · 🏆 CVPR 2026 Best Paper Candidate · [arXiv:2602.18993](https://arxiv.org/abs/2602.18993) ＋ **SenCache: Accelerating Diffusion Model Inference via Sensitivity-Aware Caching** · Haghighi & Alahi · 🎤 CVPR 2026 Oral · [arXiv:2602.24208](https://arxiv.org/abs/2602.24208) |
 | 📌 **线索来源** | SeaCache Limitation §"our analysis is formulated in the image or video domain, while most modern generative models operate in a learned latent space. The encoder can reshape the spectrum, so the latent distribution may differ from the assumed pixel-domain power-law model"；SenCache Discussions and Future Work §"as the sensitivity threshold ε maps directly to an error budget at each denoising step, dynamically scheduling ε across timesteps could further accelerate inference while maintaining generation quality: different steps contribute unequally to final fidelity" |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★☆☆☆☆ |
@@ -585,6 +600,7 @@ Quotient-Space Diffusion 把等变扩散过程投影到商空间 M/G 再拉回�
 |:--|:--|
 | 🎯 **源论文** | **Improving Diffusion Inverse Problem Solving with Decoupled Noise Annealing** · Zhang et al. · 🎤 CVPR 2025 Oral · [arXiv:2407.01521](https://arxiv.org/abs/2407.01521) |
 | 📌 **线索来源** | E.2 Limitations and Future Extension §"one main challenge is that x_{0|y} obtained by Langevin dynamics in pixel space might not lie in the manifold of clean images. This could further lead to a sub-optimal performance for autoencoders in diffusion models since they are only trained with clean data manifold." + §"A non-monotonic scheduler has the potential of providing DAPS with more power to explore the solution space." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -624,6 +640,7 @@ DAPS 把扩散后验采样中相邻步的强耦合解开：在每个噪声水平
 |:--|:--|
 | 🎯 **源论文** | **Compositional Diffusion with Guided Search for Long-Horizon Planning** · Mishra et al. · 🎤 ICLR 2026 Oral · [arXiv:2601.00126](https://arxiv.org/abs/2601.00126) |
 | 📌 **线索来源** | Limitations §"long-horizon dependencies are communicated through score averaging and resampling between adjacent skills; more sophisticated message-passing or attention-based mechanisms could improve efficiency and coherence across entire plans." + §"we generate plans for a fixed horizon, yet the framework can handle arbitrary horizons given the same start and goal, enabling selection among multiple candidate plan lengths." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🤖 Robotics · CoRL |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -663,6 +680,7 @@ CDGS 用短视野的局部扩散模型组合生成长视野序列，核心贡献
 |:--|:--|
 | 🎯 **源论文** | **On the Closed-Form of Flow Matching: Generalization Does Not Arise from Target Stochasticity** · Bertrand et al. · 🎤 NeurIPS 2025 Oral · [arXiv:2506.03719](https://arxiv.org/abs/2506.03719) |
 | 📌 **线索来源** | Conclusion, limitations and broader impact §"Our work is mainly empirical, with a focus on learned models, but did not precisely characterize the learned velocity field, in particular, how it behaves outside the trajectories defined by the optimal velocity." + §"Leveraging existing work on the inductive biases of the architectures at hand seems like a promising venue." |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |

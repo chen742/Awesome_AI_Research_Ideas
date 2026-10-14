@@ -14,6 +14,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Safety Alignment Should Be Made More Than Just a Few Tokens Deep** · Qi et al. · 🏆 ICLR 2025 Outstanding Paper · [arXiv:2406.05946](https://arxiv.org/abs/2406.05946) |
 | 📌 **线索来源** | Limitation §"our data augmentation and constrained fine-tuning are initial steps" + Future Work §"alignment that persists over the whole trajectory" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔐 Security · USENIX Security ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -47,6 +48,7 @@
 |:--|:--|
 | 🎯 **源论文** | **Artificial Hivemind: The Open-Ended Homogeneity of Language Models (and Beyond)** · Jiang et al. · 🏆 NeurIPS 2025 Best Paper · [arXiv:2510.22954](https://arxiv.org/abs/2510.22954) |
 | 📌 **线索来源** | Discussion §"reward models over-reward typical responses; annotators have idiosyncratic preferences" + Future Work §"pluralistic alignment beyond a single ground truth" |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICML ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★★ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -80,6 +82,7 @@
 |:--|:--|
 | 🎯 **源论文** | **AlphaEdit: Null-Space Constrained Model Editing for Language Models** · Fang et al. · 🏆 ICLR 2025 Outstanding Paper · [arXiv:2410.02355](https://arxiv.org/abs/2410.02355) |
 | 📌 **线索来源** | Limitation §"sequential editing still degrades after thousands of edits" + Future Work §"multi-hop / ripple effects of edits" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🗣️ NLP · ACL / EMNLP |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -113,6 +116,7 @@ AlphaEdit 的关键一步是把编辑扰动 Δ 投影到"被保留知识的键�
 |:--|:--|
 | 🎯 **源论文** | **Learning Dynamics of LLM Finetuning** · Ren & Sutherland · 🏆 ICLR 2025 Outstanding Paper · [arXiv:2407.10490](https://arxiv.org/abs/2407.10490) |
 | 📌 **线索来源** | Analysis §"the squeezing effect in DPO" + Future Work §"designing objectives that avoid squeezing" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -146,6 +150,7 @@ AlphaEdit 的关键一步是把编辑扰动 Δ 投影到"被保留知识的键�
 |:--|:--|
 | 🎯 **源论文** | **Mind the Value-Action Gap: Do LLMs Act in Alignment with Their Values?** · Hua Shen et al. · 🏆 EMNLP 2025 Outstanding Paper· [arXiv:2501.15463](https://arxiv.org/abs/2501.15463) |
 | 📌 **线索来源** | Limitation §"our evaluation focused on static LLM responses and did not account for dynamic or dialog-based behavior... We encourage future work to extend the ValueActionLens design to support free-form action generation and dialogic interactions" + Discussion §"future research should develop more rigorous assessment methods to explicitly measure alignment between declared values and behavioral outputs" |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP / ACL ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -184,6 +189,7 @@ AlphaEdit 的关键一步是把编辑扰动 Δ 投影到"被保留知识的键�
 |:--|:--|
 | 🎯 **源论文** | **Llama See, Llama Do: A Mechanistic Perspective on Contextual Entrainment and Distraction in LLMs** · Jingcheng Niu et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2505.09338](https://arxiv.org/abs/2505.09338) |
 | 📌 **线索来源** | Limitations §"we do not propose an application to mitigate the distraction problem. We believe our findings serve as foundational steps toward addressing this issue" + Conclusion §"Our identification of the entrainment heads suggests that interpretability techniques could provide crucial insights for real-world applications, such as the study of distraction." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -223,6 +229,7 @@ AlphaEdit 的关键一步是把编辑扰动 Δ 投影到"被保留知识的键�
 |:--|:--|
 | 🎯 **源论文** | **Language Models Resist Alignment: Evidence From Data Compression** · Jiaming Ji et al. · 🏆 ACL 2025 Best Paper· [arXiv:2406.06144](https://arxiv.org/abs/2406.06144) |
 | 📌 **线索来源** | Limitations §"we have not systematically validated elasticity throughout the entire lifecycle of pre-training and alignment phases" + Appendix C.2 §"the training objective can be transformed into a constrained optimization problem to quantitatively calculate the data volume required for new target alignment... The current challenge... lies in the lack of a sufficient theoretical foundation to characterize the specific features of current datasets." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICML / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -262,6 +269,7 @@ AlphaEdit 的关键一步是把编辑扰动 Δ 投影到"被保留知识的键�
 |:--|:--|
 | 🎯 **源论文** | **Calibrating Verbal Uncertainty as a Linear Feature to Reduce Hallucinations** · Ziwei Ji et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2503.14477](https://arxiv.org/abs/2503.14477) |
 | 📌 **线索来源** | Limitations §"our investigation is based on short-form (sentence-length) QA datasets" + §"our approach primarily focuses on enhancing the model's internal mechanisms for expressing uncertainty, which does not necessarily lead to correcting hallucinated answers" + Future Work §"extend its application to long-form QA tasks" |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP / ACL ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -301,6 +309,7 @@ AlphaEdit 的关键一步是把编辑扰动 Δ 投影到"被保留知识的键�
 |:--|:--|
 | 🎯 **源论文** | **LLMs Know Their Vulnerabilities: Uncover Safety Gaps through Natural Distribution Shifts** · Qibing Ren et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2410.10700](https://arxiv.org/abs/2410.10700) ＋ **How Johnny Can Persuade LLMs to Jailbreak Them** · Yi Zeng et al. · 🏆 ACL 2024 Best Social Impact Paper· [arXiv:2401.06373](https://arxiv.org/abs/2401.06373) |
 | 📌 **线索来源** | ActorBreaker Limitations §"we observe a trade-off between helpfulness and safety. Exploring reinforcement learning from human feedback (RLHF) in the multi-turn dialogue scenarios could be a valuable direction, e.g., designing a reward model that provides more granular scoring at each step of multi-turn dialogues." + Johnny Limitation §"it remains unclear whether these strategies' effectiveness would increase or if the LLMs would become more resistant after noticing prior rejections in a conversation." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · NeurIPS ＋ 🔐 Security · USENIX Security |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -340,6 +349,7 @@ ActorBreaker 用行动者网络理论生成一串**每一句都良性**、却在
 |:--|:--|
 | 🎯 **源论文** | **HALoGEN: Fantastic LLM Hallucinations and Where to Find Them** · Abhilasha Ravichander et al. · 🏆 ACL 2025 Outstanding Paper· [arXiv:2501.08292](https://arxiv.org/abs/2501.08292) |
 | 📌 **线索来源** | Limitations §"while our work provides a framework to measure both factual precision and appropriate model abstention, our metrics do not account for coverage — whether the model response contains all the information it should. Future work would introduce methodologies to measure coverage, as well as further improve the accuracy of verifiers." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -379,6 +389,7 @@ HALoGEN 覆盖 9 个领域、10.9k 提示，用高精度自动验证器把生成
 |:--|:--|
 | 🎯 **源论文** | **To Mask or to Mirror: Human-AI Alignment in Collective Reasoning** · Crystal Qian et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2510.01924](https://arxiv.org/abs/2510.01924) |
 | 📌 **线索来源** | Future Work §"This work highlights the need to distinguish between simulation alignment (matching human behavior) and outcome alignment (achieving normatively better results). Future research should address how to quantify and benchmark this distinction, as well as how to operationalize it through prompt-level control, model tuning, or system design." + Conclusion §"when identity cues were removed, all models defaulted to male-aligned choices, suggesting that gendered priors persist even without explicit signals." |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP ＋ 🧑‍💻 HCI · CHI ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -418,6 +429,7 @@ HALoGEN 覆盖 9 个领域、10.9k 提示，用高精度自动验证器把生成
 |:--|:--|
 | 🎯 **源论文** | **MiCRo: Mixture Modeling and Context-aware Routing for Personalized Preference Learning** · Jingyan Shen et al. · 🏆 EMNLP 2025 Outstanding Paper· [arXiv:2505.24846](https://arxiv.org/abs/2505.24846) ＋ **The PRISM Alignment Dataset** · Hannah Rose Kirk et al. · 🎤 NeurIPS 2024 Oral · [arXiv:2404.16019](https://arxiv.org/abs/2404.16019) |
 | 📌 **线索来源** | MiCRo Limitations §"in many real-world scenarios, user intent is often implicit, e.g., reflected in multi-turn dialogue, demographic metadata, or behavioral patterns. Incorporating such implicit user contexts into the routing process remains an imperative direction for future work." + PRISM §B.10 "It is an exciting direction for future work to explore free-form characterisations of identity (e.g. the free-text profile or system string) or ex-post groupings of people's preferences" |
+| 📮 **投稿建议** | 🗣️ **NLP** · EMNLP ＋ 🧪 ML · NeurIPS / ICML |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -457,6 +469,7 @@ MiCRo 证明当人类偏好是子群体混合时单个 Bradley–Terry 奖励头
 |:--|:--|
 | 🎯 **源论文** | **Emulated Disalignment: Safety Alignment for Large Language Models May Backfire!** · Zhanhui Zhou et al. · 🏆 ACL 2024 Outstanding Paper· [arXiv:2402.12343](https://arxiv.org/abs/2402.12343) |
 | 📌 **线索来源** | Limitations and Future Works §"(3) How to defend against ED? For open-source models, this may involve designing more robust alignment algorithms during training. For closed-source models, the challenge is balancing output token distribution transparency with the risk of misuse." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL ＋ 🧪 ML · ICML ＋ 🔐 Security · USENIX Security |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -496,6 +509,7 @@ ED 是一个免训练攻击：把安全对齐模型与其预训练基座的输�
 |:--|:--|
 | 🎯 **源论文** | **LLM Evaluators Recognize and Favor Their Own Generations** · Arjun Panickssery et al. · 🎤 NeurIPS 2024 Oral · [arXiv:2404.13076](https://arxiv.org/abs/2404.13076) |
 | 📌 **线索来源** | §5.2 Limitations and Future Work "what we are interested in is disproportionate self-preference, e.g., an LLM preferring its own generation even when it's equal or worse quality than the alternative. This would require controlling for generation quality" + §"The example level counterpart would be: an LLM shows preference towards a piece of text because it recognizes the text as its own generation, an hypothesis of interest to interpretability" |
+| 📮 **投稿建议** | 🧪 **ML** · NeurIPS / ICLR ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -535,6 +549,7 @@ ED 是一个免训练攻击：把安全对齐模型与其预训练基座的输�
 |:--|:--|
 | 🎯 **源论文** | **Watch Your Steps: Dormant Adversarial Behaviors that Activate upon LLM Finetuning** · Thibaud Gloaguen et al. · 🎤 ICLR 2026 Oral · [arXiv:2505.16567](https://arxiv.org/abs/2505.16567) |
 | 📌 **线索来源** | §5 Conclusion and Limitations "we call on the machine learning community to develop technical mitigations for finetuning-activated attacks and hope that our methods and extensive evaluations lay the foundation for strong defenses" + §"users could apply quantization (Section A.8) or add noise to the model (Section A.9) as a proxy to trigger the adversarial behavior with lower overhead" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔐 Security · USENIX Security / S&P |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -574,6 +589,7 @@ FAB 用元学习模拟下游微调，训练出一个**发布时完全良性、�
 |:--|:--|
 | 🎯 **源论文** | **Temporal Sparse Autoencoders: Leveraging the Sequential Nature of Language for Interpretability** · Usha Bhalla et al. · 🎤 ICLR 2026 Oral · [arXiv:2511.05541](https://arxiv.org/abs/2511.05541) |
 | 📌 **线索来源** | Future Work §"explore multiple temporal hierarchies, which could correspond to book-, paragraph-, sentence-, and token-level information" + §"use the features learned by SAEs as 'state' trackers, allowing for easy detection of significant changes in model behavior"；Limitations §"we only explored splitting the feature space once into a single high-level and low-level feature space" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -613,6 +629,7 @@ T-SAE 在 SAE 上加一个时间对比损失，让一部分特征在相邻 token
 |:--|:--|
 | 🎯 **源论文** | **The Shape of Adversarial Influence: Characterizing LLM Latent Spaces with Persistent Homology** · Aideen Fay et al. · 🎤 ICLR 2026 Oral · [arXiv:2505.20435](https://arxiv.org/abs/2505.20435) |
 | 📌 **线索来源** | §5 Discussion "adversarial influence manifests as topological compression of an LLM's latent space, shifting representations from compact, diverse structures to more dispersed, topologically simpler ones. This signature is consistent across architectures (3.8B–70B parameters), attack vectors (prompt injection and backdoor fine-tuning), and layers." + §B.3.1 "a refused request is routed into a more compressed region, effectively 'shutting down' further representational expansion" |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR ＋ 🔐 Security · CCS / USENIX Security |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -652,6 +669,7 @@ T-SAE 在 SAE 上加一个时间对比损失，让一部分特征在相邻 token
 |:--|:--|
 | 🎯 **源论文** | **Balancing the Budget: Understanding Trade-offs Between Supervised and Preference-Based Finetuning** · Mohit Raghavendra et al. · 🏆 ACL 2025 SAC Highlights· [arXiv:2502.11284](https://arxiv.org/abs/2502.11284) |
 | 📌 **线索来源** | Conclusion §"we identified a 'cold-start problem' while applying PFT directly on the base model on every task we studied. However, allocating even a minimal amount of data budget to SFT before transitioning to PFT (even as low as 10%) can sometimes provide substantial benefits." + Limitations §"we chose offline methods like DPO and KTO... we hope that this motivates future work to study more complex RL-based methods and their interplay with SFT." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★☆☆ |
 | 🧗 Difficulty | ★★☆☆☆ |
@@ -691,6 +709,7 @@ T-SAE 在 SAE 上加一个时间对比损失，让一部分特征在相邻 token
 |:--|:--|
 | 🎯 **源论文** | **Think in Safety: Unveiling and Mitigating Safety Alignment Collapse in Multimodal Large Reasoning Model** · Xinyue Lou et al. · 🏆 EMNLP 2025 SAC Highlights· [arXiv:2505.06538](https://arxiv.org/abs/2505.06538) |
 | 📌 **线索来源** | Conclusion §"This work represents a preliminary exploration of improving the safety of MLRMs through reasoning-based alignment. Future research will focus on developing more efficient datasets and training strategies specifically designed for MLRMs." + Limitations §"relying solely on MLLMs may compromise the accuracy of safety assessments, particularly in cases involving subtle forms of unsafe content" |
+| 📮 **投稿建议** | 🎬 **MM** · ACM MM ＋ 🗣️ NLP · EMNLP ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
