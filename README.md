@@ -518,7 +518,7 @@
 
 ## 🗺️ Roadmap
 
-- [x] 🧱 建立结构、模板、11 个类别
+- [x] 🧱 建立结构、模板、12 个类别
 - [x] 🔎 抓取 2,125 篇 oral / award 候选，1,610 篇解析出 Limitation / Future Work 段落
 - [x] 💡 176 条 idea（每条带原文引用、方案、验证、与最接近工作的区别）
 - [x] 📈 终身访问量计数（hits 徽章 + GitHub Traffic 累计）

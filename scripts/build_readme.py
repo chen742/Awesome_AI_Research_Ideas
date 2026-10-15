@@ -22,6 +22,7 @@ CAT_NAMES = {
  "09-nlp-language": "🗣️ NLP & Language Understanding",
  "10-theory-optimization": "📐 Theory, Optimization & Learning",
  "11-ai4science-other": "🔬 AI for Science & Others",
+ "12-web-search-datamining": "🌐 Web, Search, Recommendation & Data Mining",
 }
 
 def slug(h):
