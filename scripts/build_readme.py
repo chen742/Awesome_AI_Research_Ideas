@@ -29,6 +29,7 @@ CAT_NAMES = {
  "16-networking": "📡 Computer Networking",
  "17-security": "🔐 Security & Privacy",
  "18-graphics": "🎨 Computer Graphics",
+ "19-llm-agents": "🧭 LLM Agents: Tools, GUI/Web, Coding & Memory",
 }
 
 def slug(h):
@@ -42,7 +43,7 @@ def short_source(cell):
         p = re.sub(r"\[arXiv[^\]]*\]\([^)]*\)", "", p).strip(" ·")
         if not p: continue
         if p.startswith("**"): out.append(p.strip("*"))
-        elif re.search(r"🏆|🥈|🏅|🎤|📈", p): out.append(p)
+        elif re.search(r"🏆|🥈|🏅|🎤|📈|📄", p): out.append(p)
     return " · ".join(out)[:140]
 
 def parse(md):

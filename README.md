@@ -58,6 +58,7 @@
 | 🎯 | 源论文 | 📌 | 线索来源（Limitation / Future Work 的具体段落） |
 | 🏆 | Best / Outstanding Paper | 🥈 | Runner-up / 🏅 Honorable Mention |
 | 🎤 | Oral / Spotlight | 📈 | 高引用工作 |
+| 📄 | 顶会正式论文（写得好的欧美团队工作） | 🏛️ | 括号内为第一作者单位 |
 | ⭐ | Novelty（新颖性） | 🚀 | Impact（影响力） |
 | 🧗 | Difficulty（实现难度） | 🧪 | 验证方案 |
 | 💡 | 一句话 idea | 🛠️ | 解决方案 |
