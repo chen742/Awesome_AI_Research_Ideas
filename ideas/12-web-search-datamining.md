@@ -536,3 +536,411 @@ GnnXemplar 用示例理论做全局解释：在嵌入空间以覆盖最大化选
 🔑 `GNN interpretability` `global explanation` `shortcut learning` `group DRO` `heterophily` `node classification`
 
 [🔝 top](#top)
+
+---
+
+## 💡 Idea 12.14 — *Rank-Faithful Scaling Laws: Expected-Metric Surrogates and Recipe-Aware Effective Data for Compute-Optimal Dense Retriever Training*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Scaling Laws For Dense Retrieval** · Fang et al. (Tsinghua) · 🏆 SIGIR 2024 Best Paper · [arXiv:2403.18684](https://arxiv.org/abs/2403.18684) |
+| 📌 **线索来源** | Limitation and Future Work §"Although we demonstrate a positive correlation between contrastive entropy and ranking performance, it is important to note that they are not equivalent." + 同节 §"We do not cover more sophisticated training techniques, such as hard negative sampling ..., distillation ..., and contrastive pre-training ... These methods could potentially influence the scaling behaviors observed and should be investigated in the future." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🧪 ML · NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+该文首次为稠密检索拟合出模型规模、数据规模与性能之间的幂律，为绕开排序指标的离散性，选用连续的 contrastive entropy 作为拟合对象，并只在随机负采样 + 对比学习的训练配方下做实验。作者自己承认两处缺口：一是 contrastive entropy 和真正关心的 nDCG/MRR 并不等价，图 2 中相近的熵对应差异明显的排序性能；二是实际训练里普遍使用的困难负例、交叉编码器蒸馏和对比预训练都没有覆盖。这两点决定了现有缩放律还不能直接用于工业预算决策：我们要预测的是 nDCG@10，要在"更大模型 / 更多标注 / 更贵的负例挖掘 / LLM 标注"之间分配算力。关键 insight：单个查询上的排序指标是离散的，但只要把检索分数看成带校准噪声的随机变量，**期望** nDCG 就是正负例分数间隔分布的光滑函数，在噪声趋于 0 时退化为真实指标；另一方面，困难负例与蒸馏可以统一建模为"有效数据倍率"，即一个困难负例相当于多少随机负例。
+
+**💡 一句话 Idea**
+用"带校准噪声的期望排序指标"替代 contrastive entropy 来拟合缩放律，并把困难负例、蒸馏、预训练建模为配方相关的有效数据倍率，从而直接预测 nDCG@10，并给出模型规模、标注量和负例挖掘开销之间的算力最优分配。
+
+**🛠️ 可能的解决方法**
+1. **期望指标代理**：对每个查询，把文档分数建模为 s_d + ε，其中 ε~N(0, σ²)，σ 在验证集上拟合；负例 d 排在正例之前的概率 p_d = Φ((s_d − s⁺)/(√2σ))，正例排名服从泊松二项分布，由此闭式计算 E[RR] 与 E[nDCG@10]。该量光滑、可在小规模上稳定估计，σ→0 时等于真实指标。
+2. **实验网格**：编码器从 BERT-tiny 到 BERT-large，再加 Qwen2.5 0.5B/1.5B/7B 嵌入模型；训练对数量取 1k–500k（MS MARCO、T2Ranking）；配方维度包括随机负例、BM25 负例、ANCE 式动态困难负例、MarginMSE 蒸馏和 Contriever 初始化。
+3. **配方感知缩放律**：拟合 L(N, D, r) = E_r + A_r·N^(−α) + B_r·(η_r·D)^(−β)，检验"各配方共享指数、只有有效数据倍率 η_r 不同"的假设，并与"指数随配方变化"的模型做 AIC/留出外推比较。
+4. **成本模型与最优分配**：总成本 C = 训练 FLOPs（≈6·N·D·tokens）+ 负例挖掘开销（每 T 步重编码语料 ∝ N·|Corpus|）+ 标注费用（人工按条计价，LLM 按 token 计价）；在给定预算下用拉格朗日法求 (N, D, r, 标注源) 的最优解，输出可直接查表的分配曲线。
+5. **域外外推**：借鉴迁移缩放律，在 MS MARCO 上拟合，并用"有效迁移数据量"预测 BEIR 零样本 nDCG@10，回应原文无法稳定评测域外场景的问题。
+
+**🧭 与最接近工作的区别**
+- Fang et al. (2024) 本身：拟合对象是 contrastive entropy，训练配方只有随机负例；本 idea 直接预测排序指标，并覆盖主流训练配方。
+- Kaplan et al. (2020) 与 Chinchilla (Hoffmann et al., 2022)：面向语言模型困惑度的算力最优分配，不涉及负例挖掘和标注成本这类检索特有的开销项。
+- Zeng et al. (2025)《Scaling Sparse and Dense Retrieval in Decoder-Only LLMs》：比较了对比学习与蒸馏下的缩放表现，但没有提出与排序指标一致的光滑代理，也没有给出跨配方的有效数据倍率和预算分配模型。
+
+**🧪 验证方案**
+- 基准：MS MARCO dev（MRR@10）、TREC DL 2019/2020（nDCG@10）、T2Ranking（中文）、BEIR 13 个数据集（零样本 nDCG@10）。
+- 关键假设检验：(a) 在小规模点上拟合后，外推到 4× 参数量 / 4× 数据量时，期望指标代理预测 nDCG@10 的 MAPE 显著低于"先拟合熵、再线性映射到 nDCG"的做法；(b) η_r 在中英文数据集上排序一致；(c) 按最优分配训练的模型在同等预算下优于均匀分配。
+- 消融：σ 取固定值还是按查询校准、是否共享指数、是否计入挖掘开销。
+
+🔑 `scaling laws` `dense retrieval` `hard negatives` `knowledge distillation` `compute-optimal` `nDCG surrogate`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.15 — *Engine-in-the-Loop Multi-Vector Training: Learning Token Representations under Centroid Pruning, Residual Compression and Missing-Similarity Imputation*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **WARP: An Efficient Engine for Multi-Vector Retrieval** · Scheerer et al. (ETH Zurich) · 🏆 SIGIR 2025 Best Paper Award · [arXiv:2501.17788](https://arxiv.org/abs/2501.17788) |
+| 📌 **线索来源** | Conclusion §"Future work may incorporate techniques such as SIMD and GPU acceleration, more lightweight query encoding, and end-to-end training with WARP to better align model optimization with its retrieval process." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🌐 WWW · WWW / KDD |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+WARP 在 ColBERTv2/PLAID 与 XTR 的基础上做了三件事：用 WARP_SELECT 选择每个查询 token 的候选质心，并对缺失相似度做动态插补；在检索时隐式解压残差，不再重建向量；用两阶段归约聚合分数。它把 LoTTE Pooled 上的单线程延迟从 6 秒以上降到 171ms。但模型仍然按 XTR 目标训练，训练时看到的是精确的 token 相似度，部署时引擎用的却是"质心剪枝 + 2/4 bit 残差 + 插补值"的近似打分，两者不一致。nprobe 越小，这种不一致越伤害质量，而 nprobe、插补方式等关键旋钮目前只能手工调。作者明确把"与 WARP 端到端训练"列为未来工作。关键 insight：WARP 的打分函数虽然不可微，但其中每个环节都有成熟的可微替身（直通估计的 top-k 选择、量化感知训练、可学习插补器），所以可以把引擎本身放进训练循环，让表示学会在引擎的近似之下保持排序。
+
+**💡 一句话 Idea**
+在训练中模拟 WARP 的质心候选生成、残差量化与缺失相似度插补，让多向量模型直接针对引擎实际计算的分数做对比学习，同时学习插补函数和查询 token 剪枝门控，把质量-延迟的 Pareto 前沿整体前移。
+
+**🛠️ 可能的解决方法**
+1. **可微引擎替身**：每个 epoch 用 k-means 重算语料 token 质心（训练步内冻结）；对每个查询 token 用 Gumbel 直通估计选出 top-nprobe 质心；落在被选簇中的文档 token 用真实（量化后）相似度，其余位置用插补值 m_i；文档分数 = Σ_i max(真实或插补)，在批内用 softmax 交叉熵训练。
+2. **量化感知残差**：残差 r = e − c(e) 按 b bit 量化，反向时用 STE 传梯度，让表示主动学会"易于压缩"，与 ColBERTv2 的事后压缩形成对照。
+3. **可学习插补器**：m_i = g_φ(累积簇大小、最后一个入选质心的相似度、查询 token 范数)，用小型 MLP 回归真实最大相似度，并加单调性约束，取代 WARP_SELECT 的手工规则。
+4. **轻量查询编码**：为每个查询 token 加一个效用门控，以 L0 / 预算惩罚学习剪掉低价值 token，直接减少候选生成与归约的开销，对应原文"more lightweight query encoding"这一方向。
+5. **工程**：训练端用 PyTorch 实现上述替身；推理端不改 WARP 的 C++ 内核，只替换权重、质心和插补器参数，确保延迟对比公平；训练成本约为 XTR 的 1.3–1.5 倍（主要来自质心分配）。
+
+**🧭 与最接近工作的区别**
+- XTR (Lee et al., NeurIPS 2023)：训练时用批内 token 检索模拟候选生成，但没有考虑质心剪枝、残差量化和插补这些引擎近似。
+- ColBERTv2 / PLAID (Santhanam et al., 2022)：残差压缩与质心剪枝都是训练后的事后处理，模型对这些近似并不知情。
+- JPQ (Zhan et al., CIKM 2021)：对单向量检索联合优化查询编码器与乘积量化；本 idea 把这一思路推广到多向量检索，并额外覆盖候选生成与缺失分数插补。
+
+**🧪 验证方案**
+- 基准：BEIR 13 个数据集（nDCG@10）、LoTTE search/forum pooled（Success@5）、MS MARCO dev（MRR@10）。
+- 效率：单线程与多线程 p50/p99 延迟、索引大小、每查询处理的候选数；在 nprobe∈{4,8,16,32}、b∈{2,4} 下画质量-延迟 Pareto 曲线。
+- 关键假设检验：小 nprobe 下引擎内训练相对 XTR 的质量提升最大；可学习插补器的误差低于 WARP_SELECT 的规则插补。
+- 消融：只加量化感知 / 只加质心模拟 / 只加插补器 / 只加查询剪枝。
+
+🔑 `multi-vector retrieval` `late interaction` `XTR` `quantization-aware training` `retrieval efficiency` `ColBERT`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.16 — *Judgment Transfer for RAG Evaluation: Anchored Bradley–Terry Utility Estimation from Pooled Human Pairwise Judgments with Prediction-Powered Guarantees*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **The Viability of Crowdsourcing for RAG Evaluation** · Gienapp et al. (Leipzig University) · 🏆 SIGIR 2025 Best Paper Honorable Mention Award · [arXiv:2504.15689](https://arxiv.org/abs/2504.15689) |
+| 📌 **线索来源** | Conclusion §"The increasingly adopted practice of using LLMs as judges of utility, however, is concerning, as they fail to produce consistent and correct judgments in a zero-shot setting. For future work, we will study label transfer from a pool of existing human-judged responses to a new, unjudged responses, akin to a few-shot setting." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+CrowdRAG-25 针对 TREC RAG'24 的 301 个主题收集了 903 条人写和 903 条 LLM 生成的回答，覆盖三种文体；其中 65 个主题配有 47,320 条成对人工效用判断。结论有三点：文体显著影响感知效用；基于参考答案的评测失效；零样本 LLM 评委不一致。这份数据的价值在于"已判池"，但每出现一个新系统就要重新众包，成本不可持续。作者把"把已判回答的标签迁移到新回答"列为未来工作，却没有给出方法。关键 insight：成对判断天然对应 Bradley–Terry 隐效用，已判回答因此是**效用已知的锚点**。新回答只需与少量信息量最大的锚点比较，LLM 也不必给绝对分，只需在同主题已判样例的条件下做相对比较，这比零样本打分稳定得多。再用 prediction-powered inference 把少量人工判断与大量迁移判断组合起来，系统级估计就能做到无偏并带置信区间。
+
+**💡 一句话 Idea**
+把 CrowdRAG-25 的已判回答当作 Bradley–Terry 锚点，让 LLM 在检索到的同主题人工判例条件下做"新回答 vs 锚点"的少样本比较，再用 prediction-powered inference 以极少量新增人工判断校正偏差，给出带置信区间的系统级 RAG 效用排名。
+
+**🛠️ 可能的解决方法**
+1. **锚点构建**：对每个主题、每个效用维度，用人工成对判断拟合 Bradley–Terry（带主题随机效应），得到锚点效用及其后验方差。
+2. **主动锚点选择**：对新回答 r，按期望信息增益选择 k 个锚点（BT 分数接近 r 当前估计、方差小的锚点优先），通常 k≤5。
+3. **条件化比较器**：LLM 提示中放入 m 个同主题、与 (r, a) 最相似的已判对（嵌入检索得到）及其人工偏好，输出 P(r ≻ a)；另外用 CrowdRAG 成对数据以 pairwise logistic loss 微调一个 8B 评委，按主题留出划分训练，并做逐维度温度校准。
+4. **PPI 系统级估计**：对新系统只人工标 n 条比较，估计量 = 迁移判断均值 + 人工判断与迁移判断之差在已标子集上的均值，得到无偏的系统效用和 CI，并报告 CI 宽度随 n 的变化。
+5. **文体去混淆**：在 BT 模型中加入文体协变量（列表 / 散文 / 新闻），把"文体偏好"和"内容效用"分开报告，回应原文"文体显著影响效用"的发现。
+
+**🧭 与最接近工作的区别**
+- Gienapp et al. (2025) 本身：提供了判断池并揭示零样本评委的问题，但没有给出迁移方法。
+- Thomas et al. (SIGIR 2024)：证明经提示工程的 LLM 能预测搜索者偏好，但做的是零样本绝对标注，没有利用已判池作锚点，也没有统计保证。
+- ARES (Saad-Falcon et al., NAACL 2024)：同样借助 PPI 评测 RAG，但评委用合成数据训练，评测的是上下文相关性和忠实度；本 idea 迁移的是人类成对效用判断，并采用锚点式比较。
+
+**🧪 验证方案**
+- 数据：CrowdRAG-25（65 个已判主题，按主题和按回答来源做留出）；另用 TREC RAG'24 中未进入 65 个主题的部分做少量新增标注，检验泛化。
+- 指标：与人工多数票的成对一致率、系统排名与全人工 BT 排名的 Kendall τ、CI 覆盖率与宽度、达到给定 CI 宽度所需的人工判断数。
+- 对比：零样本 LLM 评委、随机少样本、AutoNuggetizer、基于参考答案的指标（原文已证明失效，作为下界）。
+- 消融：去掉锚点检索 / 去掉主动选择 / 去掉 PPI 校正 / 去掉文体协变量。
+
+🔑 `RAG evaluation` `crowdsourcing` `LLM-as-a-judge` `Bradley-Terry` `prediction-powered inference` `label transfer`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.17 — *Capture–Recapture Test-Bank Auditing: Estimating and Repairing Missing Nuggets for Unbiased LLM Autograding of Retrieve/Generate Systems*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **A Workbench for Autograding Retrieve/Generate Systems** · Laura Dietz (UNH) · 🏆 SIGIR 2024 Best Paper · [arXiv:2405.13177](https://arxiv.org/abs/2405.13177) |
+| 📌 **线索来源** | Conclusion §"In particular, we are concerned about verifying the grading process (without performing passage-level relevance judgments manually) and providing an analysis framework to diagnose the coverage of the test bank." + 同节 §"we (1) support to initialize a test bank with automatically generated nuggets and questions" |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+Autograding Workbench 用"测试库"给检索 / 生成系统打分：测试库里是 nugget（关键事实）或考题，由 LLM 判断系统回答覆盖了哪些 nugget、能答出哪些题，人只在环路中做抽查，从而绕开段落级相关性判断。它的可信度取决于测试库是否完整。测试库通常由 LLM 从少数文档自动初始化，必然遗漏事实。一个系统如果给出了正确但不在库里的信息，就拿不到分，这正是 Cranfield 池化偏差在生成式评测中的翻版，而且对"与众不同"的新系统伤害最大。作者把"诊断测试库覆盖度"列为核心关切，但工作台只提供了相关性分析，没有给出覆盖度的**估计量**。关键 insight：每个参评系统和每个 nugget 生成源都可以看作对"该主题全部相关事实"的一次独立捕获，事实在不同来源间的重叠可以用生态学的捕获-再捕获模型估计总体大小，从而给出每个主题的覆盖率；未被任何 nugget 匹配、却被多个系统反复提到的事实，就是最值得补进库里的候选。
+
+**💡 一句话 Idea**
+从所有参评回答中抽取原子事实并聚类，用捕获-再捕获模型估计每个主题的测试库覆盖率，用留一系统重建测试库来量化库偏差，再按"出现频次 × 验证置信度"优先补充缺失 nugget，让自动评分对新颖系统也保持公平。
+
+**🛠️ 可能的解决方法**
+1. **事实抽取与规范化**：对每条系统回答和每个源文档抽取原子声明，用双向 NLI 等价聚类成"事实簇"，再与现有 nugget / 考题对齐（LLM 判断覆盖关系）。
+2. **覆盖率估计**：把捕获场合定义为不同来源（LLM 从文档生成、人工 nugget、各系统回答），用 Chao1 与允许来源异质性的对数线性模型估计事实总数 N̂，主题覆盖率 Ĉ = |bank| / N̂，并用 bootstrap 给出区间。
+3. **库偏差检验**：类比 Zobel 的池化偏差实验，对每个系统 r 把仅由 r 贡献的事实从库中移除后重新评分，测量 r 的分数与排名变化，得到逐系统的"库依赖度"。
+4. **定向修补**：把未匹配的事实簇按"跨系统出现频次 × 文档可支撑度（检索证据 + NLI）"排序，取前 m 个交给人工确认后加入库；报告每加入一条 nugget 后排行榜稳定性的边际变化。
+5. **工程**：输出与 trec_eval 兼容的逐主题覆盖率与修补后分数，可直接接入工作台；成本只来自对回答逐句调用 LLM。
+
+**🧭 与最接近工作的区别**
+- Zobel (SIGIR 1998)、Buckley et al. (2007)：揭示并量化了文档池化偏差，但对象是文档级相关性判断，不涉及生成回答的 nugget 测试库。
+- AutoNuggetizer (Pradeep et al., 2024)：自动构建 nugget 并评分，但默认测试库完整，不估计缺失事实。
+- Dietz (2024) 本身：提出了覆盖度诊断这一需求，本 idea 给出覆盖率的统计估计量和偏差检验协议。
+
+**🧪 验证方案**
+- 基准：TREC RAG'24（NIST nugget 判断）、TREC DL 2019/2020 与 TREC CAR Y3（工作台原文所用数据）。
+- 关键假设检验：(a) 人为隐藏 30%/50% 的人工 nugget，检验 Ĉ 能否还原真实覆盖率；(b) 留一系统实验中，修补前后排名变化的绝对值显著下降；(c) 修补后与官方人工排行榜的 Kendall τ 上升。
+- 对比：未修补的自动测试库、只做 LLM 生成扩充（不做估计与排序）、随机补充同样数量的 nugget。
+
+🔑 `IR evaluation` `nugget evaluation` `test collection bias` `capture-recapture` `LLM autograding` `RAG evaluation`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.18 — *Facet-Aware Nugget Memory: Redundancy-Controlled, Length-Adaptive Grounded Response Generation for Multi-Turn Conversational Search*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **GINGER: Grounded Information Nugget-Based Generation of Responses** · Łajewska & Balog (University of Stavanger) · 🏆 SIGIR 2025 Best Short Paper Award · [arXiv:2503.18174](https://arxiv.org/abs/2503.18174) |
+| 📌 **线索来源** | Conclusions §"This could include investigating the impact of various response lengths (e.g., based on user preferences), controlling response completeness, or developing strategies to manage redundancy in multi-turn conversations by considering previously discussed facets." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+GINGER 把 RAG 回答生成拆成多个可审计阶段：从检索段落中检测 nugget、按方面聚类、对簇排序、摘要排名靠前的簇、最后润色。这样每句话都能落到具体 nugget 和来源上，并在长度限制内尽量多覆盖信息。它在 TREC RAG'24 上用 AutoNuggetizer 评测，效果与最好的提交相当。不过它只处理单轮问题。在对话式搜索中，用户的追问常常和上一轮共享大量方面：照搬单轮流程会重复已讲过的 nugget，浪费长度预算；如果简单删掉旧信息，又会丢掉用户正在追问的上下文。作者明确提出，需要研究多轮对话中考虑已讨论方面的冗余管理，以及按用户偏好调节回答长度。关键 insight：GINGER 的中间产物（nugget 簇 = 方面）恰好可以充当对话状态，把"已讲过什么、用户接住了什么"显式存进记忆，每轮的内容选择就变成带覆盖衰减的预算约束子模最大化问题，既有近似保证，又可解释。
+
+**💡 一句话 Idea**
+在 GINGER 的 nugget 簇之上维护一个"方面记忆"，每轮以长度预算为约束，贪心地做覆盖衰减加权的子模内容选择；已讲过的方面用简短回指代替复述，长度预算按用户偏好和问题类型自适应决定。
+
+**🛠️ 可能的解决方法**
+1. **方面记忆**：存储每个 nugget 簇的方面 ID、包含的 nugget、来源段落、首次提及的轮次，以及用户是否接续（下一轮是否追问该方面），作为对话状态。
+2. **选择目标**：max Σ_c rel(c | q_t, 历史)·(1 − γ·covered_c)·w_c + λ·novelty(c)，约束为 Σ len(c) ≤ L_t。用代价比贪心求解，可获得 (1−1/e) 量级的近似保证；用户正在追问的方面不做衰减。
+3. **回指生成**：对已覆盖且仍相关的方面，生成带来源引用的一句话回指（"如上一轮提到的 X [1]"），保证引用可追溯，同时节省长度。
+4. **长度策略**：用问题类型（事实型 / 比较型 / 开放型）和用户画像（TREC iKAT 的 PTKB 陈述）预测 L_t，可用小分类器或 bandit 结合用户反馈在线更新。
+5. **成本**：整套流程模块化，不需要训练生成器；新增开销只有一次方面对齐（嵌入 + NLI）。
+
+**🧭 与最接近工作的区别**
+- GINGER (Łajewska & Balog, 2025)：单轮 nugget 管线，没有跨轮状态，也没有长度自适应。
+- MMR (Carbonell & Goldstein, 1998)：在单次查询内去冗余，不跨轮跟踪方面覆盖与用户接续。
+- TREC iKAT (Aliannejadi et al., 2024) 的基线系统：做多轮个性化检索与生成，但不显式建模 nugget 级冗余与长度预算。
+
+**🧪 验证方案**
+- 基准：TREC iKAT 2023/2024、TREC CAsT 2022（多轮对话检索与回答）。
+- 指标：逐轮 nugget recall / precision（AutoNuggetizer）、跨轮冗余率（用 NLI 检出的重复 nugget 占比）、每 token 的累计信息增益、引用准确率；抽样做众包成对偏好评测。
+- 关键假设检验：在相同长度预算下，方面记忆让后续轮次的新 nugget 覆盖率显著提高，且追问方面的召回不下降。
+- 对比：逐轮独立运行 GINGER、把历史拼进提示的端到端 LLM、MMR 式去冗余；消融：去掉衰减 / 去掉回指 / 固定长度。
+
+🔑 `conversational search` `grounded generation` `information nuggets` `redundancy` `submodular selection` `TREC iKAT`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.19 — *Counterfactual Catalogs for LLM Recommenders: Separating Memorization from Generalization via Stratified Item Remapping and Post-Cutoff Splits*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Do LLMs Memorize Recommendation Datasets? A Preliminary Study on MovieLens-1M** · Di Palma et al. (Politecnico di Bari) · 🏆 SIGIR 2025 Best Short Paper Award · [arXiv:2505.10212](https://arxiv.org/abs/2505.10212) |
+| 📌 **线索来源** | Conclusion and open directions §"Our findings reveal that a substantial portion of the item catalog, user metadata, and user interactions can be accurately retrieved from these models, highlighting the presence of memorization." + 同节 §"Future works will be on developing ML-optimized memorization extraction techniques ... as well as mitigation approaches ... to reduce memorization and enhance the reliability of LLM evaluation and usage in recommendation tasks." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🌐 WWW · WWW / KDD |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★★ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+该文首次证明 GPT 和 Llama 能复现 MovieLens-1M 的大部分物品目录、用户元数据乃至交互记录；LLM 作为推荐器的表现与记忆程度紧密相关，还继承了数据集本身的流行度偏差。这意味着近两年大量"LLM 推荐在 ML-1M 上超越 SASRec"的结论可能部分来自背诵，而不是泛化。作者的后续方向是"更强的记忆抽取 + 缓解方法"，但领域更急需的是一个**可操作的评测协议**：给定一个 LLM 推荐器和一个公开数据集，怎样把"记忆贡献"从指标里剥离出来。关键 insight：记忆依附在具体的物品身份与共现上，泛化则依附在物品的内容属性与交互结构上。如果在"类型 × 年代 × 流行度"分层内对物品身份做双射重映射，交互图结构和内容统计都保持不变，只有被记住的共现被打断；不依赖记忆的模型在重映射前后表现应该不变，下降的部分就是记忆收益。
+
+**💡 一句话 Idea**
+提出"反事实目录"评测协议：在保持内容统计和交互结构不变的前提下，在分层内重映射或虚构物品身份，并辅以模型知识截止日期之后的交互切分，把 LLM 推荐器的 HR/NDCG 分解为泛化部分与记忆部分，并据此训练抗记忆的推荐器。
+
+**🛠️ 可能的解决方法**
+1. **记忆探针**：以 ratings.dat / movies.dat 的原始行格式做前缀续写抽取，并计算 Min-K%++ 成员分数，得到逐用户、逐物品的记忆分数，作为后续分析的协变量。
+2. **反事实目录**：(a) 分层置换：在"类型 × 年代 × 流行度十分位"层内随机双射物品 ID 与标题，保持流行度分布与内容统计；(b) 虚构目录：用 LLM 按原物品属性生成虚构标题与简介，并做去重检验，确认它们不在预训练语料中。
+3. **记忆差距指标**：MemGap = HR@10(原目录) − HR@10(反事实目录)；再把逐用户的命中情况对成员分数做回归，估计"每单位记忆带来的指标增益"。
+4. **截止日期后切分**：用 MovieLens-32M 中最新年份的评分和 Amazon Reviews 2023 中晚于模型截止日期的交互构建"未见"测试集，与反事实目录交叉验证。
+5. **缓解**：对微调型 LLM 推荐器（TALLRec、BIGRec、LLaRA）在训练中混入反事实目录增强；推理时做 ID 匿名化；比较缓解后 MemGap 与真实泛化指标的变化。
+
+**🧭 与最接近工作的区别**
+- Di Palma et al. (2025) 本身：证明了记忆存在，但没有给出把记忆从推荐指标中剥离的评测协议。
+- Golchin & Surdeanu (ICLR 2024)、Min-K% Prob (Shi et al., ICLR 2024)：面向 NLP 基准的污染检测，只判断"是否见过"，不衡量记忆对推荐排序指标的贡献。
+- TALLRec (Bao et al., 2023)、LLaRA (Liao et al., SIGIR 2024)：在 MovieLens 等公开数据集上报告 LLM 推荐效果，没有控制记忆因素。
+
+**🧪 验证方案**
+- 数据：MovieLens-1M、MovieLens-32M（截止日期后切分）、Amazon Reviews 2023（多个类目）。
+- 模型：零样本 GPT-4o-mini / Llama-3.1-8B、微调型 TALLRec / BIGRec / LLaRA；SASRec、BERT4Rec 作为不受记忆影响的对照组（期望 MemGap≈0）。
+- 指标：HR@10、NDCG@10、MemGap，以及流行度偏差（ARP、APLT）。
+- 关键假设检验：(a) LLM 推荐器的 MemGap 显著大于 0，传统模型约等于 0；(b) MemGap 与模型规模、记忆探针分数正相关；(c) 在反事实目录上重新比较时，部分"LLM 优于 SASRec"的结论发生反转。
+
+🔑 `LLM recommendation` `memorization` `data contamination` `evaluation protocol` `MovieLens` `popularity bias`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.20 — *Beyond Per-Document Utility: Position-Stratified Shapley Interaction Labels for Evaluating and Composing RAG Contexts*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **The Power of Noise: Redefining Retrieval for RAG Systems** · Cuconasu et al. (Sapienza University of Rome) · 📄 SIGIR 2024 · [arXiv:2401.14887](https://arxiv.org/abs/2401.14887) ＋ **Evaluating Retrieval Quality in Retrieval-Augmented Generation** · Salemi & Zamani (UMass Amherst) · 📄 SIGIR 2024 · [arXiv:2404.13781](https://arxiv.org/abs/2404.13781) |
+| 📌 **线索来源** | Power of Noise, Conclusions §"top-scoring retrieved documents that do not contain the answer, when added to a prompt, negatively impact the LLM effectiveness" + §"further research is needed both to uncover the inner mechanisms behind this behavior and to develop a new generation of information retrieval techniques that are specifically designed to interact with the generative component." ＋ eRAG, Conclusion §"eRAG leverages the per-document performance of the LLM on the downstream task to generate relevance labels." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+两篇 SIGIR 2024 论文合在一起，暴露了 RAG 检索评测的一个结构性矛盾。eRAG 让 LLM 每次只读一篇文档，用下游任务表现给这篇文档打"效用标签"，再据此计算检索指标，与端到端效果的相关性明显高于人工相关性标签。但它默认各文档的效用彼此独立、可以相加。Power of Noise 恰好证明这个假设不成立：高分但不含答案的干扰文档会拉低准确率；随机噪声文档放在合适位置反而有帮助；相关信息离查询越近越好。也就是说，文档效用取决于和谁一起出现、放在哪个位置。这类交互效应 eRAG 测不到，现有检索器也不会去优化。关键 insight：可以借合作博弈的语言，把上下文集合看作"联盟"，用位置分层的 Shapley 值刻画每篇文档的平均边际贡献，用 Shapley 交互指数刻画文档对之间的冲突与互补。这样得到的标签既能作为更忠实的评测指标，也能直接监督一个"上下文编排器"，决定选哪些文档、按什么顺序放。
+
+**💡 一句话 Idea**
+用位置分层采样估计每篇检索文档在上下文联盟中的 Shapley 值和成对交互指数，得到能识别"有害干扰文档"和"有益噪声"的集合级效用标签；以此定义比 eRAG 更忠实的检索评测，并训练一个联合决定文档选择与排列顺序的上下文编排器。
+
+**🛠️ 可能的解决方法**
+1. **集合级标签估计**：对查询 q 的候选集 {d_1..d_k}（k=10–20），随机采样子集与排列，统计每篇文档在不同位置层（靠近查询 / 中部 / 远端）的边际贡献 Δ = U(S∪{d}) − U(S)，U 取 EM / F1 或答案对数似然；采用 KernelSHAP 式加权回归，每个查询约 4k 次 LLM 调用，并用答案对数似然作为控制变量降低方差。
+2. **成对交互**：估计 Shapley 交互指数 I(d_i, d_j)，识别冲突对（两篇单独都有用、合在一起反而有害）与互补对（多跳证据）。
+3. **评测指标**：定义集合效用 nDCG（SU-nDCG）：增益取位置条件化的 Shapley 值，并允许为负，从而惩罚干扰文档；与 eRAG、人工相关性指标一起做元评测。
+4. **上下文编排器**：在交叉编码器上加一个列表级头，输入候选文档（含彼此的交互特征），输出每篇文档的期望边际贡献与目标位置；训练目标是对估计标签做 listwise 回归，再加一个对干扰文档的铰链惩罚；推理时贪心构造上下文。
+5. **成本控制**：只在训练集上做 Shapley 估计，部署时编排器替代 LLM 调用；用 7–8B 生成器估计标签，再验证标签迁移到更大生成器时是否依然有效。
+
+**🧭 与最接近工作的区别**
+- eRAG (Salemi & Zamani, 2024)：逐文档独立打标签，无法表达负效用、交互与位置效应。
+- Lost in the Middle (Liu et al., TACL 2024)：揭示了位置效应，但没有把它变成检索评测标签或训练信号。
+- ContextCite (Cohen-Wang et al., NeurIPS 2024)：用消融加线性代理，把**某个已生成回答**归因到上下文来源；本 idea 面向检索评测与上下文构造，并显式建模成对交互与位置。
+
+**🧪 验证方案**
+- 基准：KILT 中的 NQ、TriviaQA、HotpotQA，外加 ASQA（长答案）；检索器包括 BM25、Contriever、E5、ColBERTv2；生成器包括 Llama-3.1-8B、Qwen2.5-7B，并在 70B 上检验标签迁移。
+- 元评测：在 20 个以上的检索配置上，计算各检索指标与端到端 RAG 准确率的 Kendall τ（与 eRAG 的协议一致），比较 SU-nDCG、eRAG 与人工标签指标。
+- 下游：编排器构造的上下文与 top-k 直接拼接、Power of Noise 的启发式做法对比 EM / F1；同时报告评测成本（LLM 调用数）与相关性之间的 Pareto 曲线。
+- 关键假设检验：负 Shapley 值文档与"高分但不含答案"文档高度重合；去掉交互项后，多跳数据集上的指标相关性下降最多。
+
+🔑 `RAG evaluation` `retrieval utility` `Shapley value` `distractor documents` `context composition` `position bias`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.21 — *Retrieval-Sampled Preference Optimization: Evidence-Diverse Response Pairs from Stochastic Top-k Contexts for Jointly Aligning Retriever and Generator*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Stochastic RAG: End-to-End Retrieval-Augmented Generation through Expected Utility Maximization** · Zamani & Bendersky (UMass Amherst) · 📄 SIGIR 2024 · [arXiv:2405.02816](https://arxiv.org/abs/2405.02816) |
+| 📌 **线索来源** | Conclusions and Future Work §"the stochastic nature of Stochastic RAG can be used to increase the diversity of generated outputs in RAG systems. This is quite important in scenarios where multiple outputs are generated by RAG systems for collecting human feedback." + 同节 §"This work solely focuses on relatively short text generation." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🧪 ML · NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+Stochastic RAG 把检索建模为无放回采样，用直通 Gumbel-top-k 让"检索集合 → 生成 → 任意效用指标"整条链可微，在 KILT 七个短答案数据集中的六个上刷新了 SOTA。但它的效用是 EM/F1 这类可自动计算的指标，长文本 RAG 真正的优化信号是人类（或评委）偏好。现有 RAG 偏好对齐通常靠温度采样生成候选回答，这样得到的回答往往措辞不同、证据相同，对"哪些证据更好"几乎不提供信息，检索器也就得不到梯度。作者自己指出，随机检索可以用来增加输出多样性，服务于人类反馈的收集。关键 insight：不同的采样检索集会产生"证据层面不同"的回答对，人类对它们的偏好同时评价了证据集合与生成；而 Plackett–Luce 无放回采样下检索集合的对数概率是闭式的，所以可以把 (检索集合, 回答) 看作一个联合动作，在 DPO 框架里同时更新检索器和生成器。
+
+**💡 一句话 Idea**
+用 Gumbel-top-k 采样出证据不同的检索集合来生成候选回答对，在联合策略 log P_θ(S|q) + log π_φ(y|q,S) 上做 DPO，让一次偏好标注同时为检索器和生成器提供信号，并主动挑选证据差异最大的回答对以节省标注预算。
+
+**🛠️ 可能的解决方法**
+1. **证据多样采样**：对检索器分数加温度 τ 后做 Gumbel-top-k，每个查询采 M=4–8 个集合，并约束集合间 Jaccard 距离的下限，避免近重复。
+2. **联合 DPO 目标**：L = −log σ(β[(log P_θ(S_w|q) + log π_φ(y_w|q,S_w)) − (log P_θ(S_l|q) + log π_φ(y_l|q,S_l)) − 参考模型对应项])；P_θ(S|q) 用 Plackett–Luce 无放回概率的闭式表达，检索器与生成器（LoRA）同步更新。
+3. **偏好来源**：小规模众包成对判断，加上用 nugget 评分（AutoNuggetizer）构造的可扩展 AI 偏好；对两者分别训练，比较人类与评委信号的差异。
+4. **主动配对**：优先标注"集合对称差大、而当前联合策略对两者偏好不确定"的回答对（按期望信息增益排序），在固定标注预算下最大化对检索器的信息量。
+5. **成本**：检索器为 110M 级双塔，生成器为 7–8B，使用 LoRA；8 卡可在数天内完成一轮训练，标注量控制在万对以内。
+
+**🧭 与最接近工作的区别**
+- Stochastic RAG (Zamani & Bendersky, 2024)：优化的是可自动计算的短答案效用，没有涉及偏好数据与长文本生成。
+- REPLUG (Shi et al., NAACL 2024)：用语言模型似然监督检索器，不使用人类偏好，生成器保持冻结。
+- DPO (Rafailov et al., NeurIPS 2023) 与 Self-RAG (Asai et al., ICLR 2024)：只对齐生成器，候选回答来自温度采样，检索器得不到偏好信号。
+
+**🧪 验证方案**
+- 基准：ASQA（str-em、Disambig-F1）、KILT-ELI5（ROUGE-L、KILT 分数）、TREC RAG'24（AutoNuggetizer nugget 召回）；检索侧报告证据 Recall@k 与 nDCG@10。
+- 关键假设检验：在相同标注预算下，证据多样回答对训练出的模型，在胜率和 nugget 召回上都优于温度采样回答对；只有联合 DPO 能提升检索器的 Recall@k。
+- 对比：SFT、仅生成器 DPO、REPLUG 式检索训练加生成器 DPO 的两阶段方案、Stochastic RAG 加自动效用。
+- 消融：去掉集合多样性约束 / 去掉主动配对 / 冻结检索器。
+
+🔑 `retrieval-augmented generation` `preference optimization` `DPO` `Gumbel-top-k` `end-to-end RAG` `long-form QA`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.22 — *Preference-Grounded Persona Simulators: Calibrating LLM User Diversity with Real Extracted Preferences for Multi-Session Conversational Recommendation*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Doing Personal LAPS: LLM-Augmented Dialogue Construction for Personalized Multi-Session Conversational Search** · Joko et al. (Radboud University) · 📄 SIGIR 2024 · [arXiv:2405.03480](https://arxiv.org/abs/2405.03480) |
+| 📌 **线索来源** | Conclusion §"In our experiment, fully-synthetic LLM-based methods does not yield diverse conversations. Using actual user preferences from LAPS as personas is a promising avenue to explore for future." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🌐 WWW · WWW / KDD |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+LAPS 的做法是让 LLM 为众包工人生成个性化引导，降低工人的认知负担，由此规模化收集反映真实用户偏好的多会话个性化对话，并证明"抽取出的偏好"比"上一会话的原始话语"更利于个性化推荐。但人工收集仍然昂贵，而作者发现全合成的 LLM 对话缺乏多样性，会塌缩到少数模式上。用这种对话训练或评测个性化对话系统，会系统性高估效果。这个空隙很明确：对话式推荐需要可扩展的用户模拟器，而模拟器的瓶颈不在语言流畅度，而在**偏好分布与行为分布的真实性**。关键 insight：LAPS 已经提供了真实的偏好陈述及其共现结构，可以直接作为 persona 的经验先验；再用一个"真人 vs 模拟"判别器作为分布校准信号，把模拟话语的多样性、偏好表达率和跨会话漂移拉回真人分布。模拟器的好坏最终以"它给出的系统排名是否与真人评测一致"来衡量。
+
+**💡 一句话 Idea**
+从 LAPS 中抽取的真实偏好构建 persona 库，按其真实共现关系采样 persona，用判别器引导的偏好优化把 LLM 用户模拟器的话语多样性与跨会话行为校准到真人分布，再用"系统排名一致性"验证它能否替代昂贵的人工多会话评测。
+
+**🛠️ 可能的解决方法**
+1. **Persona 库**：把 LAPS 抽取的偏好陈述规范化为（领域, 属性, 极性, 强度）元组，统计元组间的共现与冲突；采样 persona 时按经验联合分布（或在其上拟合的低秩模型）抽取，保留真实的长尾组合。
+2. **模拟器训练**：以 persona 和会话历史为条件，在 LAPS 的真人话语上 SFT 一个 7–8B 模型；跨会话设定中，偏好按真实披露节奏逐步暴露，并以一定概率发生漂移。
+3. **分布校准**：训练"真人 vs 模拟"判别器，把判别器分数和 Distinct-n、偏好表达率等目标统计量的偏离程度合成为奖励，用 DPO 让模拟器在保持 persona 一致的同时更难被识别；同时加 persona 一致性约束（NLI 检查话语与 persona 不矛盾）。
+4. **评测用途**：让多种对话推荐器（拼接原始历史的 LLM、带偏好记忆的 LLM、检索式推荐器）与模拟器交互，产出系统排名，再与 LAPS 真人测试集上的排名比较。
+5. **成本**：只需一次 SFT 加一轮 DPO；判别器为小型编码器；可按需生成大规模多会话对话。
+
+**🧭 与最接近工作的区别**
+- LAPS (Joko et al., 2024)：数据靠人工收集，只指出全合成对话缺乏多样性，没有给出校准后的模拟器。
+- USimAgent (Zhang et al., SIGIR 2024)：用 LLM 模拟单会话的搜索行为（查询、点击、停止），不涉及跨会话的个性化偏好。
+- Balog & Zhai (2023)《User Simulation for Evaluating Information Access Systems》：系统梳理了模拟器的有效性问题；本 idea 给出一个以真实偏好为先验、以判别器为校准信号的具体方案。
+
+**🧪 验证方案**
+- 数据：LAPS 多会话对话（按用户划分训练和测试）。
+- 模拟器保真度：MAUVE、Distinct-1/2、偏好表达率与跨会话漂移率与真人分布的差距、判别器 AUC（越接近 0.5 越好）。
+- 下游效用：(a) 以模拟数据增强训练个性化推荐器，在真人测试集上看 Recall@10 和 NDCG@10；(b) 在 6–10 个对话推荐系统上，比较模拟评测排名与真人评测排名的 Kendall τ。
+- 对比：全合成 LLM 对话、只做 persona 条件化（不校准）、只做 SFT；消融：去掉共现采样 / 去掉判别器奖励 / 去掉漂移。
+
+🔑 `user simulation` `conversational recommendation` `personalization` `multi-session dialogue` `persona` `evaluation`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 12.23 — *Knowledge-Gap Routing for Self-Evolving Agent Skills: Turning Plateaued Knowledge Failures into Retrieval Targets Mined from Resolved Tickets*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **SkillForge: Forging Domain-Specific, Self-Evolving Agent Skills in Cloud Technical Support** · Liu et al. (Alibaba Cloud) · 📄 SIGIR 2026 · [arXiv:2604.08618](https://arxiv.org/abs/2604.08618) |
+| 📌 **线索来源** | Convergence and Failure Category Analysis §"Knowledge failures, however, plateau after v1 (0% further reduction in v2)—early iterations resolve the most salient knowledge gaps, but remaining deficiencies prove difficult to close through skill-level optimization alone" + Aggregated Failure Analysis Results §"critical domain knowledge is missing, causing the agent to give incorrect guidance." |
+| 📮 **投稿建议** | 🔎 **IR** · SIGIR / CIKM ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+SkillForge 用历史工单为云技术支持智能体生成领域技能，再通过"失败分析器 → 技能诊断器 → 技能优化器"的闭环迭代改写技能，在五个真实场景上把 Strict CR 提升了 9–12pp。它的失败分析显示：工具、风格、澄清三类失败随迭代稳步下降，知识类失败却在第一轮之后完全停滞，成为收敛的主要原因。这背后有一个容量问题：技能是一段指令文本，适合承载高频、通用的流程知识，却装不下长尾、细粒度、经常变动的产品事实。这类知识本应放在检索索引里，而现有闭环只会继续改写技能文本。关键 insight：失败分析器已经对每个坏例做了类型化诊断，并给出"缺少哪条知识"的提示。只要把知识类失败**路由**到检索侧，把诊断转成（客户问题, 缺失事实）训练对，从已解决工单和专家参考回答中挖掘知识卡片并训练检索器，就能打破技能层面的天花板。
+
+**💡 一句话 Idea**
+在 SkillForge 的自进化闭环里加一个类型化路由：工具 / 风格 / 澄清类失败继续改写技能，知识类失败转成检索目标，从已解决工单中挖掘知识卡片、按频度决定"写进技能"还是"放进索引"，并用失败衍生的查询训练检索器，从而突破知识类失败的停滞。
+
+**🛠️ 可能的解决方法**
+1. **失败到查询**：从失败分析器的知识维度诊断提示与专家参考回答中，抽取（客户问题上下文, 缺失事实）对，把缺失事实规范化为带来源（工单 ID / 文档）的原子知识卡片。
+2. **放置策略**：按出现频度、跨场景通用性和时效性打分；高频通用的知识写进技能（受技能长度预算约束），长尾或易变的知识进入检索索引。这本质上是一个以上下文长度为成本的背包式放置问题。
+3. **检索器适配**：用失败衍生的 (问题, 卡片) 对做困难负例对比微调，困难负例取同产品、不同版本的卡片；用 doc2query 扩写卡片以覆盖客户的多种表述；冲突卡片按时效与来源可信度消解。
+4. **充分性校验**：卡片上线前检查"检索到的卡片能否蕴含专家参考回答中的关键事实"（NLI），不通过就回到人工审核队列。
+5. **成本**：只增加一次检索调用与一个小型检索器的微调；卡片挖掘复用已有的失败分析输出。
+
+**🧭 与最接近工作的区别**
+- SkillForge (Liu et al., 2026)：所有失败都通过改写技能文本来修复，知识类失败因此停滞。
+- Xu et al. (SIGIR 2024)：用历史工单构建知识图谱做客服 RAG，知识库是静态的，不由部署后的失败驱动更新。
+- Reflexion (Shinn et al., NeurIPS 2023)、ExpeL (Zhao et al., AAAI 2024)：把经验写成自然语言记忆或洞见，不区分失败类型，也不训练检索器。
+
+**🧪 验证方案**
+- 基准：原文的云技术支持场景（若可复现）；公开代理基准用 TechQA（IBM 技术支持问答）与 τ-bench 的 retail / airline 领域。
+- 指标：端到端 Strict / Lenient CR（与原文一致）、逐轮迭代的知识类失败率、知识卡片检索的 Recall@5、nDCG@10 与 MRR。
+- 关键假设检验：(a) 加入路由后，知识类失败率在第二轮及以后继续下降；(b) 放置策略在相同技能长度预算下优于"全部写进技能"和"全部放进索引"。
+- 对比：原始 SkillForge、技能加静态 RAG（工单全文索引）、ExpeL 式经验记忆；消融：去掉放置策略 / 去掉检索器微调 / 去掉充分性校验。
+
+🔑 `agent skills` `failure analysis` `retrieval-augmented generation` `customer support` `knowledge routing` `dense retrieval`
+
+[🔝 top](#top)
