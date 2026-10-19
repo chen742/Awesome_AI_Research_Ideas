@@ -1089,7 +1089,7 @@ Khan 等在 QuALITY 长文阅读题上让能读原文的"专家"辩手对不能�
 
 | | |
 |:--|:--|
-| 🎯 **源论文** | **Secret Collusion Among Generative AI Agents** · Sumeet Ramesh Motwani et al. (Oxford) · 📄 NeurIPS 2024 · 📈 高引用 (140+) · [arXiv:2402.07510](https://arxiv.org/abs/2402.07510) |
+| 🎯 **源论文** | **Secret Collusion among AI Agents: Multi-Agent Deception via Steganography** · Sumeet Ramesh Motwani et al. (Oxford) · 📄 NeurIPS 2024 · 📈 高引用 (140+) · [arXiv:2402.07510](https://arxiv.org/abs/2402.07510) |
 | 📌 **线索来源** | 8 Conclusion and Future Work §"First and foremost, our model capability evaluation framework ought to be extended by a rigorous complexity- and information-theoretic examination could elucidate fundamental limitations to model capabilities, and the rate at which different optimisation pressures could result in model capability improvements." + §"Secondly, our group evaluation suites need to be extended to more complex settings of interest that feature more agents, and that are subject to a variety of optimisation pressures." |
 | 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔐 Security · USENIX Security / CCS |
 | ⭐ Novelty | ★★★☆☆ |
