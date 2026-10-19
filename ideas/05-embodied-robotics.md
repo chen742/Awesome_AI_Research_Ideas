@@ -710,3 +710,532 @@ RoboSpatial 用真实室内/桌面 3D 扫描与自我中心图像自动生成大
 🔑 `spatial reasoning` `containment` `volumetric` `VLA co-training` `embodied chain-of-thought` `placement`
 
 [🔝 top](#top)
+
+---
+
+## 💡 Idea 5.19 — *Utility-Guided Driving World Models: Gradient-Alignment Rewards that Turn Generated Scenes into Target-Domain Perception Supervision*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **WorldLens: Full-Spectrum Evaluations of Driving World Models in Real World** · Ao Liang et al. · 🎤 CVPR 2026 (Oral) · [arXiv:2512.10958](https://arxiv.org/abs/2512.10958) |
+| 📌 **线索来源** | 5.3 Insights & Discussions §"Models with strong perceptual scores (e.g., OpenDWM) may underperform on downstream tasks." + §"Hence, aligning generated data with the target domain is more crucial than perceptual realism for effective downstream use." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · ICLR / NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+WorldLens 用生成、重建、动作跟随、下游任务与人类偏好五个方面、二十多个指标系统评测驾驶世界模型，最刺眼的发现是"感知质量不等于可用性"：OpenDWM 视觉保真度最高，3D 检测却比 DiST-4D 低约 30%，作者归因于大规模多域训练偏离了目标域分布。这暴露出一个方法论空隙：现有驾驶世界模型（MagicDrive、DriveDreamer-2 等）只用重建/FVD 类目标训练，下游可用性只在训练后评测，从未成为**训练或采样信号**；而 WorldLens 的下游评测需要完整重训检测器，代价过高，无法逐样本使用。关键 insight：一段生成片段对下游感知的价值可以用**梯度对齐**近似——若该片段上检测损失的梯度与真实目标域验证集损失的梯度方向一致，则加入它会降低真实验证损失（TracIn 式一阶近似）。这把"可用性"变成可逐样本计算的奖励，可直接用于筛选、引导采样与后训练。
+
+**💡 一句话 Idea**
+以"生成片段的感知损失梯度与真实目标域验证梯度的对齐度"作为逐样本可用性奖励，对驾驶世界模型做筛选、引导采样与偏好后训练，使生成数据针对性地提升下游 3D 检测与占据预测，而非只追求视觉逼真。
+
+**🛠️ 可能的解决方法**
+1. **可用性评分**：固定一个在真实 nuScenes 训练集上预训练的 BEV 检测器 f_θ（如 BEVFormer-small），对生成片段 x 用其条件布局（3D 框）计算检测损失梯度 g(x)，对真实验证子集取平均梯度 ḡ_val；可用性 u(x)=cos(g(x), ḡ_val)。为降成本只取检测头与最后两层 BEV 编码器的梯度，并用随机投影压到 4k 维（TRAK 式），单样本开销约一次前反向。
+2. **三种使用方式**：(a) 生成后按 u(x) 过滤/重加权训练集；(b) 采样时对扩散中间态 x̂_0 估计 u 并做梯度引导（每 5 步一次以控成本）；(c) 对同一布局采样 G 段，以 u 排序构造偏好对，对世界模型做 Diffusion-DPO / Flow-GRPO 式后训练，同时保留原重建损失与 FVD 约束防止画质退化。
+3. **防奖励作弊**：u 只与检测器有关可能导致"对检测器友好但不真实"的纹理，加入第二个结构不同的检测器（如基于 LiDAR-free 的 PETR 系列）求平均，并用 WorldLens 的几何一致性指标作为硬约束。
+4. **成本**：评分阶段不需重训检测器；后训练每轮数千段短片段，8 卡 A100 数天可完成。
+
+**🧭 与最接近工作的区别**
+- *MagicDrive*（Gao et al., ICLR 2024）、*Panacea*（Wen et al., CVPR 2024）：以布局条件生成多视角驾驶视频并用于检测增广，但训练目标与下游可用性无关，也不做逐样本价值评估。
+- *TracIn*（Pruthi et al., NeurIPS 2020）：用梯度内积估计训练样本影响，本 idea 将其从"评估已有数据"转为"生成模型的奖励与引导信号"。
+- *WorldLens* 本身：提供评测协议但不提供改进生成模型的手段。
+
+**🧪 验证方案**
+- 基准：nuScenes（检测 mAP/NDS）、Occ3D-nuScenes（占据 mIoU），按 WorldLens 下游任务协议"真实 + 生成"混合训练；同时报告 WorldLens 的生成与几何指标（FID/FVD、深度 Abs Rel）确认画质不降。
+- 关键假设检验：u(x) 与"加入该批数据后真实验证 NDS 增益"的秩相关（Spearman）显著高于 FID、CLIP-score 等感知指标。
+- 对比与消融：随机选择 / 感知质量选择 / u 选择；过滤 vs 引导 vs 后训练；单检测器 vs 双检测器奖励；跨数据集（在 nuScenes 训练、Waymo 目标域验证）。
+
+🔑 `driving world model` `synthetic data utility` `gradient alignment` `reward-guided diffusion` `3D detection` `domain alignment`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.20 — *Kinematics as a Prompt: Self-Calibrating Proprioception-Conditioned Robot Segmentation from Uncalibrated Robot Datasets*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **RobotSeg: A Model and Dataset for Segmenting Robots in Image and Video** · Haiyang Mei et al. · 🎤 CVPR 2026 (Oral) · [arXiv:2511.22950](https://arxiv.org/abs/2511.22950) |
+| 📌 **线索来源** | 15 Limitation and Future Work §"One direction is to explicitly incorporate additional modalities such as depth, motion cues, or tactile signals, which may help disambiguate difficult cases where RGB appearance is insufficient. Another direction is to develop more lightweight architectures or distillation strategies that retain RobotSeg's robustness while significantly reducing computational cost." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+RobotSeg 在 SAM 2 上加入结构增强记忆关联器、机器人提示生成器和仅需首帧标注的训练策略，并构建了首个视频机器人分割基准 VRS。但它把机器人当作纯外观目标：外观罕见的机器人类别仍不理想，计算量高于 SAM 2.1，难以部署到移动操作平台。作者建议引入深度、运动等额外模态并做轻量化蒸馏。被忽略的事实是：几乎所有机器人视频都**自带最强的"额外模态"——关节状态与 URDF**。给定相机外参，前向运动学可以精确渲染出机器人掩码；问题在于 Open X-Embodiment 等大规模数据集多数**没有可靠的相机标定**。关键 insight：分割与标定互为 EM 的两步——RobotSeg 的预测掩码可以通过可微渲染反解相机位姿，而反解出的位姿又能渲染出几何精确、无外观歧义的伪标签和提示。这样就能在百万级未标定机器人视频上自监督地训练一个以运动学为提示的轻量分割器。
+
+**💡 一句话 Idea**
+把关节状态 + URDF 当作分割提示：用"掩码→可微渲染反解相机外参→渲染掩码作伪标签"的交替优化在未标定机器人数据集上自举，训练一个以运动学投影关键点为提示的轻量视频分割学生模型。
+
+**🛠️ 可能的解决方法**
+1. **自标定 EM**：对每段视频（相机静止段），以 RobotSeg 预测掩码 M̂_t 为观测，优化外参 T 与内参缩放 s：min_T Σ_t [1 − softIoU(R(URDF, q_t; T, s), M̂_t)]，R 为可微轮廓渲染（nvdiffrast）；用多帧不同关节构型约束位姿，RANSAC 式剔除 M̂_t 质量差的帧。收敛后渲染掩码 M_t^kin 作为伪标签。
+2. **掩码融合**：伪标签 = M_t^kin 与 RobotSeg 预测的置信度融合——运动学渲染负责几何（不受外观影响），RGB 预测负责未建模部件（线缆、末端执行器上的夹具、手持物体），融合规则在两者分歧区域用光流一致性裁决。
+3. **轻量学生**：以 SAM 2 tiny / EfficientViT 为骨干，提示为前向运动学投影的连杆关键点与关节速度投影的 2D 运动向量（运动线索），输出视频掩码；用伪标签蒸馏，目标 FLOPs 为 RobotSeg 的 1/5 以下，在 Jetson Orin 上 ≥30 FPS。
+4. **无 URDF 回退**：对没有 URDF 的机器人，学生仅以 RGB+光流工作，仍受益于大规模伪标签带来的外观多样性。
+5. **数据规模**：DROID 自带标定可做上界与标定精度验证；在 Open X-Embodiment 的数十种机器人上自举，计算主要是可微渲染，单卡每段视频分钟级。
+
+**🧭 与最接近工作的区别**
+- *CtRNet*（Lu et al., CVPR 2023）：用分割自监督做相机到机器人位姿估计，目标是位姿且针对单一机器人；本 idea 反过来以标定服务于跨具身、视频级分割与蒸馏。
+- *Mirage*（Chen et al., RSS 2024）与 *RoVi-Aug*（Chen et al., CoRL 2024）：利用机器人渲染/分割做跨具身增广，前者依赖已知标定，后者依赖外观分割；本 idea 提供在未标定数据上获得精确机器人掩码的通用手段，可直接服务于它们。
+- *RobotSeg*：纯外观、计算量大；本 idea 引入运动学提示并蒸馏为轻量模型。
+
+**🧪 验证方案**
+- 基准：VRS 视频机器人分割基准与 RobotSeg 的图像基准；指标 J&F、mIoU、按机器人类别的最差类性能；效率指标 FLOPs、参数量、Jetson Orin 帧率。
+- 标定精度：在 DROID 上比较自标定外参与官方标定的旋转/平移误差、渲染掩码 IoU。
+- 关键假设检验：(a) 在 RobotSeg 表现最差的罕见外观类别上，运动学提示带来的增益最大；(b) 伪标签规模从 1k 到 100k 段视频时学生性能单调提升。
+- 下游：用学生掩码替换 RoVi-Aug 管线中的分割模块，比较跨具身增广后策略的成功率。
+
+🔑 `robot segmentation` `self-calibration` `differentiable rendering` `proprioception` `knowledge distillation` `cross-embodiment`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.21 — *Seeing Through the Other Hand: Kinematics- and Memory-Completed 3D Observations for Occlusion-Robust Bimanual Dexterous Policies*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Structural Action Transformer for 3D Dexterous Manipulation** · Xiaohan Lei et al. · 🎤 CVPR 2026 (Oral) · [arXiv:2603.03960](https://arxiv.org/abs/2603.03960) |
+| 📌 **线索来源** | 4.5 Failure Case Analysis and Limitations §"In complex, contact-rich bimanual tasks, one hand may severely occlude the other hand or the target object. A single, fixed camera provides no mechanism to resolve this ambiguity, starving the policy of the critical geometric information needed for precise coordination." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+SAT 把动作块从"时间序列"重构为"按关节组织的无序轨迹集合"，以结构先验处理高自由度灵巧手的跨具身迁移，并以 3D 点云为观测。失败分析指出：双手接触丰富任务中一只手会严重遮挡另一只手或目标物体，单个固定相机无法消解，策略因此失去协调所需的几何信息。直接的补救是加相机，但这与"低成本单相机部署"矛盾。关键 insight：遮挡下缺失的几何信息其实**大部分可以从别处补回**——(1) 被遮挡的是机器人自己的手时，其完整几何由本体感知 + URDF 精确给出，根本不需要"看见"；(2) 被遮挡的是物体时，物体在之前帧多半可见，刚体物体的形状可由跟踪到的 6D 位姿从记忆中搬运过来。因此单相机观测可以被"补全"成近似多相机的 3D 场景，且补全本身可以作为 3D 视觉任务独立评测。
+
+**💡 一句话 Idea**
+用"本体感知渲染的完整手部点云 + 位姿跟踪驱动的物体形状记忆"把单视角点云补全为遮挡无关的 3D 观测，并在训练时用沿视线的合成遮挡增广与可见性标记，让 SAT 类结构化策略在手—手、手—物遮挡下仍能精确协调。
+
+**🛠️ 可能的解决方法**
+1. **手部补全**：由关节读数与 URDF 前向运动学采样两只手的表面点，按相机外参放入场景坐标系，替换观测中属于手的点（用渲染掩码剔除），每点附"可见/推断"标记。
+2. **物体形状记忆**：首帧（或任意高可见度帧）用 FoundationPose 类方法建立物体参考点云并在线跟踪 6D 位姿；当前帧被遮挡区域用记忆点云经位姿变换补齐。跟踪置信度低时降低记忆点的权重（作为额外通道输入）。
+3. **合成遮挡增广**：训练时在仿真中渲染完整点云，再沿相机射线随机删除"手后方"的点模拟遮挡，迫使策略依赖补全通道；损失为 SAT 原始动作损失 + 辅助补全损失（对被遮挡物体点的 Chamfer 距离预测）。
+4. **对可变形/铰接物体**：记忆仅对刚体启用，铰接物体按部件分别跟踪；超出假设时退化为原始观测，不引入错误几何。
+5. **成本**：不需新硬件，补全模块在 GPU 上每帧 <20 ms，策略训练沿用 SAT 设置。
+
+**🧭 与最接近工作的区别**
+- *3D Diffusion Policy (DP3)*（Ze et al., RSS 2024）：单视角稀疏点云输入，不处理遮挡导致的几何缺失。
+- *FoundationPose*（Wen et al., CVPR 2024）：提供物体 6D 位姿跟踪，本 idea 将其作为观测补全的部件而非最终任务。
+- *SAT*：结构化动作表示，观测仍是原始单视角点云；本 idea 与之正交，专攻观测侧的遮挡。
+
+**🧪 验证方案**
+- 仿真：双手灵巧操作基准（Bi-DexHands、DexArt 风格任务），按 GT 可见率把测试回合分为低/中/高遮挡三档，报告分档成功率；真实：单相机双手交接、拧盖等任务。
+- 3D 指标：被遮挡区域补全的 Chamfer 距离、F-score，与点云补全网络（如 PoinTr）对比。
+- 关键假设检验：高遮挡档上的成功率提升显著大于低遮挡档；手部补全与物体补全的贡献分离消融。
+- 对比：单相机原始 SAT、双相机 SAT（上界）、仅遮挡增广无补全。
+
+🔑 `dexterous manipulation` `occlusion` `point cloud completion` `bimanual` `proprioception` `6D pose tracking`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.22 — *Many Futures, One Ego Plan: Stochastic Trajectory-Conditioned Sparse Occupancy Forecasting with Set-Level Proper Scoring*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **SparseWorld-TC: Trajectory-Conditioned Sparse Occupancy World Model** · Jiayuan Du et al. · 🎤 CVPR 2026 (Oral) · [arXiv:2511.22039](https://arxiv.org/abs/2511.22039) |
+| 📌 **线索来源** | 4.4 Visualizations & Discussions §"Although the intrinsic multi-possibility of long-term forecasting raises questions about the fairness of using a single ground truth for evaluation, we argue that this metric, combined with the visualization results, at least partially demonstrates the potential of our method for relatively long-term occupancy forecasting." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+SparseWorld-TC 用稀疏锚点与 Transformer 直接从图像特征预测以自车轨迹为条件的多帧未来占据，跳过 VAE 离散 token 和 BEV 投影，在 nuScenes 1–3 秒预测上大幅领先，并展示了 10 秒长时预测。但它是**确定性**预测：给定自车轨迹，其他交通参与者的未来本质上是多模态的，确定性模型在分叉处只能给出模糊或"平均"的占据；作者自己承认用单一 GT 评价长时预测并不公平。这是占据世界模型的共同空隙：OccWorld 等模型以单一 GT 的 mIoU 为准，DOME、OccSora 等扩散模型虽可采样却很少以分布层面的指标评测。关键 insight：自车轨迹条件消除了"自身意图"的不确定性，剩余的随机性主要来自他车，因此可以把随机性**仅注入动态锚点**，并用严格适当评分规则（energy score）在样本集合层面训练与评测，既保持静态结构清晰，又覆盖他车的多种可能。
+
+**💡 一句话 Idea**
+在 SparseWorld-TC 的稀疏锚点上只对动态锚点注入潜在噪声做流匹配采样，用集合级 energy score 训练，并配套"多未来"评测协议（min-K mIoU、占据 energy score、对规划碰撞率的校准），让轨迹条件占据预测从"一个平均未来"变成"可信的未来分布"。
+
+**🛠️ 可能的解决方法**
+1. **动静分离的随机性**：由当前帧占据与跟踪结果把锚点分为静态/动态；静态锚点保持确定性回归，动态锚点的未来特征由条件流匹配从噪声 z 生成，条件为历史图像特征 + 自车轨迹 + 静态锚点上下文。
+2. **集合级训练目标**：对每个样本生成 K=6 个未来，损失为占据概率场上的 energy score：E‖Y_k − Y‖ − ½E‖Y_k − Y_k'‖（Y 为体素语义 one-hot 的连续嵌入），前项拉近真值，后项鼓励多样性，避免 min-of-K 损失的模式坍缩。
+3. **评测协议**：报告 min-K mIoU、平均 mIoU、占据 energy score、以及动态区域覆盖率（GT 他车占据被至少一个样本覆盖的比例）；对 6–10 秒长时预测这些指标比单 GT mIoU 更公平。
+4. **面向规划的校准**：用 K 个未来计算给定自车候选轨迹的碰撞概率，与真实未来的碰撞事件比较可靠性曲线（ECE），检验分布是否对决策有用。
+5. **成本**：只在动态锚点（通常 <20%）上做多步采样，推理开销约为确定性版本的 1.5–2 倍；可用 consistency 蒸馏到 1–2 步。
+
+**🧭 与最接近工作的区别**
+- *OccWorld*（Zheng et al., ECCV 2024）：离散 token 自回归的占据世界模型，以单 GT mIoU 评测。
+- *OccSora*（Wang et al., 2024）与 *DOME*（Gu et al., 2024）：扩散式占据生成可采样多个未来，但随机性施加于整个场景、且未以适当评分规则训练或评测分布质量。
+- *SparseWorld-TC*：稀疏、端到端、轨迹条件，但确定性；本 idea 保留其架构，只把动态部分改为分布建模。
+
+**🧪 验证方案**
+- 基准：Occ3D-nuScenes 1–3 秒预测（与论文对齐）+ 6/10 秒长时预测；指标 mIoU/IoU、min-K mIoU、energy score、动态覆盖率。
+- 关键假设检验：(a) 在路口/分叉场景子集上，随机模型的 min-K mIoU 显著高于确定性模型，而直行场景差距很小；(b) 动态锚点注噪比全场景注噪在静态类 mIoU 上更好。
+- 规划相关：基于样本的碰撞概率校准曲线；在 nuScenes 开环规划上用样本做风险敏感重排的碰撞率变化。
+- 消融：energy score vs min-of-K vs 单样本 L2；K 的取值；蒸馏步数。
+
+🔑 `occupancy forecasting` `world model` `stochastic prediction` `energy score` `trajectory conditioning` `autonomous driving`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.23 — *Beyond Revolute and Prismatic: Single-Image Reconstruction of Closed-Chain and Coupled Articulated Objects via Kinematic Program Synthesis and Loop-Closure Optimization*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **SPARK: Sim-ready Part-level Articulated Reconstruction with VLM Knowledge** · Yumeng He et al. · 🎤 CVPR 2026 (Oral) · [arXiv:2512.01629](https://arxiv.org/abs/2512.01629) |
+| 📌 **线索来源** | 5 Conclusion §"In future work, we plan to extend SPARK to more complex kinematic structures beyond simple revolute and prismatic joints, including multi-DOF joints, compound mechanisms, and closed-chain linkages commonly found in real-world appliances and tools." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★★ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+SPARK 从单张 RGB 图像重建仿真可用的部件级铰接物体：VLM 给出粗 URDF 参数与部件参考图，扩散 Transformer 生成部件几何，再用可微正运动学与渲染优化关节原点和角度。它的表示仍是**树状 URDF + 单自由度旋转/平移关节**，而真实的工具和家电大量是闭链与耦合机构：剪刀与钳子的双连杆、折叠椅与熨衣板的四连杆、台灯的平行四边形臂、拉杆的齿轮/凸轮联动。URDF 无法表达环路约束，现有铰接重建与生成工作（URDFormer、Real2Code、Articulate-Anything）基本都局限在树结构。关键 insight：闭链机构的自由度远少于部件数，**环路闭合约束本身就是强先验**——只要合成出正确的"运动学程序"（部件、关节类型、环路与耦合比），单张图中的几何就足以通过约束优化确定所有关节参数；而 VLM 擅长提出候选结构，可微约束求解擅长裁决。
+
+**💡 一句话 Idea**
+把铰接物体表示为带环路闭合与耦合约束的运动学程序，由 VLM 提出候选程序、可微约束求解器在单图几何与生成的多状态图像上拟合并按"渲染误差 + 描述长度"选择，从而重建 SPARK 无法表达的多自由度、闭链与联动机构并导出到支持等式约束的仿真器。
+
+**🛠️ 可能的解决方法**
+1. **表示**：DSL 包含部件节点、关节（旋转、平移、螺旋、球铰、平面副）、环路约束 loop(i→j→…→i) 与耦合约束 mimic(j1, j2, ratio)；导出为 MJCF（MuJoCo equality constraint）或 USD 物理关节，保证仿真可用。
+2. **候选生成**：VLM 根据图像与类别常识输出 top-N 个程序（如"剪刀 = 两刃 + 一共轴旋转"vs"四连杆"），并给出部件对应的 2D 区域；部件几何沿用 SPARK 的部件级生成。
+3. **约束拟合**：未知量为关节轴、原点与广义坐标；目标 = 渲染轮廓/深度误差 + λ·Σ‖loop residual‖²，用 Gauss–Newton 在约束流形上优化（隐函数定理求导），并用图像到视频模型生成同一物体的 2–3 个运动状态作为额外观测，消除单图歧义。
+4. **模型选择**：score = 渲染误差 + β·程序描述长度 + γ·运动可行性（在仿真中驱动主动关节，检查无穿模、环路残差 < ε），选最优程序。
+5. **数据**：在 PartNet-Mobility 之外程序化生成闭链与耦合机构资产（参数化连杆、剪式升降机、平行四边形臂）用于训练 VLM 提议与评测；真实图片测试集手工标注 200 件工具/家电。
+
+**🧭 与最接近工作的区别**
+- *SPARK*：树状 URDF + 单自由度关节；本 idea 引入环路与耦合约束及程序级模型选择。
+- *Real2Code*（Mandi et al., 2024）与 *Articulate-Anything*（Le et al., 2024）：用 LLM/VLM 生成铰接代码，但结构空间仍是 URDF 树，且不做约束优化。
+- *URDFormer*（Chen et al., RSS 2024）：从图像预测 URDF 结构，面向家具类树状结构。
+
+**🧪 验证方案**
+- 基准：PartNet-Mobility 标准测试集（确认在树结构上不退化）+ 新建闭链/耦合子集；真实图片集。
+- 指标：关节类型准确率、轴角误差、原点误差、部件 Chamfer 距离、运动范围误差、仿真稳定率（驱动 1000 步环路残差与穿模率）。
+- 关键假设检验：(a) 环路约束使关节参数误差显著低于"逐关节独立拟合"；(b) 生成多状态图像带来的增益在闭链物体上大于树状物体。
+- 下游：在仿真中用重建资产训练"用剪刀剪""展开折叠椅"策略，对比用真实 CAD 资产训练的成功率差距。
+
+🔑 `articulated object reconstruction` `closed-chain kinematics` `program synthesis` `sim-ready assets` `VLM` `constraint optimization`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.24 — *Hindsight Visual Subgoals: Mining Long-Horizon Structure from Unlabeled Gameplay Video to Steer a Frozen System-1 Game Policy*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **NitroGen: An Open Foundation Model for Generalist Gaming Agents** · Loïc Magne et al. · 🎤 CVPR 2026 (Oral) · [arXiv:2601.02427](https://arxiv.org/abs/2601.02427) |
+| 📌 **线索来源** | 4 Limitations and future work §"NitroGen is limited to being a fast-reacting system-1 sensory model. It cannot plan over long horizons or follow language instructions; the model only reacts to the short context it sees." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · ICLR / NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+NitroGen 从带输入叠加层的公开游戏视频中自动提取手柄动作，构建 4 万小时、1000+ 款游戏的视频—动作数据，用行为克隆训练出通用游戏策略，并在多游戏基准上展示了跨游戏迁移。作者明确其局限：它只是对短上下文做反应的 System-1，不能长时规划、不能遵循语言指令，并把语言跟随与强化学习后训练留作未来工作。空隙在于：强化学习需要每款游戏的奖励与环境接口，难以在千款游戏上扩展；而语言标注的游戏数据（如 SIMA 依赖人工采集）昂贵。关键 insight：同一批 4 万小时视频里**已经隐含长时结构**——一段视频后续出现的画面（到达新区域、打开菜单、击败首领）就是之前动作的"事后目标"。用视觉变化检测与 VLM 描述把视频切分成事件段，段末帧即可作为视觉子目标、描述作为语言目标，不需任何新标注就能训练"目标→子目标→动作"的层级智能体。
+
+**💡 一句话 Idea**
+从未标注游戏视频中以事后重标记挖掘"事件段末帧 = 视觉子目标、VLM 描述 = 语言目标"，训练一个在视觉特征空间预测下一子目标的 System-2 生成器，并以轻量适配器把冻结的 NitroGen 变为子目标条件策略，实现无奖励、无人工标注的长时程与语言跟随能力。
+
+**🛠️ 可能的解决方法**
+1. **事件切分**：对视频计算 NitroGen 视觉编码器特征的变化点（核变点检测）+ HUD/场景切换检测，得到 5–60 秒事件段；用 VLM 为每段生成"做了什么"的简短描述，过滤无信息段（如长时间菜单）。
+2. **子目标条件 System-1**：冻结 NitroGen 主干，加入 FiLM 适配器，输入为段末帧特征 g；以 hindsight 目标条件行为克隆训练（目标随机取当前时刻之后 k∈[1, 段长] 的帧），损失为原动作损失。
+3. **System-2 子目标生成器**：一个在视觉特征空间工作的扩散/流匹配预测器 p(g | 历史帧, 语言指令)，用 (历史, 描述, 段末特征) 三元组训练；推理时每到子目标附近（特征距离 < τ）或超时就重新生成下一子目标，实现长时程链式执行。
+4. **去偏**：针对数据偏向手柄动作游戏的问题，事件段采样按游戏类型重加权，并用 System-2 的不确定性（多次采样子目标的离散度）识别分布外游戏，触发更短的子目标间隔。
+5. **成本**：适配器与子目标生成器参数量远小于主干；VLM 描述按段而非按帧调用，4 万小时约数十万段，离线一次性完成。
+
+**🧭 与最接近工作的区别**
+- *VPT*（Baker et al., NeurIPS 2022）：用逆动力学模型从视频提取动作做 Minecraft 预训练，单一游戏且无语言或子目标层级。
+- *SIMA*（SIMA Team, 2024）：多游戏语言指令智能体，依赖人工采集的语言标注数据；本 idea 用事后重标记从未标注视频自动获得目标。
+- *SuSIE*（Black et al., ICLR 2024）：用图像编辑扩散生成视觉子目标驱动低层策略，面向机器人操作且需要语言标注示教；本 idea 将视觉子目标思想扩展到千款游戏并在特征空间生成。
+
+**🧪 验证方案**
+- 基准：NitroGen 多游戏基准（已见/未见游戏），新增长时程任务（需多个事件才能完成）与语言指令任务；指标：任务完成率、事件序列完成长度、指令跟随准确率（由人工或 VLM 判断）。
+- 关键假设检验：(a) 子目标条件策略在长时程任务上的提升随任务长度增大而增大；(b) 视觉子目标优于纯语言目标条件（同等数据）。
+- 对比与消融：原始 NitroGen、仅语言条件、仅事后目标无 System-2、不同切分方法；未见游戏上的少样本微调曲线。
+
+🔑 `gaming agents` `hindsight relabeling` `visual subgoals` `hierarchical policy` `video pretraining` `language following`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.25 — *Static–Dynamic Factorized Navigation World Models: Pose-Indexed Geometric Memory against Context Drift and Agent-Centric Dynamics for Pedestrians*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Navigation World Models** · Amir Bar et al. · 🎤 CVPR 2025 (Oral) · [arXiv:2412.03572](https://arxiv.org/abs/2412.03572) |
+| 📌 **线索来源** | 5 Limitations §"First, when applied to out of distribution data, the model tends to slowly lose context and generates next states that resemble the training data, a phenomena that was observed in image generation and is known as mode collapse." + §"Second, while the model can plan, it struggles with simulating temporal dynamics like pedestrian motion (although in some cases it does)." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+NWM 用 10 亿参数的条件扩散 Transformer（CDiT）在人类与机器人的第一人称视频上学习"给定过去观测与导航动作预测未来画面"，可用于在熟悉环境中模拟轨迹并规划。作者指出两类失效：分布外场景中模型逐渐"忘记上下文"、生成像训练集的画面；对行人等动态主体模拟不佳。作者把希望寄托在更长上下文与更多数据上，但这两类失效有共同根源：模型把**静态场景几何**和**动态主体运动**混在同一个像素生成过程中，静态部分只能靠有限帧上下文记忆，动态部分没有显式的主体状态。关键 insight：导航中绝大部分像素来自静态场景，而静态场景的未来外观由"已见内容 + 相对位姿"几何地决定——只要把过去帧按位姿索引存为点图记忆，并在目标位姿重投影作为条件，生成器就只需补全未见区域；行人则作为少量显式跟踪的主体单独预测，再以掩码条件合成。
+
+**💡 一句话 Idea**
+把 NWM 拆成"位姿索引的几何记忆重投影（静态）+ 显式主体轨迹预测（动态）+ 补全式扩散生成"三部分，使分布外场景中已见区域被几何锁定、不会漂回训练先验，行人运动由专门的轨迹模块驱动而非隐式像素外推。
+
+**🛠️ 可能的解决方法**
+1. **几何记忆**：用前馈重建模型（VGGT/MASt3R 类）为历史帧估计点图与相对位姿，存入按位姿索引的记忆库；生成目标动作对应的未来帧时，检索视锥重叠最大的若干帧，重投影为 RGB + 深度 + 有效性掩码，作为 CDiT 的额外条件通道。
+2. **动态主体**：用检测 + 跟踪得到行人/车辆的 2D 框与 3D 位置历史，以轻量社会轨迹预测器（以自车动作为条件）预测未来位置，渲染为主体掩码与外观嵌入条件；静态记忆在动态掩码处失效，避免拖影。
+3. **训练目标**：原扩散损失 + 已见区域一致性损失（生成帧在有效掩码内与重投影图的 LPIPS）+ 动态区域损失加权（按光流幅值上调权重，强化行人建模）。
+4. **规划接口不变**：保持 NWM 的 CEM 规划流程，仅替换世界模型；记忆在规划展开中随模拟轨迹增量更新。
+5. **成本**：重建与跟踪为离线预处理；条件通道增加的计算 <15%，可从 NWM 权重初始化微调。
+
+**🧭 与最接近工作的区别**
+- *NWM*：纯上下文帧条件，无显式几何记忆与主体建模。
+- *GEN3C*（Ren et al., CVPR 2025）：用 3D 缓存实现相机可控、世界一致的视频生成，面向相机轨迹而非导航动作，也不建模动态主体。
+- *WorldMem*（Xiao et al., 2025）：在 Minecraft 世界模型中用带位姿/时间戳的记忆帧检索维持一致性，记忆以帧特征注意力使用；本 idea 用显式几何重投影并分离动态主体，面向真实第一人称导航。
+
+**🧪 验证方案**
+- 基准：NWM 的 SCAND、TartanDrive、RECON、HuRoN（行人密集）；未见环境用 Ego4D 户外/室内行走片段。指标：DreamSim、LPIPS、PSNR、FVD（4s/16s），以及规划的 ATE/RPE。
+- 新诊断指标：回环一致性（沿闭合轨迹返回起点后生成帧与真实起点帧的 LPIPS）；动态区域 FVD 与行人轨迹 ADE（由生成视频检测反推）。
+- 关键假设检验：分布外场景中随展开步数的漂移曲线（与 NWM 对比斜率）；行人密集场景中的规划碰撞率。
+- 消融：仅几何记忆 / 仅主体模块 / 两者；记忆检索帧数；重建模型噪声敏感性。
+
+🔑 `navigation world model` `egocentric video` `geometric memory` `dynamic agents` `video diffusion` `visual planning`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.26 — *Embodiment-Anchored Camera Redirection: Kinematically Exact Robot Geometry and Confidence-Gated Point Clouds for Viewpoint-Robust Robot Video Augmentation*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **TrajectoryCrafter: Redirecting Camera Trajectory for Monocular Videos via Diffusion Models** · Mark YU et al. · 🎤 ICCV 2025 (Oral) · [arXiv:2503.05638](https://arxiv.org/abs/2503.05638) ＋ **Generative Camera Dolly: Extreme Monocular Dynamic Novel View Synthesis** · Basile Van Hoorick et al. · 🎤 ECCV 2024 (Oral) · [arXiv:2405.14868](https://arxiv.org/abs/2405.14868) |
+| 📌 **线索来源** | TrajectoryCrafter 4.5 Limitations §"because our approach relies on depth estimation to create dynamic point clouds from monocular videos, inaccuracies in this process may propagate, producing suboptimal novel trajectory videos" + GCD Appendix 0.D Failure cases §"In (b), the robot arm gets cut off when performing view synthesis from the top, presumably because Kubric-4D does not contain robots or robotic motion patterns." |
+| 📮 **投稿建议** | 👁️ **CV** · ICCV / CVPR ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+TrajectoryCrafter 以单目视频的动态点云渲染与源视频双流条件化视频扩散，实现精确的相机轨迹重定向；GCD 在合成数据上微调视频扩散实现极端视角的单目动态新视角合成。两者的失效恰好在机器人视频上叠加：前者的点云依赖单目深度，误差会传播到新视角；后者训练数据中没有机器人，俯视时机械臂被"截断"。而机器人视频是视角重定向最有价值的应用之一——策略对相机位姿极其敏感，用新视角增广示教是公认的鲁棒化手段。关键 insight：机器人视频里**最关键、运动最复杂的物体——机器人本身——的几何是精确已知的**（URDF + 关节状态 + 标定外参），根本不需要估计深度；同时 DROID 等数据集提供同步多相机机器人视频，是天然的真实多视角监督。把"已知具身几何"作为独立条件流、把场景深度的不确定性显式化，就能在机器人视频上同时修复两篇论文的失效。
+
+**💡 一句话 Idea**
+在双流视频扩散中加入"由 URDF + 关节状态精确渲染的机器人几何流"与"带逐点置信度的场景点云流"，用 DROID 同步多相机视频作真实多视角监督，使机器人示教视频可被重定向到任意新视角且机械臂完整、运动一致，从而作为策略的视角增广。
+
+**🛠️ 可能的解决方法**
+1. **三路条件**：(a) 场景流：单目/双目深度得到的点云在目标轨迹下的渲染，附逐像素置信度（多帧一致性 + 深度不确定性估计）；(b) 具身流：URDF 前向运动学在目标视角渲染的机器人 RGB-法线-掩码；(c) 源视频流。扩散模型以置信度门控融合 (a)，在低置信区域更多依赖生成先验。
+2. **训练数据**：DROID 的两路外部相机 + 腕部相机提供真实跨视角配对（以一路为源、另一路为目标）；仿真（RoboCasa、LIBERO 场景）渲染任意视角补充大视角差；TrajectoryCrafter 的通用视频数据混合以保持开放场景能力。
+3. **损失**：扩散损失 + 机器人区域掩码一致性损失（生成帧中分割出的机器人掩码与具身流掩码的 IoU）+ 末端执行器关键点重投影损失，保证"机械臂不被截断"且位置精确。
+4. **下游增广**：对示教视频随机采样 ±30° 方位、±15 cm 平移的新视角生成，配合原动作训练策略（视角变化下动作在机器人基座坐标系中不变）。
+5. **成本**：从 TrajectoryCrafter 权重初始化，仅新增具身流编码器；8 卡数天微调。
+
+**🧭 与最接近工作的区别**
+- *TrajectoryCrafter* / *GCD*：通用动态新视角合成，无具身几何先验，在机器人视频上失效。
+- *VISTA*（Tian et al., CoRL 2024，View-Invariant Policy Learning via Zero-Shot Novel View Synthesis）与 *RoVi-Aug*（Chen et al., CoRL 2024）：用逐帧静态新视角合成做视角增广，缺乏时间一致性且机器人几何靠生成模型猜测。
+- 本 idea 的独特点：把已知运动学作为精确几何条件，并用真实多相机机器人数据监督。
+
+**🧪 验证方案**
+- 视觉指标：DROID 留出相机视角上的 PSNR/SSIM/LPIPS、FVD；机器人区域掩码 IoU 与末端执行器关键点误差（衡量"截断"与位置偏差）。
+- 关键假设检验：大视角差（>45°）时具身流带来的机器人区域 IoU 增益最大；场景置信度门控在深度误差大的场景（反光、细长物体）上降低伪影。
+- 下游：LIBERO / RoboCasa 中相机位姿扰动下的策略成功率（用/不用增广，对比 VISTA 式逐帧增广）；真实机器人上移动相机后的成功率。
+- 消融：去具身流 / 去置信度 / 去 DROID 真实多视角监督。
+
+🔑 `novel view synthesis` `camera redirection` `video diffusion` `robot data augmentation` `viewpoint robustness` `kinematic rendering`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.27 — *Closest-to-Expert Rollouts in Reconstructed Worlds: Closed-Loop Supervised Fine-Tuning of Camera-Based End-to-End Driving Policies with Gaussian Re-Rendering*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Closed-Loop Supervised Fine-Tuning of Tokenized Traffic Models** · Zhejun Zhang et al. · 🎤 CVPR 2025 (Oral) · [arXiv:2412.05334](https://arxiv.org/abs/2412.05334) |
+| 📌 **线索来源** | 6 Conclusion §"We also plan to explore CAT-K fine-tuning for a broader range of policy classes, such as variational autoencoders and diffusion models. Additionally, we want to apply it to other multimodal IL tasks, including end-to-end driving, motion generation for animation, and robot navigation and manipulation." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★★ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+CAT-K 针对开环行为克隆的协变量偏移，提出闭环监督微调：在策略的 top-K 可能动作中选最接近真值的一个执行展开，使展开既符合策略分布又不远离真值，从而可以继续用真值做监督，在 WOSAC 上登顶。但它工作在**抽象的轨迹 token 空间**——交通智能体的观测是结构化状态，偏离后的新观测可直接计算。端到端视觉驾驶策略恰恰最需要闭环训练，却卡在"偏离后的新相机图像从哪来"。关键 insight：CAT-K 的"只取最接近真值的 top-K 动作"天然把展开约束在真值轨迹附近的窄带内，而这正是 3D 高斯重建场景**新视角渲染保真度最高的区域**——横向偏移 1–2 米、航向偏差数度时渲染质量仍可靠，远离日志轨迹时才会出现伪影。因此 CAT-K 与神经重建仿真是互补的：前者保证监督可用，后者提供偏离后的视觉观测，两者结合可以在不设计奖励的前提下对相机端到端策略做闭环监督微调。
+
+**💡 一句话 Idea**
+把 CAT-K 推广到连续扩散/流匹配轨迹规划器，并以 3DGS 重建的真实日志场景渲染偏离后的多相机图像，在"最接近专家的可能轨迹"上闭环展开，用回归真值的恢复轨迹作监督，实现无需奖励的视觉端到端驾驶闭环微调。
+
+**🛠️ 可能的解决方法**
+1. **连续版 CAT-K**：每个重规划步从扩散规划器采样 N=32 条轨迹，按策略似然（或去噪能量）保留 top-K，选与日志未来轨迹 ADE 最小者执行 Δt；对 VAE/流匹配策略同理。按作者建议在近邻集合中按距离做 softmax 采样，替代"赢者通吃"。
+2. **恢复监督**：在偏离状态 s'，目标轨迹为"从当前位姿平滑汇入日志轨迹"的样条（满足车辆运动学约束），作为策略的监督标签；损失沿用策略原生的扩散去噪损失。
+3. **重建渲染**：对 nuScenes / nuPlan 日志用动态 3DGS（静态背景 + 可动车辆）重建；展开时按新的自车位姿渲染环视相机，其他车辆按日志回放或用 CAT-K 交通模型反应式驱动。设置偏离预算（横向 2 m、航向 10°），超出则终止该展开，避免在伪影区域训练。
+4. **伪影鲁棒**：训练时对真实图像施加 3DGS 风格退化增广，并用"渲染—真实"配对（零偏离时）估计域差，减少策略对渲染伪影的过拟合。
+5. **成本**：重建为一次性离线成本；每次闭环展开只渲染数十帧，单卡渲染速度可达实时以上。
+
+**🧭 与最接近工作的区别**
+- *CAT-K*：结构化状态的 token 策略，观测无需渲染；本 idea 面向相机输入的连续策略。
+- *RAD*（Gao et al., 2025）：在 3DGS 环境中用强化学习训练端到端驾驶策略，依赖人工奖励设计；本 idea 用最接近专家的闭环监督，无需奖励且天然限制偏离范围。
+- *DAgger*（Ross et al., AISTATS 2011）：需要在线专家标注偏离状态；本 idea 用几何恢复轨迹替代专家查询。
+
+**🧪 验证方案**
+- 基准：NAVSIM（PDMS/EPDMS）、Bench2Drive（CARLA 闭环 Driving Score、成功率），以及基于 3DGS 重建的闭环评测（如 HUGSIM 基准）。
+- 关键假设检验：(a) 闭环 SFT 后开环指标基本不降而闭环指标显著提升；(b) 偏离预算从 0.5 m 增至 4 m 时性能先升后降，拐点与渲染质量（PSNR）下降点一致。
+- 对比：纯开环 BC、DAgger 式恢复增广（无策略展开）、RL 微调（RAD 式奖励）；消融赢者通吃 vs 近邻采样、伪影增广。
+
+🔑 `end-to-end driving` `closed-loop imitation` `covariate shift` `3D Gaussian splatting` `diffusion planner` `neural simulation`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.28 — *Gaze- and Wrist-Anchored Object Tokens with Continuous Motion Heads: Grounded Egocentric Motion–Language Models without Tokenizer Ceilings*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **EgoLM: Multi-Modal Language Model of Egocentric Motions** · Fangzhou Hong et al. · 🎤 CVPR 2025 (Oral) · [arXiv:2409.18127](https://arxiv.org/abs/2409.18127) |
+| 📌 **线索来源** | 5 Discussion, Limitations §"Firstly, our motion tokenizer is a VQ-VAE, which carries reconstruction errors. It sets an upper bound for motion tracking." + §"since each egocentric video frame is compressed by the CLIP encoder to a one-dimensional vector, it is hard for models to precisely name the object that the person is interacting with." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🧪 ML · ICLR / NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+EgoLM 用 LLM 统一建模第一人称运动与语言：运动经 VQ-VAE 离散化，第一人称视频与可穿戴传感器作为上下文，同时完成运动跟踪（由稀疏传感器恢复全身运动）与运动理解（生成叙述）。作者坦承两个结构性瓶颈：VQ 量化误差为跟踪精度设定了上限，且损失算在离散 token 上；每帧视频被 CLIP 压成一个向量，难以说出正在交互的物体名称，并伴随幻觉。这两点在可穿戴场景下都很要命——AR 助手既要精确身体姿态，也要知道"你手里拿的是什么"。关键 insight：第一人称设置自带**"往哪看"的线索**——眼动注视点与（由运动流预测的）手腕位置投影到图像上，几乎总落在交互物体附近。用这两个锚点从高分辨率特征图上取局部物体 token，就能以极少的 token 精准描述交互对象；运动方面，用 LLM 隐状态驱动连续流匹配头输出残差，可绕开量化上限。
+
+**💡 一句话 Idea**
+以眼动注视点与预测手腕位置为锚，从高分辨率视觉特征中提取少量交互物体 token 替代全局 CLIP 向量，并为 LLM 增加"离散语义 token + 连续流匹配残差"的混合运动头，同时消除物体命名瓶颈与 VQ 跟踪上限。
+
+**🛠️ 可能的解决方法**
+1. **锚定物体 token**：Aria 类设备提供眼动注视；手腕位置由运动流当前预测投影至图像（需头部位姿与相机内参）。在 SigLIP/DINOv2 的高分辨率特征图上以锚点为中心做 RoIAlign，取 2–4 个局部 token/帧，替代或补充全局 CLIP 向量。
+2. **混合运动头**：保留 VQ token 用于语言对齐与理解任务；跟踪任务额外由 LLM 最后隐状态条件化的小型流匹配网络输出连续残差 Δpose，损失直接算在原始关节旋转/位置上（MPJPE + 速度项）。
+3. **接地一致性**：生成叙述中的物体名词须能被开放词汇检测器在锚点 ROI 中验证；训练时作为辅助分类损失，推理时作为重排序信号，降低物体幻觉。
+4. **训练数据**：Nymeria（含全身动捕、第一人称视频、眼动与叙述）为主，Ego-Exo4D 补充多样交互；无眼动数据时只用手腕锚点。
+5. **成本**：新增 token 数小（每帧数个），流匹配头 <50M 参数；沿用 EgoLM 三阶段训练，仅在第三阶段加入新模块。
+
+**🧭 与最接近工作的区别**
+- *EgoLM*：全局 CLIP 帧向量 + 纯 VQ 运动 token。
+- *MotionGPT*（Jiang et al., NeurIPS 2023）：VQ 运动 token + LLM，面向文本—运动生成，不处理第一人称视觉与物体接地。
+- *EgoAllo*（Yi et al., CVPR 2025）：由头戴设备位姿做连续扩散的身体与手部估计，精度高但不具备语言理解与物体命名能力；本 idea 把连续估计与语言模型统一。
+
+**🧪 验证方案**
+- 运动跟踪：Nymeria 上 MPJPE、MPJVE、抖动指标，比较 EgoLM、EgoAllo 与本方法（重点看是否突破 VQ 重建误差下限）。
+- 运动理解：叙述生成的 BERTScore/CIDEr，以及**交互物体命名准确率**与物体幻觉率（叙述中的物体名词在 GT 标注中不存在的比例）。
+- 关键假设检验：锚定 token 的增益在杂乱场景（画面物体数多）中更大；仅手腕锚点 vs 仅注视 vs 二者。
+- 消融：全局 token 数增加到与锚定 token 同等预算的对照（排除仅因 token 更多带来的提升）。
+
+🔑 `egocentric perception` `motion-language model` `eye gaze` `object grounding` `flow matching` `body tracking`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.29 — *Ground, Then Generate: Affordance-Layout Intermediates for Egocentric Action Frame Generation in Cluttered Scenes*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **LEGO: Learning EGOcentric Action Frame Generation via Visual Instruction Tuning** · Bolin Lai et al. · 🎤 ECCV 2024 (Oral) · [arXiv:2312.03849](https://arxiv.org/abs/2312.03849) |
+| 📌 **线索来源** | Appendix G Limitation and Future Work §"We find it's hard for our model to associate the action with correct objects when there are too many irrelevant objects around." + §"How to combine affordance understanding with generative models may be a key step to address this problem." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+LEGO 提出"第一人称动作帧生成"：给定用户当前视角图像与动作指令，生成执行该动作时的画面；它用视觉指令微调的多模态 LLM 生成动作描述，并把 LLM 嵌入作为扩散 U-Net 的条件。作者列出的失败集中在两点：杂物多时动作被关联到错误物体；专业工具（锯、割草机、缝纫机）上的手—物交互难以合成，并认为结合可供性理解是关键。根本原因是 LEGO 把"在哪里、怎么做"与"画出来"压在同一个端到端条件化中，嵌入向量无法携带精确的空间信息。关键 insight：第一人称数据集已有**活跃物体与手部分割标注**（如 EPIC-KITCHENS VISOR），可以训练一个显式的"可供性布局"中间层——目标物体掩码、手部接触区域、手部姿态骨架、动作后物体状态区域；生成器只需在布局约束的区域内编辑，其余像素保持不变。这将关联错误从"生成问题"变为可单独评测与改进的"接地问题"。
+
+**💡 一句话 Idea**
+先由多模态 LLM 在第一人称图像中接地目标物体并预测可供性布局（物体掩码、接触热区、手部关键点、状态变化区域），再用布局条件的区域受限扩散编辑生成动作帧，从而在杂乱场景中把动作作用到正确物体并生成合理的手—物交互。
+
+**🛠️ 可能的解决方法**
+1. **布局预测器**：以 LLaVA 类模型 + 分割解码头（LISA 式）输出：目标物体掩码 M_obj、手部 21 点关键点、接触热图 C、状态变化区域 M_chg；监督来自 VISOR（手/活跃物体掩码）、Ego4D 手—物交互标注、以及用 HaMeR 类手部重建在动作帧上提取的伪关键点。
+2. **布局条件生成**：在 LEGO 的扩散模型上加 ControlNet 分支，输入 (M_obj, 关键点骨架图, C, M_chg)；损失 = 扩散损失 + 区域外保持损失（M_chg ∪ 手部区域之外的像素与输入图的 LPIPS）。
+3. **专业工具交互**：对锯、缝纫机等，接触热图从带手部姿态的少量第一人称教学视频中统计（同类工具共享），作为布局先验；生成时可采样多种握持布局供用户选择。
+4. **评测指标**：提出"编辑定位正确率"——生成帧与输入帧的差异区域与 GT 活跃物体掩码的 IoU，补充作者指出的图文相似度指标在第一人称域泛化差的问题。
+5. **成本**：布局预测器与 ControlNet 分支分别训练，均在单机 8 卡数天内完成。
+
+**🧭 与最接近工作的区别**
+- *LEGO*：端到端嵌入条件化，无显式空间接地。
+- *Affordance Diffusion*（Ye et al., CVPR 2023）：先预测手的布局再合成手—物交互图像，但针对单个物体的孤立图像，无动作指令与杂乱场景中的目标选择。
+- *InstructPix2Pix*（Brooks et al., CVPR 2023）：通用指令编辑，缺乏手—物交互与第一人称先验，常编辑错误区域。
+
+**🧪 验证方案**
+- 基准：Ego4D 与 EPIC-KITCHENS（LEGO 使用的数据集划分）；指标：EgoVLP/CLIP 相似度、FID、PSNR、LPIPS，以及新增编辑定位正确率与手部关键点检测置信度。
+- 关键假设检验：按画面中物体数量分档，杂物越多本方法相对 LEGO 的定位正确率增益越大。
+- 用户研究：动作帧对"教会用户执行动作"的有用性评分。
+- 消融：去掉布局中的各分量（掩码 / 关键点 / 接触热图）；预测布局 vs GT 布局（上界）。
+
+🔑 `egocentric vision` `action frame generation` `affordance` `hand-object interaction` `layout-conditioned diffusion` `visual grounding`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.30 — *Debiasing Generative Affordance Mining: Learned Mask–Viewpoint Proposals and Importance-Weighted Uplifting for Comprehensive 3D Human–Object Affordance*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Beyond the Contact: Discovering Comprehensive Affordance for 3D Objects from Pre-trained 2D Diffusion Models** · Hyeonwoo Kim et al. · 🎤 ECCV 2024 (Oral) · [arXiv:2401.12978](https://arxiv.org/abs/2401.12978) |
+| 📌 **线索来源** | H Limitations & Future Works §"Our method utilizes inpainting diffusion models to insert humans into object images; however, the diffusion model may possess spatial biases, which may alter the inpainting results as the properties of inpainting mask (e.g., center location, aspect ratio, resolution) differs." + §"Future research can further improve by mitigating the spatial bias in diffusion models, or the mask selection procedure to reduce the number of unnecessary generations." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🎨 Graphics · SIGGRAPH |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★☆☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+ComA 提出"全面可供性"，同时建模人—物接触与人体顶点相对物体的方位、距离分布，并通过"渲染—修补插入人—抬升到 3D"的管线从 2D 扩散模型中挖掘 3D 交互样本来估计它。作者列出了一串偏差来源：修补模型对掩码位置、长宽比、分辨率的空间偏差（球类物体在画面下方时生成不出人）、VLM 错误提示、分割误差与末端重度过滤。这些问题的共同本质是：ComA 估计的是"**生成管线的采样分布**"而非"真实交互分布"，渲染视角、掩码参数和过滤器都成了未建模的混杂变量。关键 insight：可以把整个管线视为一个参数可控的有偏采样器 q(样本 | 视角, 掩码)，以统计方式校正——学习一个提议分布提高有效生成率，同时对每个被接受样本按其提议概率与接受率做重要性加权，并用"同一物体换渲染参数后估计应当不变"作为偏差的可检验判据。
+
+**💡 一句话 Idea**
+把 ComA 的生成管线当作有偏采样器：用交叉熵法学习视角与掩码参数的提议分布以减少无效生成，用重要性加权与软过滤替代硬过滤，并以"渲染参数不变性"检验与校正可供性估计中的空间偏差。
+
+**🛠️ 可能的解决方法**
+1. **参数化采样空间**：θ = (相机方位/俯仰, 物体在画面中的位置与尺度, 掩码中心、长宽比、分辨率)。先均匀采样建立基线，再用交叉熵法/高斯过程 bandit 学习 q_φ(θ | 物体类别) 以最大化"抬升成功且通过质量检测"的接受率。
+2. **重要性加权聚合**：ComA 分布估计由样本简单计数改为 Σ w_i · δ(交互_i)，w_i ∝ p_0(θ_i) / q_φ(θ_i)（p_0 为均匀或物理先验的参考分布），避免学习到的提议把分布偏向"容易生成"的交互。
+3. **软过滤**：把原先的硬阈值过滤替换为质量分数（人体姿态先验似然、穿透体积、接触合理性）的连续权重，降低过滤导致的系统性偏差（如被过滤掉的极端姿态交互）。
+4. **提示纠错与不变性检验**：VLM 从多个视角识别物体并投票，不一致时重新生成提示；对每个物体比较两组不同 θ 分布下的 ComA 估计的 KL 散度，作为"偏差残留"指标并用于调参。
+5. **成本**：提议分布学习可在类别级共享；预计在同等 GPU 时间内有效样本数提升数倍，详见实验中的"每个接受样本的生成次数"指标。
+
+**🧭 与最接近工作的区别**
+- *ComA*：固定的掩码/视角选择与硬过滤，偏差未建模。
+- *CHORUS*（Han et al., ICCV 2023）：同样从合成图像学习 3D 人—物空间关系，未处理生成器的空间偏差与采样效率问题。
+- 与扩散模型去偏工作（如对生成模型做公平性校正）不同，本 idea 不改动生成模型，而是在采样与估计层面做统计校正，可插拔到任何修补模型上。
+
+**🧪 验证方案**
+- 基准：BEHAVE、InterCap 中具有真实人—物交互的物体类别；指标：接触 precision/recall/F1、相对方位分布与 GT 的 KL/EMD、下游人体姿态优化（ComA 论文的 human optimization 设置）的穿透与接触指标。
+- 效率指标：每个被接受样本所需的生成次数、单位 GPU 时间的有效样本数。
+- 关键假设检验：不加权的学习提议会让估计偏向易生成交互（KL 上升），而重要性加权可恢复；不变性 KL 与最终下游误差正相关。
+- 消融：仅提议学习 / 仅加权 / 仅软过滤 / 多视角提示投票。
+
+🔑 `affordance` `human-object interaction` `diffusion inpainting` `sampling bias` `importance weighting` `3D uplifting`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 5.31 — *Edit Locality for Hand-Conditioned World Models: Separation-Aware Influence Masks and Counterfactual Contact Pairs for Object-Permanent Interaction Generation*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Controlling the World by Sleight of Hand** · Sruthi Sudhakar et al. · 🎤 ECCV 2024 (Oral) · [arXiv:2408.07147](https://arxiv.org/abs/2408.07147) |
+| 📌 **线索来源** | 4.6 Limitations §"Furthermore, we find that when its not obvious if two objects are separated, sometimes interactions with one object will result in ambiguous surrounding objects also being altered." + 5 Discussion §"This opens up exciting applications in robot planning, controllable image generation, and augmented or virtual reality." |
+| 📮 **投稿建议** | 👁️ **CV** · CVPR / ICCV ＋ 🤖 Robotics · CoRL / ICRA |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★☆☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+CosHand 从无标注手部操作视频学习手部条件生成：给定当前图像与当前/未来手部掩码，预测交互后的画面，可零样本迁移到机器人夹爪。它的典型失败是：当两个物体是否分离不明显时，与一个物体交互会连带改变周围物体。对用于规划的世界模型，这比画质问题更致命——规划器会误以为推杯子也能移动旁边的盘子。根本原因是训练目标只有整幅图像的重建，模型从未被告知"交互的影响范围"。关键 insight：视频本身给出了影响范围的监督——交互前后真实变化的像素（光流 + 帧差）按 SAM 2 分割归属到物体实例，就是"被影响物体集合"；而对同一场景构造"手接触物体 A"与"手接触物体 B"的反事实对，可以显式教会模型变化区域应随接触对象切换而不重叠。物体是否相连的歧义则用深度不连续与支撑关系推断，并在不确定时以多假设采样保留。
+
+**💡 一句话 Idea**
+为手部条件生成模型增加"影响掩码"预测分支，用视频中真实变化区域的实例级归属监督，并以反事实接触对与区域外保持损失约束编辑局部性，使交互只改变被接触（及物理相连）的物体，成为可用于规划的物体持久型世界模型。
+
+**🛠️ 可能的解决方法**
+1. **影响掩码监督**：对 Something-Something v2 等视频，在交互前后帧间计算光流与帧差，按 SAM 2 实例分割把变化像素归属到物体实例，得到"被影响实例"掩码 I*；相机运动用单应估计补偿后剔除。
+2. **模型结构**：在 CosHand 扩散主干上加入影响掩码头，预测 Î（由当前图像、手部掩码与深度不连续图条件化）；生成时把 Î 作为软门控：门控外像素以输入图为锚。
+3. **损失**：扩散损失 + BCE(Î, I*) + 区域外保持损失 λ·‖(1−Î)⊙(x̂ − x_0)‖ + 反事实对比损失：同一场景分别以接触 A、接触 B 的手部掩码条件生成，两次的变化区域 IoU 应低（除非 A、B 物理相连）。
+4. **歧义处理**：对深度不连续弱、可能相连的物体对，影响头输出"相连概率"，生成时以此为伯努利采样得到多个假设，供规划器做风险评估，而非强行二选一。
+5. **成本**：伪标签离线生成；在 CosHand 基础上微调，8 卡数天。
+
+**🧭 与最接近工作的区别**
+- *CosHand*：整图重建目标，无影响范围建模。
+- *InterDyn*（Akkerman et al., CVPR 2025）：以手部掩码驱动视频扩散生成交互动力学，同样未显式约束编辑局部性与物体分离歧义。
+- *Affordance Diffusion*（Ye et al., CVPR 2023）：生成手—物交互图像，但不预测交互导致的场景变化。
+
+**🧪 验证方案**
+- 基准：Something-Something v2（CosHand 的设置），指标 PSNR/LPIPS/FID；新增"附带变化率"——非目标物体实例掩码内的像素变化比例，及目标物体变化区域 IoU。
+- 关键假设检验：在"物体紧邻/堆叠"子集上附带变化率显著降低，而在真实相连物体（如一摞盘子）上仍正确地同时移动。
+- 机器人迁移：在 BridgeData V2 场景上零样本以夹爪掩码为条件，用生成结果做目标图像驱动的动作选择，比较规划成功率。
+- 消融：去影响头 / 去反事实对 / 去深度不连续条件 / 去多假设采样。
+
+🔑 `hand-conditioned generation` `world model` `edit locality` `object permanence` `counterfactual training` `interaction synthesis`
+
+[🔝 top](#top)
