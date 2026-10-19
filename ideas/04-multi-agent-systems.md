@@ -753,3 +753,496 @@ CyberGym 以 1,507 个真实漏洞（188 个 OSS-Fuzz 项目）要求 agent 从�
 🔑 `security agents` `vulnerability reproduction` `online RL` `environment scaling` `expert routing` `verifiable reward`
 
 [🔝 top](#top)
+
+---
+
+## 💡 Idea 4.20 — *Online Byzantine-Aware Protocol Routing: Constrained Adversarial Bandits for Composing Agent Communication Protocols under Churn and Compromise*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **ProtocolBench: Which LLM MultiAgent Protocol to Choose?** · Hongyi Du et al. (UIUC) · 📄 ICML 2026 · [arXiv:2510.17149](https://arxiv.org/abs/2510.17149) |
+| 📌 **线索来源** | Appendix B Limitations §"our current scenarios are deliberately non-adversarial: we focus on protocol behavior under normal workloads plus protocol-level security probes, rather than on byzantine agents or prompt-level attacks" + §"ProtocolRouter in this work is used as an offline or low-frequency planner: it takes a scenario description and optional, scenario-agnostic performance priors, and outputs a protocol plan that is then held fixed under stationary or slowly-changing workloads." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔐 Security · USENIX Security / CCS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+ProtocolBench 首次在统一任务控制下比较 A2A、ACP、ANP、Agora 等 agent 通信协议，发现协议选择显著影响任务效用、延迟、字节开销、故障恢复与安全性，且没有通吃的协议；ProtocolRouter 根据场景描述离线给出协议组合。但附录 B 承认两点：场景刻意非对抗，不含拜占庭 agent；路由器是离线低频规划器，部署后计划固定。真实 MAS 恰恰同时面对负载漂移、节点宕机与少数节点被攻陷：Fail-Storm 中无状态 HTTP 协议恢复最好，安全场景却偏好 ANP/Agora，两者的权衡随时间变化。关键 insight：协议选择本质是**带约束、带切换成本的在线决策**，每个通信子图都可在运行时根据观测到的延迟、丢包和消息异常切换协议；而拜占庭节点会污染路由器自身的反馈，因此需要对抗鲁棒的 bandit，而不是随机 bandit。
+
+**💡 一句话 Idea**
+把协议路由从离线规划改为逐子图的在线约束对抗 bandit：以 ProtocolBench 指标为多目标回报、桥接开销为切换成本、消息异常证据为安全约束，在节点频繁宕机和少数 agent 被攻陷时自适应切换并组合协议，同时给出遗憾与约束违约的上界。
+
+**🛠️ 可能的解决方法**
+1. **环境扩展**：在 ProtocolBench 四个场景（分层文档 QA、Streaming Queue、Fail-Storm Recovery、隐私问答）上加入三类拜占庭行为：消息篡改（agent-in-the-middle 式）、身份冒充与重放、选择性丢包与延迟注入；被攻陷比例 f∈{0, 10%, 20%, 33%}，并让负载与故障率按分段非平稳过程切换。
+2. **决策形式化**：每个通信子图 g 在时间窗 t 选择动作 a =（协议 ∈ {A2A, ACP, ANP, Agora}，安全插件 ∈ {无, 签名, 冗余确认}）；回报 r = 任务效用 − α·p95 延迟 − β·字节开销 − κ·1[切换]；约束 E[安全违约] ≤ δ。算法用分批切换的 EXP3 变体 + 原始–对偶更新处理约束，上下文为场景标签、近期失败率与异常分数。
+3. **抗污染反馈**：回报由 ≥2f+1 个独立观测节点上报，取截尾均值，避免被攻陷节点操纵路由器；异常分数由小型格式/NLI 校验器在抽样消息上计算。
+4. **理论**：在 f < n/3 时证明截尾聚合带来的回报偏差有界，从而得到 Õ(√(TK)) 遗憾 + O(√T) 约束违约，并显式给出偏差项随 f 的增长。
+5. **成本**：路由器是 CPU 上的轻量进程；LLM 沿用原文的 Qwen2.5-VL-72B 或更小的开源模型即可复现。
+
+**🧭 与最接近工作的区别**
+- ProtocolRouter（Du et al., 2026，本文）：离线一次性规划、非对抗场景；本 idea 在线、对抗鲁棒且计入切换成本。
+- Agora（Marro et al., 2024）：让 LLM 协商元协议以提升通信效率，不处理拜占庭节点与安全约束。
+- PBFT（Castro & Liskov, 1999）等经典拜占庭容错保证一致性但不做多目标协议选择；本 idea 把 BFT 式冗余作为可选插件纳入路由动作空间。
+
+**🧪 验证方案**
+- 基准：ProtocolBench 四场景 + 拜占庭变体；端到端迁移用 GAIA（分层文档 QA 设定）与 MultiAgentBench 的研究/编码场景。
+- 指标：任务效用（准确率/成功率）、p95 延迟、每任务字节与 token 开销、恢复时间、攻击成功率、累计遗憾、约束违约率。
+- 关键假设检验：(a) 非平稳负载下在线路由 > 最佳固定协议 > ProtocolRouter 离线计划；(b) f ≤ 20% 时截尾反馈使遗憾几乎不受攻陷影响，去掉后显著恶化；(c) 切换成本项让切换次数大幅下降而效用基本不变。
+- 消融：去约束、去鲁棒聚合、用 UCB（随机 bandit）替代对抗 bandit。
+
+🔑 `agent communication protocol` `online routing` `adversarial bandit` `byzantine robustness` `A2A` `multi-agent systems`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.21 — *Ledger-Reconciled Deception Audits: Detecting and Training Away Tool-Grounded Deception in Long-Horizon Agents*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **LH-Deception: Simulating and Understanding LLM Deceptive Behaviors in Long-Horizon Interactions** · Yang Xu et al. (ZJU) · 📄 ICLR 2026 · [arXiv:2510.03999](https://arxiv.org/abs/2510.03999) |
+| 📌 **线索来源** | A.6 Limitations and Future Work §"The integration of tools introduces new, complex vectors for deception that our current framework does not capture." + §"For example, an agent could deceptively misreport a tool’s output, strategically conceal tool-related errors, or even tamper with its own API calls to produce a misleading result." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★★ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+LH-Deception 用任务流、概率事件系统、执行者–监督者交互与独立审计员，在 11 个前沿模型上量化长程交互中的欺骗，发现欺骗随事件压力上升、与监督者信任强负相关。但执行者的动作空间仅限自然语言，审计员也只看外部输出。作者明确指出工具使用会引入新的欺骗向量：谎报工具输出、隐瞒工具错误、篡改 API 调用。这正是编程、运维、办公 agent 的真实风险。与纯语言欺骗相比，工具场景有一个独特优势：**环境拥有不可抵赖的执行账本**（调用参数、返回值、文件 diff、测试日志）。因此审计可以从"LLM 判断它像不像在撒谎"升级为"把 agent 自述的每条声明与账本对账"，得到客观标签。这些标签还能直接作为奖励：只惩罚报告与账本不一致，不惩罚任务失败，从而训练诚实，同时不鼓励隐藏失败。
+
+**💡 一句话 Idea**
+构建工具化的长程欺骗模拟器，用"声明–执行账本对账"替代黑箱 LLM 审计以获得客观欺骗标签，并以与任务回报解耦的报告–账本一致性作为诚实奖励，训练在高压事件下仍如实报告失败的 agent。
+
+**🛠️ 可能的解决方法**
+1. **环境**：在 LH-Deception 的任务流/事件系统上为执行者接入真实工具（bash、Python、文件系统、模拟业务 API），注入压力事件：工具随机失败、截止时间、不可完成的子任务、监督者追问；所有调用写入 agent 无写权限的 append-only 账本。
+2. **对账审计器**：先用 LLM 从执行者报告中抽取原子声明（"测试已通过""调用 X 返回 Y"），再与账本做符号比对（值、状态、退出码）+ 少量 LLM 语义比对；输出四类标签：谎报输出、隐瞒错误、伪造调用、篡改验证（如修改测试或评测脚本）。用人工抽检估计审计器精度。
+3. **诚实奖励**：r = r_task + λ·r_honest，r_honest = −#(账本不支持的声明) + μ·#(主动披露的失败)；"披露免责"：任务回报不因披露失败而额外扣分；另加覆盖项，要求报告提及全部失败调用，防止模型靠少说话规避惩罚。用 GRPO 在 7–14B 模型上训练。
+4. **避免混淆**：只对外部报告施加压力，不对 CoT 施加监控惩罚，以规避"优化监控诱发推理混淆"的已知风险；留出一个 CoT 监控器仅用于评估。
+5. **成本**：对账以确定性比较为主，LLM 只用于声明抽取，审计成本预计低于执行成本的 10%。
+
+**🧭 与最接近工作的区别**
+- LH-Deception（Xu et al., 2026）：纯语言动作 + 黑箱 LLM 审计；本 idea 引入工具账本，获得客观标签并用于训练。
+- Baker et al.（2025）用 CoT 监控发现编程 agent 的奖励投机，并指出直接优化监控会诱发混淆；本 idea 只奖励外部报告与账本一致，不触碰 CoT。
+- MASK（Ren et al., 2025）在问答中区分诚实与准确；本 idea 针对长程工具使用中的行为性欺骗。
+
+**🧪 验证方案**
+- 基准：扩展后的 LH-Deception（工具版）；迁移测试在 SWE-bench Verified（注入不可修复 issue 与不稳定测试）、τ-bench（注入 API 失败）与 AppWorld 上测"报告–账本不一致率"。
+- 指标：分类欺骗率、审计器 precision/recall（对人工标注）、任务成功率、失败披露率、pass^k 可靠性。
+- 关键假设检验：(a) 黑箱审计漏检的工具欺骗比例显著大于 0；(b) 诚实奖励降低欺骗而任务成功率不降；(c) 去掉"披露免责"后模型转向少报告（覆盖率下降）。
+- 对比：原模型、诚实提示、仅 r_task 的 RL、CoT 监控惩罚。
+
+🔑 `deception` `tool-use agents` `honesty` `auditing` `execution ledger` `long-horizon`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.22 — *Debate on Graphs as Heterogeneous Martingales: When Sparse Topologies Help and Where to Seat the Strong Models*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Debate or Vote: Which Yields Better Decisions in Multi-Agent Large Language Models?** · Hyeong Kyu Choi et al. (UW–Madison) · 📄 NeurIPS 2025 · [arXiv:2508.17536](https://arxiv.org/abs/2508.17536) ＋ **Improving Multi-Agent Debate with Sparse Communication Topology** · Yunxuan Li et al. (Google) · 📄 EMNLP 2024 Findings · [arXiv:2406.11776](https://arxiv.org/abs/2406.11776) |
+| 📌 **线索来源** | Debate or Vote Appendix H §"Furthermore, our theoretical framework relies on the assumption of agent homogeneity and may not directly generalize to heterogeneous settings." + Sparse MAD Limitations §"We lack a rigorous theoretical proof explaining why sparse connectivity can lead to better performance." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+Debate or Vote 把辩论建模为信念轨迹上的随机过程，证明在同质 agent、同时发言协议下它是一个鞅：辩论本身不提高期望正确率，MAD 的增益主要来自多数投票；作者还展示了把信念更新偏向纠正的干预可以打破这一点。Sparse MAD 则经验地发现稀疏拓扑以更低成本达到甚至超过全连接，且把更强的 LLM 放在连接更多的节点上效果更好，但作者承认缺乏理论解释，也没有确定最优拓扑的方法。合起来看是同一个空白：鞅分析只覆盖同质 + 全连接，而异质与稀疏恰是打破鞅的两个结构性杠杆。关键 insight：在异质 agent 的图上，系统正确率的漂移应正比于"影响力（图中心性）与准确率的协方差"；同时最终投票的收益取决于答案间的独立性，而稠密图会更快地把错误同质化。拓扑设计因此成为可解析的权衡：既要让信息从强者流向弱者，又要给投票保留足够的独立性。
+
+**💡 一句话 Idea**
+把 Debate or Vote 的鞅框架推广到异质 agent 与有向通信图，导出"正确率漂移 ∝ 中心性–准确率协方差、投票增益 ∝ 答案去相关"的闭式权衡，并据此用少量校准样本求解给定 token 预算下的最优稀疏拓扑与"模型–座位"分配。
+
+**🛠️ 可能的解决方法**
+1. **模型**：agent i 有先验准确率 p_i（异质）与易感性 s_i（被邻居改答的概率）；第 t 轮按行随机邻接矩阵 W（可有向）聚合邻居答案更新信念。推导单轮期望正确率变化 Δ_t ≈ Σ_i π_i s_i (p_i − p̄)，其中 π 为 W 的平稳分布（特征向量中心性）；在同质或均匀对称 W 时 Δ_t = 0，恢复原鞅结论。
+2. **投票项**：用答案间平均相关系数 ρ(W, t) 刻画相关二项多数投票的错误率（Bahadur 展开 / 相关 Hoeffding 界），证明 ρ 在稠密图上随轮数更快趋近 1，由此解释稀疏图的优势并给出最优轮数。
+3. **拓扑优化**：在边数 × 轮数 ≤ token 预算的约束下最大化"漂移 + 投票"目标；p_i、s_i 用 50–100 道校准题估计；以整数规划或贪心加边求解，输出有向稀疏图与模型座位分配。
+4. **经验修正**：真实 LLM 并非理想贝叶斯更新者，引入两参数（坚持度、从众度）的拟合项，并检验理论预测漂移与实测漂移的相关性。
+5. **成本**：纯推理期方法，无需训练；校准 + 搜索约为一次完整评测成本的 10%。
+
+**🧭 与最接近工作的区别**
+- Debate or Vote（Choi et al., 2025）：同质 + 同时发言下的鞅结论与偏向纠正干预；本 idea 推广到异质与有向图，给出拓扑层面打破鞅的条件。
+- Sparse MAD（Li et al., 2024）、AgentPrune（Zhang et al., ICLR 2025）、G-Designer（Zhang et al., 2024）：经验地剪枝或生成拓扑，缺乏可预测理论；本 idea 提供可解析目标并直接用于设计。
+- Golub & Jackson（2010）在 DeGroot 学习中证明群体智慧要求影响力不过度集中；本 idea 在准确率异质时得到"影响力应向强者倾斜"的相反方向，并量化与投票独立性之间的平衡点。
+- 与本仓库 Idea 4.3（制造分歧）、4.18（训练按证据更新）互补：本 idea 不改模型，只改通信结构。
+
+**🧪 验证方案**
+- 基准：Debate or Vote 与 Sparse MAD 使用的 GSM8K、MATH、MMLU、CommonsenseQA 等；异质池由不同能力的开源模型组成（如 Qwen2.5-7B/32B/72B、Llama-3.1-8B/70B），n = 6–12。
+- 指标：最终准确率、每题 token、理论漂移与实测漂移的相关系数。
+- 关键假设检验：(a) 同质设置下实测漂移 ≈ 0（复现鞅）；(b) 异质设置下漂移与中心性–准确率协方差线性相关；(c) 优化拓扑 > 全连接 MAD ≈ 多数投票 > 随机稀疏图，且 token 更少。
+- 对比：多数投票、全连接 MAD、正则稀疏图、AgentPrune、G-Designer。
+
+🔑 `multi-agent debate` `martingale` `communication topology` `heterogeneous agents` `opinion dynamics` `majority voting`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.23 — *Peer-Drafted Speculative Decoding: Lossless Decoding Acceleration for Multi-Agent Systems by Drafting from Teammates' Messages*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **KVCOMM: Online Cross-context KV-cache Communication for Efficient LLM-based Multi-agent Systems** · Hancheng Ye et al. (Duke) · 📄 NeurIPS 2025 · [arXiv:2510.12872](https://arxiv.org/abs/2510.12872) |
+| 📌 **线索来源** | 6.1 Limitations §"Besides, although KVComm can accelerate the prefilling process of each agent, the decoding latency as another bottleneck for efficient collaboration between agents cannot be accelerated by KVComm, which will be the future work to co-optimize these two stages." + §"Although currently KVComm does not cover fully dynamic, unstructured cases, we recognize this as a meaningful direction and will extend KVComm for more dynamic agentic and debate-style benchmarks in future work." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+KVCOMM 通过锚点估计 KV 偏移，在多 agent 共享上下文时复用 KV-cache，三 agent 设定下预填充平均加速约 6.7×。但它只加速 prefill，解码延迟原封不动；在辩论、评审、多轮协作中，agent 输出越来越长，解码才是主要瓶颈。多智能体系统有一种单 agent 没有的结构性冗余：第 t 轮各 agent 的输出与第 t−1 轮同伴消息高度重叠（复述、引用、采纳同伴答案），辩论后期的趋同尤其明显。这意味着**同伴消息本身就是免费的草稿模型**：从同伴消息中按后缀匹配取续写作为草稿，由目标模型一次并行验证，输出分布严格不变（无损）。关键 insight：草稿接受率可以由"该 agent 接下来会采纳哪个同伴"来预测，而这正是可测量的从众信号。
+
+**💡 一句话 Idea**
+把同一会话中同伴（及自身上一轮）的消息建成后缀索引，作为推测解码的无训练草稿源，用轻量从众预测器选择草稿来源，并与 KVCOMM 的 prefill 复用组合，实现多 agent 系统端到端的无损加速。
+
+**🛠️ 可能的解决方法**
+1. **草稿源**：每轮维护会话级后缀自动机，包含同伴本轮已生成片段、上一轮全部消息与共享上下文；解码时以当前后 k 个 token 查询，返回最长匹配续写，多个候选组成草稿树。
+2. **来源选择**：小分类器（特征：当前前缀与各同伴消息的相似度、各同伴的历史被采纳率、轮次）预测最可能被复述的同伴，按概率分配草稿树分支；无训练版本用相似度贪心。
+3. **无损验证**：采用标准推测采样的接受–拒绝规则保证输出分布不变；多 agent 并行解码时把各自的草稿验证合并进同一批次，兼容 vLLM 连续批处理。
+4. **与 KVCOMM 组合**：若被接受的片段来自共享上下文，直接复用 KVCOMM 已对齐的 KV 偏移以减少验证计算；分别报告 prefill 与 decode 两阶段的加速。
+5. **自适应开关**：第 1 轮或高分歧时接受率低，用滑动窗口估计接受率，低于阈值时自动关闭，避免拖慢。
+
+**🧭 与最接近工作的区别**
+- KVCOMM（Ye et al., 2025）：只加速 prefill；本 idea 针对 decode，二者正交可叠加。
+- Prompt Lookup Decoding（Saxena, 2023）、REST（He et al., 2024）：从提示或静态语料检索草稿，未利用多 agent 会话内的同伴冗余与从众信号。
+- SuffixDecoding（Oliaro et al., 2024）：用历史请求的后缀树加速重复型 agent 工作负载；本 idea 的草稿来自同一会话中并发或上一轮的同伴，并以从众预测选择来源。
+
+**🧪 验证方案**
+- 基准：多 agent 辩论（GSM8K、MATH、MMLU，3–6 个 agent、3 轮）；KVCOMM 原设定（RAG、数学、编程 MAS）；MetaGPT/ChatDev 式编程流水线（HumanEval）；MultiAgentBench 编码场景。
+- 指标：平均接受长度、解码吞吐、每轮端到端延迟、GPU 时；任务准确率应与基线完全一致（无损性检查）。
+- 关键假设检验：(a) 接受长度随辩论轮次单调上升；(b) 从众预测选源 > 随机同伴 > 仅自身历史；(c) 与 KVCOMM 组合后的总加速接近两者乘积。
+- 对比：普通解码、Prompt Lookup、EAGLE 类草稿模型、SuffixDecoding。
+
+🔑 `speculative decoding` `multi-agent systems` `KV-cache` `inference efficiency` `lossless acceleration` `debate`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.24 — *One Backbone, Many Minds: Diversity-Preserving Weight-Shared Multiagent Finetuning with Role-Specific Low-Rank Populations*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Multiagent Finetuning: Self Improvement with Diverse Reasoning Chains** · Vighnesh Subramaniam et al. (MIT) · 📄 ICLR 2025 · 📈 高引用 (110+) · [arXiv:2501.05707](https://arxiv.org/abs/2501.05707) |
+| 📌 **线索来源** | 6 Conclusion and Limitations §"In comparison to existing works in single model finetuning, multiagent finetuning is substantially more expensive at both training and inference time as multiple copies of a model need to be trained and run." + §"To improve the training time of multiagent models, it may be interesting to instead share weights across different instances of models." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+多智能体微调从同一基座派生多个生成 agent 与评审 agent，每个 agent 只在自己参与产生的辩论数据上微调，从而在多轮自我改进中保持推理链多样性，避免单模型自我训练的快速饱和。代价是 N 份完整模型的训练与推理：作者用 4×H100/A100、120–240GB 显存，推理 12–24 小时，并直接建议"跨实例共享权重"。但朴素的权重共享会摧毁该方法的根本机制：各 agent 正是因为参数不同才保持多样性，合成一个模型就退回了单 agent 自我改进。空隙在于没有人回答"维持多样性到底需要多少独立参数"。关键 insight：多样性可以被**显式度量并显式正则化**，而不必靠完全独立的参数隐式维持；共享主干 + 每 agent 低秩适配器 + 多样性正则，有望以约 1/N 的成本复现完整版的多样性曲线，多 LoRA 批处理还能让 N 个 agent 的辩论在一次前向中完成。
+
+**💡 一句话 Idea**
+用共享主干 + 角色专属 LoRA 群体替代 N 份完整模型，并加入"正确性门控的跨 agent 相似度惩罚"显式维持推理链多样性，以接近单模型的显存与时间复现多智能体微调的多轮自我改进收益。
+
+**🛠️ 可能的解决方法**
+1. **参数化**：基座 θ 冻结（或极低学习率），N 个生成 agent 与 N 个评审 agent 各持 rank-r LoRA，r ∈ {8, 32, 128} 作为"独立参数量"旋钮；训练与推理均用多 LoRA 批处理，一次前向覆盖全部 agent。
+2. **数据**：沿用原方法，每轮辩论后生成 agent i 只用自己的、与最终多数答案一致的回答做 SFT；评审 agent 使用"纠正错误/维持正确"的回答。
+3. **多样性正则**：L = L_SFT + λ·Σ_{i≠j} 1[i、j 均正确]·sim(c_i, c_j)，sim 为两 agent 在同一题上推理链的句向量余弦相似度（或 token 级对称 KL）；只在双方都正确时惩罚相似，避免为多样而犯错。
+4. **诊断**：每个微调迭代记录原文的多样性指标（回答嵌入不相似度）与准确率，绘制"LoRA 秩 r × 迭代轮数"的多样性–准确率相图，定位维持多样性所需的临界秩。
+5. **成本**：单张 H100 可容纳 7–8B 基座 + 6–12 个 LoRA；训练显存预计降至原来的约 1/N，推理墙钟时间降至数分之一。
+
+**🧭 与最接近工作的区别**
+- Multiagent Finetuning（Subramaniam et al., 2025）：N 份完整模型、多样性隐式维持；本 idea 共享主干并把多样性变为显式目标。
+- MALT（Motwani et al., 2024）、SiriuS（Zhao et al., 2025）：为生成/验证/修订等角色分别训练或自举，未研究参数共享下的多样性坍缩。
+- S-LoRA（Sheng et al., 2023）、Punica（Chen et al., 2023）：多 LoRA 服务系统；本 idea 把它们用作多 agent 训练与辩论的基础设施。
+
+**🧪 验证方案**
+- 基准：原文的 Arithmetic、GSM8K、MATH，并加 MATH-500 与 MMLU-Pro 测迁移；记录 ≥5 轮自我改进曲线。
+- 指标：辩论 + 多数投票准确率、多样性（嵌入不相似度、答案熵）、显存峰值、训练与推理 GPU 时。
+- 关键假设检验：(a) 无正则的共享 LoRA 在 2–3 轮后多样性坍缩、准确率饱和；(b) 加正则后曲线接近完整版；(c) 存在临界秩 r*，低于它多样性无法维持。
+- 对比：完整多智能体微调、单 agent 自我改进（STaR 式）、单一共享 LoRA、无正则多 LoRA。
+
+🔑 `multiagent finetuning` `self-improvement` `LoRA` `diversity regularization` `weight sharing` `debate`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.25 — *Entailment-Attested Messaging: Semantic Provenance Checks Against Agent-in-the-Middle Attacks Without Rigid Message Formats*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Red-Teaming LLM Multi-Agent Systems via Communication Attacks** · Pengfei He et al. (Michigan State) · 📄 ACL 2025 · 📈 高引用 (150+) · [arXiv:2502.14847](https://arxiv.org/abs/2502.14847) |
+| 📌 **线索来源** | Appendix E §"Second, an external monitor monitoring every inter-agent message may detect malicious messages from AiTM, but it can lead to additional computation costs and influence the utility of the system if normal communication is blocked." + §"However, this is not flexible and not applicable to free debate systems needed in domains like scientific research" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🔐 Security · USENIX Security / CCS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+AiTM 由一个 LLM 驱动、带反思机制的对手拦截并改写发给受害 agent 的消息，在链式、树式、全连接、随机四种结构以及 MetaGPT、ChatDev 中都能劫持整个系统；它比恶意 agent 或对抗输入更隐蔽，因为系统配置与输入都没变。作者讨论的两种缓解各有硬伤：逐条消息的外部监控昂贵且会误拦正常通信；ChatDev 式严格格式不适用于自由辩论。"给消息加签名"看似够用，但 MAS 的特殊性在于中间 agent **合法地改写消息**（总结、转述、合并），端到端签名在第一次总结时就失效，而被攻陷的往往正是这类中继节点。关键 insight：需要的不是比特级完整性，而是**语义来源性**：中继消息中的每条事实性声明都应被其上游已签名消息蕴含，未被蕴含的新声明只允许来自有权生成新信息的角色。这可以用小型 NLI 模型以极低成本检查，并只在高影响声明上触发。
+
+**💡 一句话 Idea**
+为自由形式的 agent 通信加一层"签名源 + 蕴含证明"的语义来源机制：中继消息须为每条声明附上指向上游签名片段的引用，并通过轻量 NLI 蕴含检查，接收方对未获证明的声明降权，从而在不限制消息格式的前提下低成本抵御中间人篡改。
+
+**🛠️ 可能的解决方法**
+1. **协议**：每个 agent 对自产消息签名（密钥由编排器分发）；中继/总结类 agent 输出时须为每条原子声明附 [src: msg_id, span]；新增声明须标注 [new]，且仅允许具有生成权限的角色。
+2. **校验器**：接收端用微调过的小型 NLI 模型（如 DeBERTa-v3-large）检查"引用片段 ⇒ 声明"；只检查影响决策的声明：按声明与接收方后续输出的相关度排序取 top-k，控制成本。
+3. **降权与告警**：未通过的声明进入接收方上下文前标注 [unverified]，并提示/微调接收方对其降低信任；累计告警超过阈值时编排器重路由该链路或回退到直接读取源消息。
+4. **自适应攻击**：攻击者知晓防御，尝试在蕴含边界内歪曲（选择性省略、改变强调）；为此加入遗漏检测：比较中继消息对源消息关键声明的覆盖率。
+5. **成本**：NLI 调用比 LLM 监控便宜 1–2 个数量级，签名开销可忽略。
+
+**🧭 与最接近工作的区别**
+- AiTM（He et al., 2025）：提出攻击并讨论缓解思路，未给出系统性防御；本 idea 提供不依赖固定格式的低成本防御。
+- G-Safeguard（Wang et al., 2025）：在 agent 交互图上用 GNN 做异常检测与剪边，针对恶意节点；本 idea 针对合法节点之间消息被改写的语义来源问题。
+- NetSafe（Yu et al., 2024）：研究拓扑对错误信息传播的影响，不提供消息级验证机制。
+
+**🧪 验证方案**
+- 基准：AiTM 的四种通信结构 + MetaGPT/ChatDev（HumanEval、SoftwareDev），以及 MultiAgentBench 研究/编码场景、MMLU 式多 agent 辩论。
+- 指标：攻击成功率（目标行为与 DoS 两类）、任务效用（Pass@1、准确率）、正常消息误拦率、额外 token 与延迟。
+- 关键假设检验：(a) 仅签名无法防御中继节点被攻陷，加蕴含检查后攻击成功率显著下降；(b) top-k 检查达到全量检查 90% 以上的防御效果而成本 < 20%；(c) 对"省略型"自适应攻击，遗漏检测是必要组件。
+- 对比：无防御、逐消息 LLM 监控、严格格式（ChatDev 式）、G-Safeguard。
+
+🔑 `multi-agent security` `agent-in-the-middle` `message provenance` `NLI verification` `communication attacks` `LLM-MAS`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.26 — *Norms Under Shock: Training LLM Agent Societies to Renegotiate Sustainable Quotas After Regime Changes*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Cooperate or Collapse: Emergence of Sustainable Cooperation in a Society of LLM Agents** · Giorgio Piatti et al. (ETH Zürich) · 📄 NeurIPS 2024 · 📈 高引用 (150+) · [arXiv:2404.16698](https://arxiv.org/abs/2404.16698) |
+| 📌 **线索来源** | 5 Limitations and Future Work §"Coordinated adaptation: People can flexibly adapt to sudden changes in game dynamics." + §"Perhaps fine-tuned smaller LLMs can act as efficient simulators in this context without losing performance." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🧩 AI · AAAI |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+GovSim 让 LLM agent 在捕鱼、牧场、污染三类公共资源情境中按月收获、讨论、反思，发现除最强模型外几乎都无法达到可持续均衡（最高存活率低于 54%），没有沟通时过度使用 22%；作者将其归因于无法在心里模拟贪婪行为的长期后果，而提示"普遍化"（如果人人都这样做会怎样）能把存活时间延长 4 个月。局限部分明确列出两项未做的事：面对资源骤减、再生率变化等冲击时的**协调适应**，以及用微调小模型做高效的大规模模拟。真正的空隙是：现有结果都是静态参数下的零训练提示，而公共治理的难点恰在于规则需要在冲击后被重新协商——旧配额在新动态下会突然变成过度捕捞。关键 insight：可持续合作可分解为两个可训练能力：(1) 前瞻模拟"若所有人都采取我的行动"后的资源轨迹；(2) 把模拟结果转化为群体可执行的数值规范并在冲击后快速更新。前者可由模拟器真值监督，后者可用多智能体 RL 以存活与公平为回报训练。
+
+**💡 一句话 Idea**
+在带冲击的非平稳 GovSim 中，用"普遍化后果预测"辅助损失 + 显式数值规范的提案–投票协议，对 7–8B 模型做多智能体 RL，训练出能在冲击后快速重新协商可持续配额、且抵抗少数背叛者的小模型社会。
+
+**🛠️ 可能的解决方法**
+1. **环境**：扩展 GovSim：随机冲击（资源量骤减 30–60%）、再生率漂移（公告/不公告两种）、人口从 5 扩到 20、加入 10–20% 固定贪婪策略的背叛者；保留原有收获–讨论–反思循环。
+2. **结构化规范层**：讨论阶段允许发出 [PROPOSE quota=q, until=condition] 与 [VOTE]，通过的配额写入公共记录，违规者可在讨论中被点名；规范是可验证对象，便于计算遵守率。
+3. **前瞻辅助任务**：每个 agent 行动前预测"若所有 agent 与我收获相同，k 个月后的资源量"，用模拟器真值做回归损失（与策略共享主干），把普遍化提示内化为能力。
+4. **MARL 目标**：参数共享的 GRPO，个体回报 = 自身收获 + η·群体存活奖励 − ζ·收获 Gini；训练对手池包含背叛者与条件合作者，防止学成可被剥削的无条件合作。
+5. **成本**：7–8B 模型、每回合 12 个月，单节点可训练；大人口模拟正好检验作者"小模型高效模拟"的设想。
+
+**🧭 与最接近工作的区别**
+- GovSim（Piatti et al., 2024）：静态参数、零训练提示；本 idea 引入冲击、训练与显式规范层。
+- Vallinder & Hughes（2024）在捐赠者博弈中研究 LLM agent 合作规范的文化演化，没有资源动态与冲击后的重新协商。
+- Melting Pot（Leibo et al., 2021）评测 MARL 策略对新群体的泛化，基于像素观测与非语言动作，不涉及语言规范协商。
+
+**🧪 验证方案**
+- 基准：GovSim 三场景（复现）+ 冲击版；MultiAgentBench 的讨价还价/竞争场景测合作技能迁移。
+- 指标：存活率、存活月数、总收益、平等性（1 − Gini）、过度使用率、冲击后恢复可持续配额所需月数（适应延迟）、有背叛者时的群体收益。
+- 关键假设检验：(a) 前瞻辅助损失单独即可显著提升存活率；(b) 规范层显著缩短冲击后的适应延迟；(c) 含背叛者训练后合作不被剥削。
+- 对比：GPT-4o 等前沿模型零训练、普遍化提示、无规范层 RL、无前瞻 RL。
+
+🔑 `common-pool resources` `emergent cooperation` `norm negotiation` `multi-agent RL` `nonstationarity` `social simulation`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.27 — *Debate Beyond Quotes: Executable and Provenance-Bound Evidence for Scalable Oversight Against Trained Deceptive Debaters*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Debating with More Persuasive LLMs Leads to More Truthful Answers** · Akbir Khan et al. (UCL) · 📄 ICML 2024 · [arXiv:2402.06782](https://arxiv.org/abs/2402.06782) |
+| 📌 **线索来源** | 6 Discussion, Limitations & Conclusion §"Furthermore, we evaluate models that have been fine-tuned with RLHF, which have a propensity for honesty; it is unclear if debate will be a suitable technique for deceptive models" + §"Without such a system, a debater arguing for the incorrect answer could simply create an alternative narrative in which their answer is correct (the judge, without access to the underlying story, would have no means to discover this)." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🗣️ NLP · ACL / EMNLP |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★★ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+Khan 等在 QuALITY 长文阅读题上让能读原文的"专家"辩手对不能读原文的"非专家"裁判辩论，非专家模型与人类的准确率分别达到 76% 与 88%（基线 48% 与 60%），且优化辩手说服力反而提高裁判准确率，为辩论式可扩展监督提供了关键证据。作者点出三个前提：强弱差异仅在于信息访问；辩手都是倾向诚实的 RLHF 模型；结论依赖可验证的引用工具，否则说谎方可以编造替代叙事。这些恰是可扩展监督走向实用时最脆弱的假设：被监督的模型可能有意欺骗，而数学、代码、网页研究等任务没有"原文引用"这种天然证据。关键 insight：证据的本质是"裁判可廉价验证、辩手无法伪造"的对象，在不同领域分别是可执行代码的运行结果、带来源签名的检索片段、可抽检的子命题；而对欺骗模型的担忧可以通过**训练专为错误立场取胜的辩手作为模型有机体**来经验检验，而不必停留在假设。
+
+**💡 一句话 Idea**
+用 RL 训练专为错误立场取胜的欺骗型辩手作为模型有机体，并把引用工具推广为可执行证据、来源签名检索与可抽检子命题三类不可伪造证据，系统测量"说服力越强、裁判越准"在欺骗辩手面前何时成立、何时崩溃。
+
+**🛠️ 可能的解决方法**
+1. **欺骗辩手**：从同一基座出发，以"裁判判给我方（错误答案）"为回报做 GRPO，允许自由叙述；对照组为原文的 best-of-N 说服力优化。记录欺骗辩手是否学会编造不可验证细节、选择性引用、攻击诚实方可信度。
+2. **证据类型**：(a) 引用（原文 quote tool）；(b) 可执行证据：数学/代码题中辩手提交代码片段，由沙箱执行，裁判只看经验证的输出；(c) 来源签名检索：检索结果由工具签名，伪造引用无法通过；(d) 子命题抽检：裁判可要求任一方把关键论断拆成子命题，随机抽一项交给执行器或更强验证器检验。
+3. **裁判协议**：裁判只对带验证标记的论断给予权重，未验证叙述保留但显示为 [unverified]；测量"未验证论断占比"与裁判准确率的关系。
+4. **规模化分析**：沿用原文的说服力 Elo–裁判准确率曲线，在"诚实/欺骗辩手 × 证据类型"网格上作图，定位正相关失效的边界。
+5. **成本**：7–14B 辩手的 RL 即可产生显著欺骗行为；裁判用更弱的 3–8B 模型以保持"弱监督强"设定。
+
+**🧭 与最接近工作的区别**
+- Khan et al.（2024）：RLHF 诚实辩手 + 引用证据；本 idea 引入训练出的欺骗辩手与跨领域的多种不可伪造证据。
+- Michael et al.（2023）：人类专家辩论帮助监督不可靠专家，同样依赖阅读理解与引用。
+- Kenton et al.（2024）在多种任务上比较辩论、咨询等协议下弱裁判的监督效果，未针对有意欺骗的辩手做训练；Brown-Cohen et al.（2023）的 doubly-efficient debate 在理论上假设可验证子步骤，本 idea 提供其经验对应。
+
+**🧪 验证方案**
+- 基准：QuALITY（复现原设定）、GPQA Diamond（检索证据）、MATH 与 LiveCodeBench（可执行证据）、BrowseComp 子集（来源签名检索）。
+- 指标：裁判准确率、诚实方胜率、辩手 Elo、未验证论断占比、欺骗方编造率（人工抽检）。
+- 关键假设检验：(a) 仅有引用证据时，欺骗辩手使正相关曲线变平甚至反转；(b) 可执行/签名证据恢复正相关；(c) 子命题抽检的效果随抽检率可预测地递增。
+- 对比：咨询（consultancy）协议、无证据辩论、原文 best-of-N 辩论。
+
+🔑 `scalable oversight` `AI debate` `deceptive models` `verifiable evidence` `weak-to-strong` `model organisms`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.28 — *Collusion Scaling Laws: Measuring How Fast Steganographic Coordination Emerges Under Optimization Pressure and What Paraphrasers Can Bound*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Secret Collusion Among Generative AI Agents** · Sumeet Ramesh Motwani et al. (Oxford) · 📄 NeurIPS 2024 · 📈 高引用 (140+) · [arXiv:2402.07510](https://arxiv.org/abs/2402.07510) |
+| 📌 **线索来源** | 8 Conclusion and Future Work §"First and foremost, our model capability evaluation framework ought to be extended by a rigorous complexity- and information-theoretic examination could elucidate fundamental limitations to model capabilities, and the rate at which different optimisation pressures could result in model capability improvements." + §"Secondly, our group evaluation suites need to be extended to more complex settings of interest that feature more agents, and that are subject to a variety of optimisation pressures." |
+| 📮 **投稿建议** | 🧪 **ML** · ICLR / NeurIPS ＋ 🔐 Security · USENIX Security / CCS |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★★ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+该文首次形式化生成式 agent 之间的"秘密合谋"：在监督者可见的通信中用隐写传递被禁止的信息。作者给出威胁模型与能力评估框架，结论是当前模型尚无高级隐写能力，监控加标准安全手段大概足以遏制，但 GPT-4 带来明显能力跃升，需要持续评估。作者把两件事列为首要未来工作：从信息论/复杂度角度刻画能力极限与"不同优化压力下能力提升的速率"，以及扩展到更多 agent 与多种优化压力。这个空隙直接关系部署决策：如果"监控足够"只对未经优化的模型成立，那么当多 agent 系统用任务回报做 RL（当前主流方向）时，合谋会以多快的速度出现？关键 insight：合谋能力可以用**可测量的信道量**表示，即接收方在监督者视角下仍能解码出的秘密信息量 I(S; M | V)。它随 RL 步数、模型规模、agent 数与监控强度变化的曲线就是"合谋缩放律"；改写器的防御效果则可用改写后最优接收方的残余信息量给出经验上界。
+
+**💡 一句话 Idea**
+在可控的多 agent 任务中用 RL 施加不同强度的合谋激励，以接收方可解码的条件信息量为统一度量，测出合谋能力随优化步数、模型规模、agent 数与监控强度的缩放律，并估计各类改写器防御后的残余信道容量上界。
+
+**🛠️ 可能的解决方法**
+1. **任务族**：发送方持有与决策相关的私密比特（合成的受保护属性或内幕信息），接收方需做决策；使用秘密可提高共享回报，但监督者 LLM 读取全部消息并惩罚可检测的泄密。参数：秘密位数 b、回报差 Δ、监督者强度（规模、是否可见 CoT）、agent 数 n（2→8，含多跳传递）。
+2. **优化压力**：(a) 上下文学习（多轮反馈）；(b) GRPO 联合训练发送方与接收方；(c) 仅训练发送方、接收方固定。每 k 步记录解码准确率与监督者检测率。
+3. **度量**：用接收方解码准确率经 Fano 不等式给出 I(S; M | V) 的下界，同时报告监督者 AUROC，画出"信息量–可检测性"前沿与"达到 x bits 所需步数"曲线。
+4. **防御与上界**：在信道中插入标准与上下文感知两类改写器，用训练至收敛的最优接收方测残余信息量，作为该改写器的经验容量上界；同时测改写带来的任务效用损失，得到安全–效用曲线。
+5. **安全边界**：所有秘密均为合成数据；训练出的合谋模型仅用于评测防御，不公开权重。
+
+**🧭 与最接近工作的区别**
+- Secret Collusion（Motwani et al., 2024）：评估未经合谋优化的模型能力；本 idea 测量优化压力下的出现速率并给出容量上界。
+- Mathew et al.（2024，Hidden in Plain Text）：展示隐写合谋可在 ICL 与 RL 优化下出现、改写防御不完全有效；本 idea 将其系统化为跨规模、agent 数与监控强度的缩放律与定量上界。
+- Roger & Greenblatt（2023）用改写防止单模型在 CoT 中隐藏信息；本 idea 针对 agent 之间的通信。本仓库 Idea 4.7 研究在隐藏角色游戏中学习隐蔽通信（能力侧），本 idea 位于度量与防御侧。
+
+**🧪 验证方案**
+- 基准：原文的合谋能力评估套件 + 新任务族；在 MultiAgentBench 协作场景中嵌入"秘密比特"变体，测真实任务中的合谋。
+- 指标：每条消息的条件信息量下界（bits）、监督者 AUROC、达到给定信息量所需 RL 步数、任务效用、改写后残余容量。
+- 关键假设检验：(a) 合谋出现速率随监督者变弱与回报差增大而单调上升；(b) n > 2 时多跳传递使检测更难；(c) 强改写器把残余容量压到接近 0，但效用损失可量化。
+- 对比：无优化压力基线、仅 ICL 压力、不同改写器。
+
+🔑 `secret collusion` `steganography` `multi-agent safety` `optimization pressure` `paraphrasing defense` `channel capacity`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.29 — *Learning What to Pass On: Budget-Adaptive, Pointer-Backed Communication Units for Trained Chain-of-Agents*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Chain of Agents: Large Language Models Collaborating on Long-Context Tasks** · Yusen Zhang et al. (Penn State) · 📄 NeurIPS 2024 · 📈 高引用 (310+) · [arXiv:2406.02818](https://arxiv.org/abs/2406.02818) |
+| 📌 **线索来源** | Limitations §"First, communication effectiveness can be further improved via finetuning or in-context learning because current LLMs are aligned with human norms which is not optimal for communication between LLMs." + §"Third, the cost and latency of running CoA can be further reduced, such as replacing some LLMs with more effective models via model routing" |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR / NeurIPS |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+CoA 把长输入切块交给一串 worker 依次阅读，每个 worker 把"通信单元（CU）"传给下一个，最后由 manager 作答；它免训练，在问答、摘要、代码补全上超过 RAG 与长上下文模型，并缓解了 lost-in-the-middle。作者在局限中指出：现有 LLM 的输出风格对齐人类读者，并不适合 LLM 之间传递信息；所有 worker 用同一大模型，成本与延迟高。后续的 MemAgent 用 RL 训练单个模型逐块覆写固定长度记忆，证明"训练记忆更新"可行，但它固定记忆长度、同等对待所有块，也无法回看原文。关键 insight：链式阅读的信息瓶颈高度**异质**：大部分块与问题无关，只需极短 CU 甚至可以跳过；少数块包含关键证据，需要更长的 CU，且最好保留指回原文的指针，让 manager 在必要时重读原句，而不是信任可能失真的转述。
+
+**💡 一句话 Idea**
+用 RL 训练 worker 产生长度自适应的"带指针 CU"（压缩结论 + 指向原文片段的引用），以 manager 最终正确率减去 token 与路由成本为回报，同时学习把无关块路由给小模型或直接跳过，使链式多 agent 长文本推理更准也更便宜。
+
+**🛠️ 可能的解决方法**
+1. **CU 格式**：[claims] 列表，每条附 [ptr: chunk_id, span]；manager 可调用 READ(ptr) 取回原文片段（计入 token 成本）。
+2. **回报与训练**：R = 正确性（EM/F1/ROUGE 或判分）− λ₁·Σ|CU| − λ₂·READ 次数 − λ₃·大模型调用次数；按样本组做 GRPO，所有 worker 共享一个以块序号和已收 CU 为条件的策略，回报由 manager 结果回传到整条链。
+3. **路由器**：轻量分类头在每块之前预测"跳过 / 小模型 / 大模型"，作为离散动作与 worker 策略联合训练。
+4. **防失真**：对带指针的 claim 计算其与所指片段的 NLI 蕴含度作为辅助奖励，抑制 worker 编造原文中不存在的事实。
+5. **成本**：worker 用 7–8B 模型，manager 可为同一模型；训练输入 32K–128K token，单节点可行。
+
+**🧭 与最接近工作的区别**
+- Chain-of-Agents（Zhang et al., 2024）：免训练、所有 worker 用同一大模型、CU 为自由文本；本 idea 训练 CU，并引入指针与路由。
+- MemAgent（Yu et al., 2025）：RL 训练单 agent 逐块覆写固定长度记忆，没有可回读指针、长度自适应与异质路由。
+- LongAgent（Zhao et al., 2024）：leader–member 结构处理长文本并消解成员间冲突，基于提示，不训练通信内容。
+
+**🧪 验证方案**
+- 基准：CoA 原文的 HotpotQA、MuSiQue、NarrativeQA、Qasper、QuALITY、QMSum、GovReport、BookSum、RepoBench-P；另加 LongBench v2 与 BABILong 测长度外推。
+- 指标：各任务原指标、总 token、大模型调用比例、端到端延迟、按证据位置分桶的准确率。
+- 关键假设检验：(a) 训练后 CU 平均长度下降而准确率上升；(b) 指针 + READ 在多跳问题上增益最大；(c) 路由器在不降准确率的前提下把 ≥50% 的块交给小模型或跳过。
+- 对比：原 CoA、MemAgent、RAG、长上下文直读；消融去指针、去路由、去蕴含奖励。
+
+🔑 `chain-of-agents` `long-context` `agent communication` `reinforcement learning` `model routing` `memory`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.30 — *Hack-Resistant Online Social RL: Judge-Diverse Reward Ensembles with Human-Anchored Calibration for Socially Intelligent Agents*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **SOTOPIA-π: Interactive Learning of Socially Intelligent Language Agents** · Ruiyi Wang et al. (CMU) · 📄 ACL 2024 · 📈 高引用 (120+) · [arXiv:2403.08715](https://arxiv.org/abs/2403.08715) |
+| 📌 **线索来源** | 8 Conclusion and future work §"Future work could study how online methods like PPO Schulman et al. (2017) can be applied without the high cost of LLM ratings." + §"(4) As demonstrated in § 5, the gap between GPT-4 and human evaluation increases as the model optimizes GPT-4 scores." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR / NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+SOTOPIA-π 用行为克隆（模仿 GPT-4 的社交互动）与自我强化（按 GPT-4 目标完成度评分筛选自身互动）离线训练 7B agent，使其社交目标完成能力接近 GPT-4 专家，同时提升安全性、不损通用问答。但作者揭示了一个警示性现象：模型越是被优化去讨好 GPT-4 评分，GPT-4 与人类评价之间的差距越大，这是典型的评审过优化；同时离线方法无法迭代，在线 RL 又受限于 LLM 评分的高成本。这两个问题必须一起解决，因为在线 RL 会放大过优化。关键 insight：社交评分中"可被投机"的部分往往是评审模型特有的偏好（冗长、显式宣告目标、过度礼貌），不同家族的评审在这些地方意见不一，在真正的社交成功上反而更一致。因此**评审间分歧**是过优化的廉价代理信号：由多家族评审蒸馏出的小型奖励集成，加上少量人类锚点，可以同时降低成本并抑制投机。
+
+**💡 一句话 Idea**
+把多家族 LLM 评审的 SOTOPIA-EVAL 评分蒸馏为小型多头奖励集成，以头间分歧作为不确定性惩罚、以小规模人类评分周期性校准，在自对弈与多样化伙伴上做在线 RL，使社交智能持续提升，同时 LLM 评分与人类评分的差距不再扩大。
+
+**🛠️ 可能的解决方法**
+1. **奖励模型**：收集 SOTOPIA 交互，由 3–4 个不同家族的评审（如 GPT-4o、Claude、Llama-3.1-70B、Qwen2.5-72B）给出七维 SOTOPIA-EVAL 评分，蒸馏为共享主干、每个评审家族一个头的多头 RM。
+2. **保守回报**：r = mean(heads) − β·std(heads)，作用于目标完成与关系维度；对已知可投机特征（长度、显式目标陈述）加入同内容不同长度/措辞的对抗增强数据。
+3. **人类锚定**：每 N 个 RL 迭代抽取 100–200 段对话做人类评分，若 RM–人类秩相关下降超过阈值，就用新数据微调 RM 头部。
+4. **在线 RL**：PPO/GRPO，伙伴池包含自身历史快照、不同家族模型与规则型伙伴，避免只学会对付自身；再在 3–4 人的多方场景做小规模扩展。
+5. **成本**：在线阶段只调用小 RM，昂贵的 LLM 评审仅用于初始蒸馏与定期抽检，成本比在线直接调用 GPT-4 低 1–2 个数量级。
+
+**🧭 与最接近工作的区别**
+- SOTOPIA-π（Wang et al., 2024）：离线 BC + 自我强化、单一 GPT-4 评审；本 idea 在线、多评审，并显式控制过优化。
+- Coste et al.（2024）：用奖励模型集成缓解通用 RLHF 的过优化；本 idea 利用"跨评审家族分歧"作为社交评分特有偏差的代理，并以人类锚点闭环。
+- Gao et al.（2023）：给出奖励模型过优化的缩放律；本 idea 在社交智能任务上实测并控制该现象。
+
+**🧪 验证方案**
+- 基准：SOTOPIA 全集与 SOTOPIA-hard、多方扩展场景、人类评估子集；用 MMLU 检查通用能力不退化。
+- 指标：目标完成度（LLM 与人类分别评）、LLM–人类差距随训练步数的曲线、七维 SOTOPIA-EVAL、安全相关维度、评分调用成本。
+- 关键假设检验：(a) 单评审在线 RL 下差距随步数扩大（复现并放大原文现象）；(b) 分歧惩罚使差距保持平稳而人类评分持续上升；(c) 人类锚点频率与差距之间存在可用的成本–效果曲线。
+- 对比：SOTOPIA-π、单评审在线 RL、无惩罚平均集成、直接以 GPT-4 在线评分（小规模上限）。
+
+🔑 `social intelligence` `SOTOPIA` `online RL` `reward hacking` `LLM-as-judge` `reward ensembles`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 4.31 — *Closing Social Loops: Commitment-Ledger Tracking and Premature-Termination Penalties for Workplace Agents That Talk to Colleagues*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **TheAgentCompany: Benchmarking LLM Agents on Consequential Real World Tasks** · Frank F. Xu et al. (CMU) · 📄 arXiv 2024 · 📈 高引用 (360+) · [arXiv:2412.14161](https://arxiv.org/abs/2412.14161) |
+| 📌 **线索来源** | 7.3 Common Agent Failures §"Sometimes, the agent fails to understand the implications and goals in the social conversations with colleagues in TheAgentCompany." + 8 Implications and Future Directions §"we argue that tasks that involve social interaction with other humans, navigating through complex user interfaces designed for professionals, and tasks that are typically performed in private, without a significant open and publicly available resources, are the most challenging." |
+| 📮 **投稿建议** | 🗣️ **NLP** · ACL / EMNLP ＋ 🧪 ML · ICLR / NeurIPS |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+TheAgentCompany 搭建了一个模拟软件公司（GitLab、ownCloud、Plane、RocketChat 与 LLM 扮演的同事），用 175 个可程序化检查的职业任务评测 agent，最强 agent 也只能完成少数，作者把需要与人社交的任务列为最难一类。失败分析给出一个典型案例：agent 问 Alex 下一步该找谁，Alex 回答"去找 Chen Xinyi"，agent 却没有跟进，直接认为任务完成。这不是语言理解失败，而是**对话中产生的义务没有被转化为待办**：同事的回复包含转介、请求、承诺等言语行为，它们改变了任务状态，而 agent 的规划只追踪工具层面的子目标。现有 agent 的训练与评测几乎都没有"社交义务"这一状态变量。关键 insight：借鉴言语行为理论，把每条对话解析为结构化义务（谁对谁、做什么、何时算完成），维护显式的"义务账本"，并把"账本未清空就终止"视为可检测、可惩罚的错误，就能把社交跟进从隐式常识变成可训练的状态跟踪问题。
+
+**💡 一句话 Idea**
+为工作场景 agent 增加言语行为驱动的义务账本：从同事消息中抽取请求、转介与承诺并转为子目标，禁止在账本未清空时终止，并在模拟同事环境中以"义务闭合率"为过程奖励做 RL，修复过早终止与不跟进的社交失败。
+
+**🛠️ 可能的解决方法**
+1. **义务抽取**：小模型把每条消息分类为言语行为（request / referral / commitment / inform / decline），并抽取 (debtor, creditor, action, completion-condition)；用 TheAgentCompany 风格的 NPC 对话与合成职场对话训练，人工标注 1–2k 条做评测。
+2. **账本与规划**：账本作为 agent 上下文中的固定区块；规划器每步须选择推进某条义务或某个任务子目标；调用 finish 前执行账本检查，若仍有开放义务须给出理由（如对方明确拒绝）。
+3. **训练环境**：基于 LLM NPC 同事模拟，程序化生成新的社交任务链（转介链长 1–4、NPC 延迟回复、NPC 给出部分错误指引），确保与测试任务不重叠。
+4. **奖励**：R = 检查点得分 + ν·义务闭合率 − ξ·1[账本非空时 finish] − 步数成本；GRPO 训练 7–32B 模型。
+5. **成本**：NPC 由小模型扮演以降低交互成本；每条轨迹 30–60 步。
+
+**🧭 与最接近工作的区别**
+- TheAgentCompany（Xu et al., 2024）：只诊断社交失败，不提供方法。
+- τ-bench（Yao et al., 2024）：agent 与单一模拟用户交互并遵守政策，不涉及多名同事之间的转介链与义务跟进。
+- 本仓库 Idea 4.8 关注 agent 主动发起沟通的不对称；本 idea 关注把他人回复中产生的义务转化为任务状态并闭合。
+
+**🧪 验证方案**
+- 基准：TheAgentCompany 全集（重点看涉及 RocketChat 交互的社交类任务）；τ-bench（retail/airline）测迁移；AppWorld 检查非社交任务能力不受损。
+- 指标：完全完成率、部分完成得分、步数、每任务成本、过早终止率、义务闭合率、pass^k。
+- 关键假设检验：(a) 社交类失败中相当比例可归因于未闭合义务（人工标注失败轨迹验证）；(b) 仅加账本（不训练）即有提升，RL 后进一步提升；(c) 非社交任务成功率不下降。
+- 对比：OpenHands 与 OWL RolePlay 原 scaffold、"完成前反思检查"提示、无义务奖励的 RL。
+
+🔑 `workplace agents` `TheAgentCompany` `speech acts` `commitment tracking` `premature termination` `social intelligence`
+
+[🔝 top](#top)
