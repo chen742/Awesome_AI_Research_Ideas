@@ -174,7 +174,7 @@ AnyBlox 让数据集随身携带 Wasm 解码器，把编码格式与读取系统
 |:--|:--|
 | 🎯 **源论文** | **Beluga: A CXL-Based Memory Architecture for Scalable and Efficient LLM KVCache Management** · Xinjun Yang et al. (Alibaba Cloud) · 📄 SIGMOD 2025 · [arXiv:2511.20172](https://arxiv.org/abs/2511.20172) |
 | 📌 **线索来源** | 8. Future Work on CXL Switches §"Second, a critical research area is the design of more efficient coherence protocols for CXL memory pools. Potential directions include: (1) leveraging application-level semantics to relax coherency, (2) implementing scalable, directory-based coherence using in-switch resources, and (3) developing hybrid models where a small, hardware-coherent region manages coherence metadata for a significantly larger address space." |
-| 📮 **投稿建议** | 🗄️ **DB** · SIGMOD / VLDB ＋ 🖥️ Systems · OSDI |
+| 📮 **投稿建议** | 🗄️ **DB** · VLDB / ICDE ＋ 🖥️ Systems · OSDI |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★★★ |
@@ -215,7 +215,7 @@ Beluga 基于首批商用 CXL 2.0 交换机搭建 GPU 集群共享内存池，�
 |:--|:--|
 | 🎯 **源论文** | **SagaLLM: Context Management, Validation, and Transaction Guarantees for Multi-Agent LLM Planning** · Edward Y. Chang & Longling Geng (Stanford) · 📄 VLDB 2025 · [arXiv:2503.11951](https://arxiv.org/abs/2503.11951) |
 | 📌 **线索来源** | 6. Conclusion §"Future work will address several critical challenges: developing formal verification methods for LLM-generated compensation code to ensure logging and rollback correctness, addressing intrinsic autoregressive context limitations, creating comprehensive verification frameworks for transactional multi-agent systems, ..." + 2.3 §"LangGraph and AutoGen enable structured workflows and agent interactions, but lack built-in atomicity guarantees, compensation logic, or robust failure recovery." |
-| 📮 **投稿建议** | 🗄️ **DB** · VLDB / SIGMOD ＋ 🧪 ML · NeurIPS |
+| 📮 **投稿建议** | 🗄️ **DB** · VLDB / ICDE ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -255,7 +255,7 @@ SagaLLM 把经典 Saga 事务引入多智能体规划：用不可变日志、补
 |:--|:--|
 | 🎯 **源论文** | **Chameleon: a Heterogeneous and Disaggregated Accelerator System for Retrieval-Augmented Language Models** · Wenqi Jiang et al. (ETH Zurich) · 🏆 VLDB 2025 Best Scalable Data Science Paper · [arXiv:2310.09949](https://arxiv.org/abs/2310.09949) |
 | 📌 **线索来源** | 8. Conclusion and Outlook §"ChamVS could also be extended to support index updates (Xu et al., 2023b) and relational features (Zhang et al., 2023)." |
-| 📮 **投稿建议** | 🗄️ **DB** · VLDB / SIGMOD ＋ 🖥️ Systems · OSDI |
+| 📮 **投稿建议** | 🗄️ **DB** · VLDB / ICDE ＋ 🖥️ Systems · OSDI |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★★☆ |
@@ -295,7 +295,7 @@ Chameleon 把检索增强语言模型拆成 GPU 上的 LLM 推理（ChamLM）和
 |:--|:--|
 | 🎯 **源论文** | **SIEVE: Effective Filtered Vector Search with Collection of Indexes** · Zhaoheng Li et al. (UIUC) · 📄 VLDB 2025 · [arXiv:2507.11907](https://arxiv.org/abs/2507.11907) |
 | 📌 **线索来源** | 6. Discussion §"One potential problem for SIEVE is an exploding optimization space when the historical workload contains many distinct filter templates." + §"SIEVE assumes availability of accurate filter cardinality info (card(h))." |
-| 📮 **投稿建议** | 🗄️ **DB** · VLDB / SIGMOD ＋ 🌐 WWW · KDD |
+| 📮 **投稿建议** | 🗄️ **DB** · VLDB / ICDE ＋ 🌐 WWW · KDD |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -375,7 +375,7 @@ SIEVE 用三维代价模型（内存、速度、召回）从历史负载中挑�
 |:--|:--|
 | 🎯 **源论文** | **Is Long Context All You Need? Leveraging LLM's Extended Context for NL2SQL** · Yeounoh Chung et al. (Google) · 📄 VLDB 2025 · [arXiv:2501.12372](https://arxiv.org/abs/2501.12372) |
 | 📌 **线索来源** | 6.3 Long context in production and limitations §"One limitation of our study, as we analyze the impact of long context and additional contextual information on NL2SQL, is the absence of benchmark datasets that accurately model enterprise use cases. Such cases typically involve hundreds of very wide tables with thousands of columns, as well as schemas with less descriptive and similar table and column names, making schema linking significantly more challenging." |
-| 📮 **投稿建议** | 🗄️ **DB** · VLDB / SIGMOD ＋ 🗣️ NLP · ACL |
+| 📮 **投稿建议** | 🗄️ **DB** · VLDB / ICDE ＋ 🗣️ NLP · ACL |
 | ⭐ Novelty | ★★★☆☆ |
 | 🚀 Impact | ★★★★★ |
 | 🧗 Difficulty | ★★★☆☆ |
@@ -454,7 +454,7 @@ SIEVE 用三维代价模型（内存、速度、召回）从历史负载中挑�
 |:--|:--|
 | 🎯 **源论文** | **SPADE: Synthesizing Data Quality Assertions for Large Language Model Pipelines** · Shreya Shankar et al. (UC Berkeley) · 📄 VLDB 2024 · [arXiv:2401.03038](https://arxiv.org/abs/2401.03038) |
 | 📌 **线索来源** | 4.4 Limitations and Future Work §"Additionally, assessing the accuracy of FFR estimates with limited E′ and exploring methods to enhance FFR accuracy in the absence of large labeled datasets (e.g., via prediction-powered inference (Angelopoulos et al., 2023)), presents an interesting area for future work." + §"Our study focuses on single-prompt LLM pipelines, but more complex pipelines, such as those involving multiple prompts, external resources, and human interaction, present opportunities for auto-generating assertions for each pipeline component." |
-| 📮 **投稿建议** | 🗄️ **DB** · VLDB / SIGMOD ＋ 🧪 ML · NeurIPS |
+| 📮 **投稿建议** | 🗄️ **DB** · VLDB / ICDE ＋ 🧪 ML · NeurIPS |
 | ⭐ Novelty | ★★★★☆ |
 | 🚀 Impact | ★★★★☆ |
 | 🧗 Difficulty | ★★★☆☆ |

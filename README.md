@@ -283,8 +283,9 @@
 | 🤖 Robotics | **IROS** | **3** | 3 |
 | 🤖 Robotics | **RSS** | **5** | 5 |
 | 🤖 Robotics | **CoRL** | **11** | 31 |
-| 🗄️ DB | **SIGMOD** | **12** | 12 |
+| 🗄️ DB | **SIGMOD** | **6** | 6 |
 | 🗄️ DB | **VLDB** | **12** | 13 |
+| 🗄️ DB | **ICDE** | **6** | 6 |
 | 🖥️ Systems | **OSDI** | **12** | 21 |
 | 🖥️ Systems | **SOSP** | **12** | 12 |
 | 🖥️ Systems | **FAST** | **1** | 1 |
