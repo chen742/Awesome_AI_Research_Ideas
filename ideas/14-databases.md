@@ -485,3 +485,504 @@ SPADE 从 prompt 版本差异中合成候选断言，再用 ILP 在覆盖率 ≥
 🔑 `data quality` `LLM pipelines` `assertions` `prediction-powered inference` `integer linear programming` `RAG`
 
 [🔝 top](#top)
+
+---
+
+## 💡 Idea 14.13 — *Cross-Engine Semi-Join Programs: Adaptive Multi-Round Reduction for Nested and Bidirectional Graph–Relational Joins*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **MICRO: A Lightweight Middleware for Optimizing Cross-store Cross-model Graph-Relation Joins** · Xiuwen Zheng et al. (UCSD) · 🏆 ICDE 2026 Best Research Paper · [arXiv:2603.13835](https://arxiv.org/abs/2603.13835) |
+| 📌 **线索来源** | VIII-K Limitations and Discussion for Future Work §"More complex cases—such as nested joins or multi-round bidirectional joins—can arise in practice." + §"CMLero uses estimated plan from Neo4j collected statically offline, adaptive re-optimization maybe needed when the actual Neo4j plan deviates a lot from the estimates." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🌐 WWW · KDD |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+MICRO 形式化了"图库（Neo4j）× 关系库"的跨引擎跨模型连接，用 learning-to-rank 优化器 CMLero 在少量候选计划（谁先执行、键集合往哪边下推）中挑一个，获得 ICDE 2026 最佳论文。它的计划空间只有**一轮、单向**的下推，并依赖离线采集的 Neo4j 估计计划。作者也承认嵌套连接、多轮双向连接在实践中存在，且实际 Neo4j 计划偏离估计时需要自适应重优化。真正的空隙在于：当查询是"关系→图→关系"链或多个跨引擎连接边时，最优策略是一段**半连接程序**，即多轮来回传递键集合或 Bloom 过滤器，逐步缩小两边的中间结果，相当于跨引擎的 Yannakakis full reducer。每一轮注入参数后，外部引擎会**重新规划**，代价随之变化，所以静态排序器无法预知。关键 insight：把"下一步做哪种缩减"建模为序贯决策，让排序器读取前几轮观测到的真实中间规模，就能把 MICRO 的离线 ranking 变成在线自适应的程序合成。
+
+**💡 一句话 Idea**
+把跨引擎图–关系查询的执行表示为"半连接程序"（方向、过滤器类型、轮数）。按跨引擎连接树做 full reducer 式的多轮缩减，由一个读取每轮实测中间规模的上下文排序器在线决定下一步，用于嵌套与双向连接。
+
+**🛠️ 可能的解决方法**
+1. **程序抽象**：把查询分解为引擎本地子查询（Cypher 段、SQL 段）构成的连接树，跨引擎边上是连接键。原子步骤 = (src→dst, 过滤器 ∈ {精确键表, Bloom(FPR f), 区间摘要}, 注入方式 ∈ {`IN $keys` 参数, 临时表, UNWIND})。程序 = 步骤序列 + 终止 join。
+2. **代价与搜索**：代价 = 传输字节 + 两侧引擎在参数注入下的执行时间（用 `PROFILE` / `EXPLAIN ANALYZE` 采集）。离线阶段在基准上枚举短程序（≤ 2·|边| 步）训练 pairwise ranker；在线阶段每执行一步就把实测 |中间结果|、Neo4j 实际 db hits 加入特征，重排剩余候选步骤，实现 mid-query 重优化。
+3. **Bloom 参数选择**：对每一步求解 min_f bytes(f) + E[下游多余行 ∝ f·|domain|] 的一维凸问题，闭式给出最优 FPR。图侧大键集合优先发送 Bloom，关系侧可以直接 hash-probe。
+4. **理论锚点**：对无环的跨引擎连接树，两遍 full reducer 让每侧中间规模 ≤ 输入 + 输出（Yannakakis）。程序搜索只在其子空间内做代价敏感的提前终止，保证最坏情况不劣于 MICRO 的单轮计划（单轮计划本身就是候选）。
+5. **工程**：中间件保持无侵入（只用 Cypher/SQL 参数化），兼容 MICRO 的 5 个基准，并扩展生成嵌套、双向模板。
+
+**🧭 与最接近工作的区别**
+- MICRO (2026)：一轮单向下推 + 静态离线排序。本 idea 支持多轮双向缩减程序与执行中自适应。
+- *Reducing the Cross-Model Tax: Query Optimization over Multi-Model Data* (MM-quecat, 2026)：在 PostgreSQL/MongoDB/Neo4j 间做谓词下推和依赖连接，规则是静态的、单向的，也没有学习型的序贯决策。
+- arXiv 查新（关键词：semi-join + polystore；Yannakakis + federated；semijoin reduction + Cypher）未发现跨图–关系引擎的多轮缩减程序工作。
+
+**🧪 验证方案**
+- 基准：MICRO 的真实基准与 4 个半合成基准，加新生成的嵌套（R→G→R）与双向模板；引擎：Neo4j + PostgreSQL，可加 Kùzu / DuckDB 验证通用性。
+- 指标：端到端延迟、传输字节、相对 oracle 程序的 slowdown 分布（P50/P95）、优化开销。
+- 对比：MICRO/CMLero、MM-quecat 式静态依赖连接、"全拉取到中间件再 join"、固定两遍 full reducer。
+- 消融：去掉执行中特征（退化为静态排序）/ 只允许精确键表 / 不允许多轮；并人为制造 Neo4j 计划估计偏差，检验自适应的收益。
+
+🔑 `cross-model query` `polystore` `semi-join reduction` `Yannakakis` `learning-to-rank optimizer` `adaptive query processing`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.14 — *Discriminative-Bit Lanes: Branchless SIMD Search over Variable-Length String Keys in Gapped B-trees*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **BS-tree: A gapped data-parallel B-tree** · Dimitrios Tsitsigkos et al. (Athena RC) · 🏆 ICDE 2026 Best Research Paper Runner-Up · [arXiv:2505.01180](https://arxiv.org/abs/2505.01180) |
+| 📌 **线索来源** | 9. Conclusions §"In addition, we will study the support of string keys in BS-tree (one solution is to use Binary, ASCII or Base64 encoding (Ding et al., 2020a))." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🖥️ Systems · OSDI |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+BS-tree 的两个核心技巧都依赖**定长整数键**：节点 = 一个 SIMD 寄存器宽的有序数组，用复制相邻键制造 gap，从而做到无分支的 SIMD 查找与无移位插入；再用 FOR 压缩让节点容量可变。作者把字符串键列为未来工作，设想用 Binary/ASCII/Base64 编码。但定长编码要么截断，导致比较不再保序；要么把键变长，SIMD 并行度随之崩塌。真正的空隙：字符串 B-tree 至今仍靠逐键 memcmp，最多加上 4 字节 "head" 前缀，前缀相同时就退化。关键 insight 来自 HOT 的观察：节点内 n 个有序键最多只需要 **n−1 个区分位（discriminative bits）** 就能完全保序区分。BS-tree 的 gap 是"重复键"，不会引入新的区分位。因此一个最多含 17 个不同键的节点，任意长度的字符串都能压成 **16 位 lane**，一个 AVX-512 寄存器装 32 个 lane，正好是 17 个键加 15 个 gap。gap 机制与区分位编码天然契合。
+
+**💡 一句话 Idea**
+在 BS-tree 节点内用 PEXT 把每个字符串键抽成"节点局部区分位"构成的 16/32 位部分键，在 SIMD lane 上做无分支比较，最后用一次全键校验修正秩。gap 仍靠复制部分键实现，因此任意长度字符串都能保留 BS-tree 的无分支查找与无移位更新。
+
+**🛠️ 可能的解决方法**
+1. **节点编码**：节点保存公共前缀长度 p、区分位位置集 D（按字节偏移 + 位掩码分组）、部分键数组 pk[i] = PEXT(gather(key_i, D))、指向完整键的指针数组。|D| ≤ 不同键数 − 1，lane 宽度 w ∈ {8,16,32} 随 |D| 自适应，与 FOR 的可变容量思路一致。
+2. **查找**：先用 VPERMB/VPSHUFB 按 D 的字节偏移从查询键收集字节，再 PEXT 得到 q̂，然后 SIMD 比较 + popcount 得到候选位置 j。对 j 处完整键做一次比较；若不相等，用 q 与 key_j 的第一个不同位（clz of XOR）在 D 的序上二分修正秩（HOT 的修正规则），全程至多一次分支。
+3. **更新**：插入键若引入新的区分位，就对整个节点重算 PEXT（一次 SIMD 批处理，O(节点)）；否则直接写入一个 gap 槽（复制邻居后覆盖），保持无移位。lane 位宽溢出时触发分裂。分析重编码的摊还代价，在随机插入下期望为 O(1)。
+4. **内存与缓存**：完整键放到独立的 key arena 并做前缀截断。叶层用 slotted page 存放完整键，内部节点只存部分键 + 子指针，扇出不受键长影响。
+5. **并发**：沿用 BS-tree 的 optimistic lock coupling，重编码时只需节点版本号 + 1。
+
+**🧭 与最接近工作的区别**
+- HOT: A Height Optimized Trie Index for Main-Memory Database Systems (SIGMOD 2018)：同样用区分位 + SIMD，但它是 trie 结构，没有 B-tree 平衡与 gap，更新需要结构重组。本 idea 把区分位当作 B-tree 节点内的**定长 lane 编码**，并利用"gap 不增加区分位"的性质。
+- *Order-Preserving Key Compression for In-Memory Search Trees* (HOPE, 2020)：全局保序字典压缩，键仍然变长，也没有和 SIMD 节点结构协同。
+- arXiv 查新（关键词：SIMD + string keys + index；variable-length keys + index；SIMD + B-tree）未发现把区分位 lane 编码用于 gapped SIMD B-tree 的工作。
+
+**🧪 验证方案**
+- 数据：email、Wikipedia 标题、URL（HOPE/HOT 使用过的字符串集），以及 YCSB A–F 的字符串键版本；键长从 8 B 到 200 B 不等。
+- 对比：BS-tree + Base64 定长编码、STX/TLX B+-tree（std::string）、Masstree、ART、HOT、Wormhole。
+- 指标：查找/插入/范围扫描吞吐（1–64 线程）、内存占用、构建时间、重编码频率与摊还开销。
+- 消融：固定 32 位 lane vs 自适应 w / 无 gap / 无全键校验（统计误判率）；在长公共前缀的 URL 集上对比 4 字节 head 方案。
+
+🔑 `B+-tree` `SIMD` `string keys` `discriminative bits` `branchless search` `main-memory index`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.15 — *Layout Portfolios: Competitive Online Management of Co-existing Data Layouts with Partial, Non-Uniform Reorganization*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Dynamic Data Layout Optimization with Worst-Case Guarantees** · Kexin Rong et al. (Georgia Tech) · 📄 ICDE 2024 · [arXiv:2405.04984](https://arxiv.org/abs/2405.04984) |
+| 📌 **线索来源** | VIII Discussion and Future Work §"However, if we have the storage budget to maintain multiple layouts of the same dataset simultaneously, we could extend Algorithm 4 to accommodate this scenario." + §"Extending our framework to support non-uniform metrics would increase the possible state space of data layouts." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🖥️ Systems · OSDI |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+OReO 把"何时、如何重组数据布局"建模为动态状态空间上的 uniform metrical task system (MTS)，得到对数竞争比。它有两个明确的简化。其一，任意两种布局之间的切换代价相同，而真实的重组往往只需重切部分分区，代价非均匀。其二，任何时刻只保留一份布局。湖仓（Delta/Iceberg）的现实正相反：存储便宜，工作负载常是**多模态**的，比如 BI 看板按时间过滤，风控按用户过滤，单一布局永远在两者之间摇摆。真正的问题因此变成：在存储预算 k 份内，维护一个**布局组合（portfolio）**，每条查询路由到代价最低的副本，并在线决定何时、对哪份副本做多大范围的局部重组。这是 MTS 向"多服务器 + 非均匀度量"的推广，理论上接近 generalized k-server，直接求解很难。关键 insight：把副本与工作负载簇绑定，然后用 HST（层次分离树）嵌入非均匀重组度量，这样每份副本都能沿用 OReO 式的计数器算法，并获得针对其路由子流的竞争保证。
+
+**💡 一句话 Idea**
+在存储预算内维护多份布局：查询按最低扫描代价路由，每份副本只对路由给它的子工作负载做 OReO 式在线决策。切换代价用"变动分区字节数"度量，并通过 HST 嵌入处理非均匀性。是否新增或淘汰副本用 ski-rental 规则决定，在多模态漂移下获得有界竞争比。
+
+**🛠️ 可能的解决方法**
+1. **状态与代价**：布局候选由 Qd-tree 在滑动窗口查询上生成。两布局之间的距离 d(L, L') = 需要重写的数据字节，即两棵 Qd-tree 分区不一致的子树大小之和；共享上层切分的布局距离小，因此度量是非均匀的。
+2. **路由与分簇**：查询 q 路由到 argmin_i cost(q, L_i)（用 min/max zone map 统计跳过的分区）。路由结果形成 k 个子流，每个子流独立维护 OReO 计数器，只在其子流的累计遗憾超过 d(L_i, L*) 时重组副本 i。
+3. **非均匀度量**：把候选布局嵌入 HST（期望失真 O(log n)），在 HST 上运行已知的随机化 MTS 算法，得到 O(polylog n) 竞争比。候选集动态增长时，沿用 OReO 的 dynamic-state 处理方式。
+4. **副本数自适应**：新建副本的代价 C_new 是一次性的，类似买雪橇，因此用 ski-rental 规则：当"若存在第 k+1 份副本可省下的扫描代价"累计超过 C_new 时就新建，给出 2-竞争的创建决策；长期无路由的副本淘汰。
+5. **工程**：在 Spark + Delta Lake 上实现，重组以分区粒度后台执行（OPTIMIZE / rewrite files），查询路由在元数据层完成，对引擎透明。
+
+**🧭 与最接近工作的区别**
+- OReO (2024)：单份布局 + uniform 切换代价。本 idea 处理多副本组合与局部（非均匀）重组。
+- *Qd-tree: Learning Data Layouts for Big Data Analytics* (2020)：离线为固定工作负载学一份布局，不处理漂移与多副本。
+- *Heterogeneous Replica for Query on Cassandra* (2018)：给各副本静态指定不同排序，没有在线重组与竞争分析。
+- arXiv 查新（关键词：data layout + replicas + workload；data layout + reorganization + online；metrical task + database）未发现在线多布局组合的工作。
+
+**🧪 验证方案**
+- 工作负载：TPC-H/TPC-DS 加上人为构造的多模态漂移（两三类谓词模板交替、比例渐变），以及 Amazon Redset 公开查询轨迹中的谓词模式回放。
+- 指标：总代价（扫描 + 重组时间）、扫描的分区/行数、存储开销、相对离线 oracle（已知整条查询流、固定 k）的实测比值。
+- 对比：静态 Qd-tree、OReO（k = 1）、周期性全量重组、k 份静态副本（各按一个历史簇优化）。
+- 消融：uniform vs 非均匀度量 / 固定 k vs ski-rental 自适应 k / 路由策略（最低代价 vs 轮询）。
+
+🔑 `data layout` `metrical task systems` `online algorithms` `lakehouse` `replica portfolio` `data skipping`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.16 — *Marginal-Novelty Table Search: Set-Level Entity-Coverage Maximization with Mergeable Sketches over Data Lakes*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Novel Table Search** · Besat Kassaie & Renee J. Miller (Waterloo) · 📄 ICDE 2026 · [arXiv:2603.07235](https://arxiv.org/abs/2603.07235) |
+| 📌 **线索来源** | X Conclusions and Future Work §"If a query table contains poor quality data, a search algorithm may lack sufficient information to identify truly novel tables." + §"In this work, we computed relevance using the similarity of attribute embeddings." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🌐 WWW · KDD |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+NTS 首次把"去冗余"引入数据湖的可并表搜索：找出与查询表可 union、又能带来新信息的表。ANTs 用"语义相关 + 语法相异"打分，用多样化算法选出 top-k。但它的新颖性仍是**逐表相对查询表**来定义的，有两个后果。(1) 若两张候选表彼此高度重叠，却都与查询表不同，它们会被一起选中，用户实际获得的新实体远少于预期；结果间的多样性项只是代理，并没有度量"新增了多少实体"。(2) 作者承认，查询表质量差时（行少、脏），可用于判断新颖性的信息不足，于是计划用 LLM 生成假想元组扩充查询，但这会引入幻觉。关键 insight：用户真正要的是**集合级边际覆盖**，即 f(S) = |Ent(Q ∪ S)| − |Ent(Q)|。它是单调子模函数，贪心法有 1−1/e 保证。更重要的是，每选入一张真实表，参照集就自然扩充，这正好用**真实数据**而非 LLM 幻觉替代了查询扩展。
+
+**💡 一句话 Idea**
+把 NTS 重新定义为子模的"边际实体覆盖最大化"：每张表存一份可合并的 HLL/KMV 实体草图（实体键经模糊归一化），在可 union 的候选上用 lazy greedy 选表。每选一张表就把它并入参照集，用真实数据完成查询自扩充，并给出近似比保证。
+
+**🛠️ 可能的解决方法**
+1. **实体签名**：对齐后的 union 列中先选出"键列组合"（高唯一性列，用 TUS 的列对齐结果确定）。值经过规范化（大小写、单位、缩写词典），再用字符 n-gram SimHash 分桶，使语法变体落进同一桶。元组签名 = hash(各键列桶 ID)。
+2. **草图**：每张表离线存 HyperLogLog（基数）+ KMV（包含度）草图。边际增益 Δ(T | R) = |HLL(R ∪ T)| − |HLL(R)|，可在常数时间内合并计算。
+3. **选择算法**：先由现有 TUS（如 Starmie 列嵌入 + HNSW）召回 top-m 可并候选，再在其上运行 CELF lazy greedy。由于 Δ(T | R) ≤ |HLL(T)|，用这个上界剪枝。分析 HLL 相对误差 ε 对近似比的影响：(1−1/e)·OPT − O(kε·|U|)。
+4. **相关性约束**：目标改为 f(S) = Σ_T rel(Q, T)·Δ(T | Q ∪ S_<T)。仍然是子模函数，可防止"新但不相关"的表被选入；rel 沿用 ANTs 的语义相关度。
+5. **扩展**：对数值列，把"新实体"推广为"新值域覆盖"，用等深直方图草图度量，可服务于 ML 训练数据补全。
+
+**🧭 与最接近工作的区别**
+- NTS / ANTs (2026)：逐表新颖性 + 结果多样化（GMC），没有度量集合级新增实体，查询质量差时依赖 LLM 扩充。
+- *Semantics-aware Dataset Discovery from Data Lakes with Contextualized Column-based Representation Learning* (Starmie, 2022)：只按可并性排序，不考虑冗余。
+- *Table Integration in Data Lakes Unleashed* (2024)：判断可集成的表集合并消解冲突，目标是集成正确性，而不是新增覆盖最大化。
+- arXiv 查新（关键词：data lake + novelty；table union search；data lake + coverage + sketch；data lake + submodular）未发现直接重合的工作。
+
+**🧪 验证方案**
+- 基准：NTS 论文使用的可并表基准（基于 SANTOS / TUS / UGEN 构造的新颖性标注集），另加人为降质的查询表（截断到 5% 行、注入噪声）测试鲁棒性。
+- 指标：top-k 结果实际新增的去重实体数（ER 后计数）、新增实体/总行数之比、下游任务增益（NTS 中的数据增强任务）、查询延迟与草图存储。
+- 对比：ANTs、GMC、SemNov、ER-based NTS、Starmie top-k；以及"ANTs + LLM 假想元组扩充"。
+- 消融：去掉自扩充（参照集固定为 Q）/ 去掉 SimHash 模糊化 / HLL 精度 p 变化对选择质量的影响。
+
+🔑 `data lakes` `table union search` `novelty` `submodular coverage` `HyperLogLog` `dataset discovery`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.17 — *Computing on the Curve: Exact and ε-Bounded Range Aggregates Directly over Nonlinear Learned Time-Series Encodings*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Learned Compression of Nonlinear Time Series with Random Access** · Andrea Guerra et al. (Univ. of Pisa) · 📄 ICDE 2024 · [arXiv:2412.16266](https://arxiv.org/abs/2412.16266) |
+| 📌 **线索来源** | VI Conclusions and Future Work §"Another interesting research direction is to exploit the information encoded by the functions to efficiently answer aggregate queries on the time series data." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🌐 WWW · KDD |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★☆☆☆ |
+
+**🔍 深入分析**
+NeaTS 把时间序列切成若干片段，每段用误差有界的非线性函数（线性、二次、指数、幂函数等）拟合，无损版再存位打包的残差。它在压缩率、随机访问和解压速度之间给出了新的权衡。但聚合查询（SUM/AVG/MIN/MAX/阈值计数）仍须**先解压再计算**，代价与区间长度成正比。作者明确提出，应利用函数里编码的信息来回答聚合。已有的模型化时序库（ModelarDB、Plato）只在**有损、线性/常数模型**上做近似聚合。非线性函数族的闭式求和、无损精确结果，以及"片段划分本身应当为聚合优化"，这三点都还没有人做。关键 insight：片段内 Σ f(i) 对多项式、指数、幂函数都有闭式或快速可算的形式，取整误差加残差的总和有确定界 (ε + ½)·len。于是 O(1) 就能给出带确定区间的答案；只有落在区间边界的片段才需要解码，就能拿到精确值，形成 anytime 查询。
+
+**💡 一句话 Idea**
+为 NeaTS 增加聚合原生层：存每片段精确和的前缀数组 + 片段内稀疏的残差前缀采样。范围 SUM/AVG 先给出 O(1) 的确定误差区间，再只解码边界片段得到精确值。MIN/MAX 和阈值计数用函数极值与求根做分支定界。另外在片段划分 DP 中加入聚合代价项，得到"压缩率–查询速度"的帕累托旋钮。
+
+**🛠️ 可能的解决方法**
+1. **精确 SUM**：每个片段 j 存精确和 S_j（无损：Σ x_i），再存其前缀 P_j（Elias–Fano 压缩）。片段内每隔 s 个位置采样一次残差前缀。range-sum = P 差 + 两端部分片段（闭式 Σ⌊f(i)⌉ 的近似 + 至多 s 个解码），精确值 O(s) 可得。
+2. **ε-界答案**：部分片段用闭式 Σ f(i)（多项式用 Faulhaber 公式，指数用几何级数，幂函数用 Hurwitz-zeta 截断或预计算表）加上误差界 ±(ε + ½)·len，O(1) 返回区间；用户要求精确值时再解码。
+3. **MIN/MAX 与阈值计数**：每片段的函数在区间上的极值可解析求得（单调或单一驻点），±ε 得到上下界；只解码边界与真实极值重叠的片段。COUNT(x > τ) 解 f(i) = τ ± ε 的根，只在 2ε 不确定带内解码。
+4. **聚合感知划分**：NeaTS 的最短路径 DP 的边权从"比特数"改为"比特数 + λ·E_workload[边界解码代价]"，λ 调节压缩率与查询速度，并保持原有随机访问 API。
+5. **成本**：额外空间约为每片段一个整数加 n/s 个采样，预计 < 5% 的开销。
+
+**🧭 与最接近工作的区别**
+- *Scalable Model-Based Management of Correlated Dimensional Time Series in ModelarDB+* (2019)：在有损、以常数/线性为主的模型上直接聚合，不支持非线性函数族和无损精确聚合。
+- Plato (VLDB 2020)：给压缩时序上的近似分析提供确定误差保证，但面向有损压缩表示，没有无损精确结果，也没有"区间 → 精确"的渐进细化。
+- arXiv 查新（关键词：time series + compressed + aggregate queries；lossless + random access；compressed domain + time series）未发现在非线性无损学习型压缩上直接回答聚合的工作。
+
+**🧪 验证方案**
+- 数据：NeaTS 论文的 16 个时序数据集（温度、心电、金融、IoT 等）。
+- 查询：随机区间长度 10²–10⁷ 的 SUM/AVG/MIN/MAX/阈值计数；指标：延迟、精确性（无损版必须逐比特相等）、ε-界宽度、额外空间、压缩率变化。
+- 对比：NeaTS 解压后聚合、ALP / Chimp / Gorilla 解压后聚合、ModelarDB 式模型聚合、Plato。
+- 消融：采样间隔 s 与 λ 的帕累托曲线 / 只用线性函数族 / 去掉阈值求根剪枝。
+
+🔑 `time series compression` `learned compression` `compressed-domain query` `range aggregates` `nonlinear approximation` `random access`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.18 — *Capacity-Consistent Coreset Environments: Training RL-Enhanced Spatial Indices on Weighted Samples with Provable Reward Fidelity*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Benchmarking RL-Enhanced Spatial Indices Against Traditional, Advanced, and Learned Counterparts** · Guanli Liu et al. (Univ. of Melbourne) · 📄 ICDE 2026 · [arXiv:2512.11161](https://arxiv.org/abs/2512.11161) |
+| 📌 **线索来源** | VI-B Challenges and Limitations of RLESIs §"This mismatch means models often optimize policies on artificial geometries that fail to capture true data locality." + §"For example, in the full dataset, 100 spatially close points may be spread across multiple pages, whereas in a sparse sample the same 100 points can fit on a single page." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🧪 ML · NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+这篇基准论文首次统一评测了 12 种空间索引，其中包括 RL 增强空间索引（RLESI）。结论是：RLESI 训练昂贵、对参数敏感，而且并不稳定地优于学习型或改进型的传统索引。作者把一个根本原因讲得很具体：为了降低"训练→构建→评估"循环的代价，训练只在**采样数据**上进行，而页面容量仍按全量设置，于是全量中分散在多页的邻近点在样本里挤进同一页。策略因此在"失真的几何"上优化，奖励信号本身就是错的。这不是调参问题，而是 RL 环境的**保真度**问题，现有的 ELSI 等采样加速只针对 CDF 型学习索引，没有处理"页容量与样本率的耦合"。关键 insight：把样本点赋予权重 n/|S|，页容量按**权重单位**计数。再取 ε-近似（矩形范围空间的 VC 维为 4），使任意查询矩形的加权计数误差 ≤ εn。这样奖励（访问页数）的误差有界，策略排序在奖励间隙大于两倍误差界时不会翻转。
+
+**💡 一句话 Idea**
+为 RLESI 构造"容量一致"的加权 coreset 训练环境：样本量按页数而不是数据量设定（每页约 m 个样本点），页容量以权重计。用 ε-近似理论界定奖励误差，用多保真度 successive halving 在必要时提升分辨率，消除训练与构建之间的局部性失配。
+
+**🛠️ 可能的解决方法**
+1. **页分辨率 coreset**：|S| ≈ m·⌈n/B⌉（m≈16–32），用 merge-reduce 的 kd-分层抽样构造 ε-近似，每点权重 w = n/|S|。所有分裂和装页决策都在加权分位点上进行，页满条件改为 Σw ≥ B。
+2. **奖励保真界**：对查询矩形 R，|Σ_{S∩R} w − |D∩R|| ≤ εn，于是访问页数误差 ≤ εn/B + 边界页项。若两候选动作的估计奖励差 > 2 倍误差界，排序与全量一致，可写成定理。
+3. **多保真度训练**：动作或参数候选先在低分辨率 coreset 上评估，只对奖励差落在误差界内的"难区分"候选提升 m 并重评（successive halving），最后少数几次全量构建做验证。
+4. **代价型奖励**：用加权 coreset 上的解析代价（页访问期望）替代 BM-tree 那种反复评估中间分区的奖励，消除基准论文图 22 中的训练开销热点。
+5. **通用接口**：作为基准框架"训练/构建解耦"模块的插件，对基准中的各类 RLESI（如 RLR-tree、BMTree）透明。
+
+**🧭 与最接近工作的区别**
+- 源基准论文 (2025)：均匀采样训练、全量构建，明确指出失配但未给出解决方案。
+- ELSI (Liu et al., ICDE 2023)：用代表性子集加速 CDF 型学习空间索引的训练，不涉及 RL 奖励与页容量耦合。
+- *Towards Designing and Learning Piecewise Space-Filling Curves* (BMTree, VLDB 2023)：RL 学习分段 SFC，奖励在采样数据上计算，正是本 idea 要修正的设置。
+- arXiv 查新（关键词：spatial index + reinforcement learning；coreset + spatial index；learned index + sampling + spatial）未发现直接重合的工作。
+
+**🧪 验证方案**
+- 框架与数据：基准论文的统一框架、6 个数据集（OSM、Tiger 及合成分布）与 7 类工作负载（点、窗口、kNN，不同选择度）。
+- 指标：训练时间、最终全量索引的查询 I/O 与延迟、构建时间，以及 coreset 奖励与全量奖励之间的 Kendall τ（策略排序保真度）。
+- 对比：均匀采样（基准默认）、全量训练（上界）、ELSI 式代表集；RLESI 取基准中已实现的全部方法（如 RLR-tree、BMTree）。
+- 关键假设检验：误差界预测的"排序翻转率"与实测一致；m 从 4 增到 64 时性能饱和点的位置。
+
+🔑 `spatial index` `reinforcement learning` `coreset` `epsilon-approximation` `reward fidelity` `learned index training`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.19 — *Guarded Cost Cases: Compiling Python UDFs into Path-Summarized Operators for Cost-Based Guard Pushdown and Predicate Ordering*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **GRACEFUL: A Learned Cost Estimator for UDFs** · Johannes Wehrstein et al. (TU Darmstadt) · 📄 ICDE 2025 · [arXiv:2503.23863](https://arxiv.org/abs/2503.23863) |
+| 📌 **线索来源** | VIII Conclusion and Future Work §"While we believe that our work is an important step to enable query optimization for queries with UDFs, more work is needed in particular on how to enable cost-based optimizations for UDFs that go beyond pull-up/push-down decisions." + II-B Discussion of Scope §"Each scalar udf can contain diverse statements as supported by commercial DBMSs and include branches, loops, arithmetic, and string operations, as well as calls to external libraries (e.g., math or numpy)." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🖥️ Systems · OSDI |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+GRACEFUL 把 Python 标量 UDF 的控制流图与查询计划合成一张图，用 GNN 预测含 UDF 的计划代价，并据此做 UDF 上拉/下推决策，在 20 个数据集上取得加速。但作者明确说，超越上拉/下推的基于代价的 UDF 优化仍是空白。现状是：优化器把 UDF 当成一个**不透明的整体**，只有"在哪儿算"一个自由度。可 GRACEFUL 已经证明 UDF 内部结构（分支、循环、字符串操作）可学习、可分析。真正的空隙在于：一个过滤型 UDF `WHERE udf(a, b)` 往往只在部分路径上返回 True，这些路径条件里常有可以写成 SQL 的必要条件（如 `len(a) > 3`、`b > 0`）。把它们提出来，就能下推到扫描、zone map 和索引，也能和其他谓词按代价排序；廉价路径还能直接内联成 `CASE WHEN`。关键 insight：把 UDF 编译成"带守卫的代价分支集合" {(φ_p, cost_p, out_p)}，让优化器在这个**新算子抽象**上做代价决策，不再把 UDF 视为黑盒。
+
+**💡 一句话 Idea**
+用符号执行把 Python UDF 编译为路径摘要算子：每条路径带路径条件、代价和输出。从中推导出可写成 SQL 的必要条件守卫和充分条件短路，再用扩展到逐路径的 GRACEFUL 代价模型，在守卫下推、部分内联、记忆化和谓词排序之间做基于代价的选择。
+
+**🛠️ 可能的解决方法**
+1. **路径摘要**：对 UDF 的 CFG 做有界符号执行（循环按输入长度抽象为代价函数，外部库调用视为未解释函数）。得到路径集合 P，每条路径记录 φ_p（输入列上的约束）、cost_p（由 GRACEFUL 的节点级特征预测）、out_p（常量 / 表达式 / 未知）。
+2. **守卫推导**：过滤型 UDF 的必要条件 N = ∨_{p: out_p 可能为 True} φ_p，这是过近似，因此语义安全。把 N 中可下推的原子（比较、LIKE 前缀、长度）翻译为 SQL，下推到扫描与 zone map。若某路径恒为 True 且很廉价，就内联成充分条件短路，不再调用 UDF。
+3. **逐路径代价**：期望代价 E[cost] = Σ_p sel(φ_p)·cost_p，其中 sel 来自 DBMS 统计（直方图 / 采样），cost_p 来自 GRACEFUL 的 GNN 头。优化器在 {原样, 守卫下推, 部分内联, 记忆化（distinct 少时）, 与其它谓词重排（按 (1−sel)/cost 排序）} 中做选择。
+4. **安全回退**：符号执行超时、动态特性（eval、反射）或副作用时回退为不透明 UDF。正确性只依赖"守卫是过近似"，可以用随机输入做差分测试校验。
+5. **实现**：基于 DuckDB 的 Python UDF 接口或 PostgreSQL PL/Python，分析器离线运行并缓存摘要，查询时零额外分析开销。
+
+**🧭 与最接近工作的区别**
+- GRACEFUL (2025)：把 UDF 当整体估代价，只决策上拉/下推。本 idea 把 UDF 拆成带守卫的路径并新增多种优化动作。
+- *Optimal Predicate Pushdown Synthesis* (Pusharoo, 2026)：为 fold 型 UDF 合成"把已有过滤移到 UDF 之前"的前置过滤器，不从 UDF 谓词本身推导 SQL 守卫，也不做基于代价的选择。
+- Froid (VLDB 2018)：把 T-SQL UDF 整体内联为关系代数，要么全内联要么不内联，不支持 Python 和部分内联。
+- arXiv 查新（关键词：UDF + symbolic execution；UDF + predicate + data skipping；UDF + cost model）未发现从 UDF 路径条件推导守卫并做代价选择的工作。
+
+**🧪 验证方案**
+- 基准：GRACEFUL 公开的 UDF 基准（20 个数据集上的 Python 标量 UDF 查询），另加从 GitHub 采集的真实 PySpark/pandas UDF 过滤器。
+- 指标：端到端加速、回归比例（变慢的查询占比）、可分析 UDF 占比、守卫选择度与 zone-map 跳过率、优化时间。
+- 对比：无优化、GRACEFUL pull-up advisor、Froid 式全内联（能内联的子集）、Pusharoo（适用子集）。
+- 消融：只用守卫下推 / 只用逐路径代价排序 / 去掉记忆化；并统计符号执行失败的原因分布。
+
+🔑 `UDF optimization` `learned cost model` `symbolic execution` `predicate pushdown` `data skipping` `query optimization`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.20 — *Rerank-Depth-Optimal Dimension Reduction: Learning Projections that Minimize Conformal Candidate Budgets for Certified-Recall Vector Search*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **QPAD: Quantile-Preserving Approximate Dimension Reduction for Nearest Neighbors Preservation in High-Dimensional Vector Search** · Jiuzhou Fu et al. (Univ. of Washington) · 📄 ICDE 2026 · [arXiv:2504.16335](https://arxiv.org/abs/2504.16335) |
+| 📌 **线索来源** | V Conclusion and Future Work §"Future directions include stochastic QPAD variants for very large datasets, adaptive parameter schedules for hands-off tuning, and deeper integration with ANNS pipelines to further accelerate retrieval." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🧪 ML · NeurIPS |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+QPAD 是面向检索的无监督降维：在软正交约束下最大化 k 近邻与非近邻之间的分位数间隔，在 5 类数据上的 kNN 召回优于 11 种降维方法，并能接入 4 种 ANN 索引。但在真实的"低维检索 + 全维重排"管线里，决定成本与召回的变量并不是间隔，而是**重排深度** k′：需要从低维结果里取多少候选，才能包含真正的 k 近邻。QPAD 用固定的 k′，召回没有保证；作者把"与 ANNS 管线更深的集成"和"免调参"列为未来工作。现有声明式召回工作（DARTH）只在全维索引上做提前终止，不处理降维失真；LeanVec 等降维方法同样使用固定重排深度。关键 insight：令 ρ(q) 为真 k 近邻在低维空间中的最大秩。只要训练目标直接压低 ρ 的 (1−δ) 分位数，服务时再用 split-conformal 校准 k′，就能**同时**得到更省的候选预算和有分布无关覆盖保证的召回。
+
+**💡 一句话 Idea**
+把降维目标从"间隔"改为"重排深度分位数"：训练投影以最小化真近邻在低维空间中最大秩的 (1−δ) 分位数。服务时按查询局部特征分箱做 Mondrian conformal 校准，为每条查询给出最小的 k′，保证 P(recall@k = 1) ≥ 1−δ；再用 conformal 鞅检测查询分布漂移并触发重校准。
+
+**🛠️ 可能的解决方法**
+1. **可微目标**：对训练查询 q，ρ(q) ≈ Σ_{x∉NN_k(q)} σ((d̃(q, x_k*) − d̃(q, x))/τ)，表示比最远真近邻更近的非近邻个数，σ 为 sigmoid。最小化 E_q[ρ] 的平滑分位数（pinball loss），保留 QPAD 的软正交正则。
+2. **Conformal 校准**：在留出查询上计算非一致性分数 s(q) = ρ(q)，k′_δ = ⌈(1−δ)(n+1)⌉ 分位数。按低维局部间隔特征 g(q) = d̃_(k+1) − d̃_(k) 分箱做 Mondrian 校准，困难查询分到更大的 k′。
+3. **与图索引集成**：低维 HNSW/IVF 的搜索宽度 ef ≥ k′(q)。全维重排只算 k′ 个距离；对图索引自身造成的召回损失，再叠加一层 DARTH 式提前终止预测器，整体预算按两层分位数相加控制。
+4. **漂移监控**：在线对少量带真值的影子查询计算 conformal p 值，构造检验鞅。超过阈值即提示分布漂移（如文搜图的 OOD 查询），触发重校准或重训。
+5. **成本**：训练复杂度与 QPAD 同阶（只需每个训练查询的 kNN 与负采样），校准只需几千条查询。
+
+**🧭 与最接近工作的区别**
+- QPAD (2025)：优化分位数间隔，k′ 固定，召回无保证。
+- *DARTH: Declarative Recall Through Early Termination for Approximate Nearest Neighbor Search* (2025)：在全维索引上实现声明式召回，不涉及降维投影的训练与失真。
+- *LeanVec: Searching vectors faster by making them fit* (2023)：查询感知的线性降维 + 重排，重排深度固定，没有覆盖保证。
+- arXiv 查新（关键词：conformal + nearest neighbor search；conformal + vector search；recall guarantee + ANN）未发现直接重合的工作。
+
+**🧪 验证方案**
+- 数据：SIFT1M、GIST1M、Deep10M、OpenAI/Cohere 文本嵌入（1M 级），以及 BigANN Text2Image（检验 OOD 查询）。
+- 指标：目标召回 1−δ 的实际覆盖率、平均与 P99 的 k′、QPS、全维距离计算数、训练与校准时间。
+- 对比：PCA / QPAD / LeanVec + 固定 k′、全维 HNSW、全维 HNSW + DARTH。
+- 消融：间隔目标 vs 重排深度目标 / 全局 vs Mondrian 校准 / 有无漂移监控（在 ID→OOD 切换流上测覆盖率塌陷）。
+
+🔑 `vector search` `dimensionality reduction` `conformal prediction` `re-ranking` `recall guarantee` `ANNS`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.21 — *Purpose Types for Warehouse Pipelines: Sound Purpose-Label Propagation with Implicit Flows and Declassifying Aggregates*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Data Guard: A Fine-grained Purpose-based Access Control System for Large Data Warehouses** · Khai Tran et al. (LinkedIn) · 📄 ICDE 2026 · [arXiv:2502.01998](https://arxiv.org/abs/2502.01998) |
+| 📌 **线索来源** | VIII Conclusions And Future Work §"We also plan to enhance Data Guard capabilities to support privacy-enhancing technologies such as anonymization and differential privacy, and encryption for data storage." + §"Finally, defining a theoretical framework for the fine-grained access control problem and establishing the properties of Data Guard in the context of this framework is an important future direction." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🖥️ Systems · OSDI |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★★ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+Data Guard 在 LinkedIn 落地了基于用途的细粒度访问控制。策略按"语义标签 + 访问用途"书写，编译成掩码 SQL 视图，访问时按用途透明路由。但标签挂在**基表列**上，而数仓里绝大多数表是 ETL/CTAS 派生的。派生列的标签如果靠人工维护或只按显式血缘传播，就会漏掉两类泄漏。第一类是**隐式流**：`WHERE salary > 200k` 的结果集即便不含 salary 列，也泄露了该列的信息。第二类是**过度污染**：`AVG(salary) GROUP BY dept HAVING COUNT(*) ≥ 50` 本可以合法降级，却被当作敏感数据。作者自己提出了两件事：需要一个理论框架来刻画 FGAC 问题和 Data Guard 的性质，以及支持匿名化与差分隐私。关键 insight：把用途标签做成**SQL 上的信息流类型系统**。显式血缘、谓词或连接键带来的隐式流、聚合降级（k-阈值或 DP 预算）都是类型规则，于是可以证明"相对用途的非干扰性"，并让派生表的掩码视图自动生成。
+
+**💡 一句话 Idea**
+为数仓 SQL 管线定义"用途类型"：列标签沿显式血缘传播，谓词、连接与分组键带来的隐式流会抬升结果的行级标签，满足 k-阈值或扣除 DP 预算的聚合可以降级。在此上证明相对用途的非干扰性，并把推导出的标签自动编译为 Data Guard 的掩码视图，策略变更时增量重标注。
+
+**🛠️ 可能的解决方法**
+1. **标签格**：L = 语义标签集合的幂集 × 变换等级 {raw, masked, k-agg, dp(ε)}。策略 π(purpose) 给出每个标签允许的最低变换等级。
+2. **类型规则**：投影列的标签 = 表达式中各列标签的 join。选择、连接、分组键的标签并入结果的"上下文标签" pc，再并入每个输出列，这就是隐式流。聚合满足 `HAVING COUNT(*) ≥ k`（必要时由编译器自动插入）时降级为 k-agg；使用 DP 聚合时降级为 dp(ε)，ε 从用途预算中扣除。
+3. **可靠性定理**：对任意两个只在用途 p 无权访问的列上不同的数仓实例，p 下可见的输出相同（DP 情形下 ε-不可区分）。证明沿用 IFC 的非干扰性框架，并在 Coq/Lean 中形式化核心片段。
+4. **系统**：解析数仓的 SQL/dbt/Spark SQL 作业，在列级血缘图（如 DataHub）上做标签推断；派生表落地时生成掩码视图。策略变更时只重算受影响列的下游闭包，对数万张表增量处理。
+5. **精度提升**：为降低隐式流造成的过度污染，加入"标签保持改写"，例如把敏感谓词改写为在已降级视图上执行。同时度量被标为敏感的派生列比例，作为可用性指标。
+
+**🧭 与最接近工作的区别**
+- Data Guard (2025)：基表级语义标签 + 视图编译，派生数据靠人工标注，也没有形式化保证。
+- *Lineage-Aware Memory Governance: A Derivation-Gated Framework for Privacy-Preserving Column-Level Access Control in Enterprise AI Agents* (2026)：按显式列血缘拦截缓存的结果，作者自己声明不处理隐式编码的派生信息，也没有聚合降级。
+- IFDB (EuroSys 2013)：数据库中的去中心化信息流控制，标签挂在进程或元组上，没有用途维度，也没有 DP/k-阈值降级。
+- arXiv 查新（关键词：purpose-based access control；access control + lineage + SQL；information flow + SQL + labels；declassification + database）只发现上述血缘门控工作，未发现带隐式流与聚合降级的用途类型系统。
+
+**🧪 验证方案**
+- 管线：TPC-DS 的 ETL 派生（星型模型 → 汇总表）、GitLab 公开的 dbt 项目（数千个模型），并为源列合成语义标签与用途策略。
+- 可靠性测试：差分测试，即只扰动某用途无权访问的源列，检查该用途下所有派生输出不变（或在 DP 情形下统计检验分布差异）。
+- 指标：漏报泄漏数（应为 0）、过度污染率、增量重标注时间、生成视图的查询开销。
+- 对比：仅显式血缘传播、Data Guard 人工标签、无传播；消融：去掉隐式流规则 / 去掉聚合降级 / 去掉标签保持改写。
+
+🔑 `purpose-based access control` `information flow control` `data lineage` `differential privacy` `data governance` `type system`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.22 — *Factorization-Aware Plan Spaces for Cyclic Many-to-Many Queries: Choosing Between Factorized Binary Joins and WCOJ via f-Representation Statistics*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Optimizing Queries with Many-to-Many Joins** · Hasara Kalumin & Amol Deshpande (UMD) · 📄 ICDE 2024 · [arXiv:2412.16323](https://arxiv.org/abs/2412.16323) |
+| 📌 **线索来源** | 7. Conclusion and Future Work §"There are number of natural directions for future work that we are planning to explore, including generalizing to handle cyclic queries; incorporation of WCOJs and deciding when to use them; and better selectivity estimation techniques." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🌐 WWW · KDD |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★★☆ |
+
+**🔍 深入分析**
+这篇论文指出，多对多连接（图工作负载常见）在使用因子化中间表示时，传统"扁平基数"代价模型会严重失真。作者为因子化表示提出了更准确的代价模型和连接顺序算法，但只覆盖**无环**查询；环状查询、何时使用 WCOJ、更好的选择度估计三项都留作未来工作。现有统一框架在这三点上各有缺口。Free Join 统一了 WCOJ 与二元连接，但输出扁平、代价基于基数。Mhedhbi & Salihoglu 的混合计划用 i-cost，不考虑因子化。Kùzu 等系统同时具备因子化与 WCOJ，但只用启发式。真正的空隙是三者交叉处：环状部分用 WCOJ，各"包"之间保持因子化；决定这一选择的统计量是 **f-表示的大小**，而不是输出基数，目前没有估计器能提供它。关键 insight：f-表示的大小等于 f-tree 各节点上"父路径 × 值"的不同对数之和，可以用条件 distinct 计数草图加度序列上界来估计。
+
+**💡 一句话 Idea**
+为环状多对多查询构造"超树分解 × 包内算法 {WCOJ, 二元} × 包间因子化"的混合计划空间。以 f-表示大小作为代价核心，用条件 distinct 计数草图和度序列上界估计，在 DP 中联合选择分解、包内算法与连接顺序，使中间结果按因子化规模而非扁平规模计价。
+
+**🛠️ 可能的解决方法**
+1. **计划空间**：枚举宽度 ≤ 2 的广义超树分解，每个包选 WCOJ（Generic Join / Free Join 风格）或二元哈希连接，包与包之间按 f-tree 保持 d-表示，最后按需扁平化或直接做因子化聚合。
+2. **f-表示规模估计**：对 f-tree 节点 v，size(v) = |π_{anc(v) ∪ v}| 的不同值数，即"祖先路径条件下的 distinct"。用 KMV 草图维护连接键对的 distinct 组合，配合度直方图做独立性修正。上界采用度序列 ℓp-范数的悲观界，与估计值一起给出代价区间。
+3. **包内代价**：WCOJ 代价用带度约束的 AGM 界；二元代价用 f-表示规模。DP 的状态 = (已覆盖的超边集合, 当前 f-tree 形状)，并沿用 DPconv 等子集卷积剪枝以控制枚举规模。
+4. **鲁棒决策**：当估计区间重叠时，偏向最坏情况更好的计划（min–max regret），以规避多对多连接下的爆炸风险。
+5. **工程**：在原论文的向量化原型或 DuckDB 扩展中实现因子化向量（类似 Kùzu 的 factorized vectors），并接入 Free Join 执行器。
+
+**🧭 与最接近工作的区别**
+- 源论文 (2024)：只处理无环查询，没有 WCOJ 选择。
+- *Free Join: Unifying Worst-Case Optimal and Traditional Joins* (2023)：统一执行框架，但中间结果扁平、代价基于基数。
+- *Optimizing Subgraph Queries by Combining Binary and Worst-Case Optimal Joins* (2019)：混合计划 + i-cost，没有因子化，也没有 f-表示规模统计。
+- arXiv 查新（关键词：factorized + join order；factorized + cardinality estimation；degree sequence + factorized；worst-case optimal + binary join + optimizer）未发现以 f-表示规模驱动 WCOJ/二元选择的工作。
+
+**🧪 验证方案**
+- 查询：LDBC SNB Interactive/BI 的环状模式、SNAP 图（LiveJournal、Orkut、Twitter）上的三角形/4-环/钻石模式，以及 JOB 与 STATS-CEB 中的多对多连接。
+- 指标：端到端时间、峰值中间规模（扁平 vs 因子化）、f-表示规模估计的 q-error、优化耗时。
+- 对比：DuckDB、Kùzu、Free Join、源论文的无环优化器、纯 WCOJ（Generic Join）。
+- 消融：扁平基数代价 vs f-表示代价 / 去掉悲观上界 / 固定"环用 WCOJ"启发式。
+
+🔑 `many-to-many joins` `factorized databases` `worst-case optimal joins` `cyclic queries` `cardinality estimation` `query optimization`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.23 — *Version-Interval Indexing for Online Predicate-Aware Isolation Checking: Detecting Phantoms and Predicate Write Skew in Streaming SQL Histories*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **Online Timestamp-Based Transactional Isolation Checking of Database Systems** · Hexu Li et al. (Nanjing Univ.) · 📄 ICDE 2025 · [arXiv:2504.01477](https://arxiv.org/abs/2504.01477) |
+| 📌 **线索来源** | VIII Conclusion, Discussions, and Future Work §"We plan to extend Chronos and Aion to support more data types and complex queries, such as SQL queries with predicates, by inferring the commit/version order [25] and/or transaction snapshots from their start and commit timestamps/IDs." + §"Our work do not directly work for database systems which implement SI/SER using mechanisms distinct from the timestamp-based methods." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🖥️ Systems · OSDI |
+| ⭐ Novelty | ★★★★☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+Chronos/Aion 利用数据库内核暴露的开始与提交时间戳，把 SI/SER 检查做成增量的在线算法，可以持续检查约 12K TPS 的事务流。但它们只支持按键的读写。真实 SQL 中大量是**谓词读**（范围扫描、`SELECT ... WHERE status = 'open'`），而幻读、谓词写偏斜这类最隐蔽的隔离 bug 恰恰出在谓词上。Adya 的形式化早已定义了谓词依赖，但已有检查器（Elle、PolySI 等）以键值或列表追加为模型，绕开了谓词。作者也把"带谓词的 SQL"和"非时间戳实现（如 PostgreSQL 可见性规则）"列为未来工作。难点在于：谓词读的正确性是"在快照 s 时满足 P 的所有版本恰好等于返回集"，在线检查需要对**所有历史版本**做时空范围查询。关键 insight：每个版本对应属性空间中的一个点，加上时间轴上的有效区间 [cts, next_cts)。这样谓词读检查就是一次**范围 × 时刻的 stabbing 查询**，而 SER 的谓词反依赖是新写入对"活跃谓词登记表"的反向 stabbing。两者都可以用区间增强的空间索引在对数时间内完成。
+
+**💡 一句话 Idea**
+把版本建模为"属性点 × 有效时间区间"，存进区间增强的空间索引，把谓词读表示为"谓词矩形 × 快照时刻"。在线 SI 检查变为 stabbing 查询结果与返回集的比对；SER 的谓词 rw 依赖由新写入反查活跃谓词登记表得到。再用水位线回收空间，把 Aion 扩展为支持幻读与谓词写偏斜检测的在线检查器。
+
+**🛠️ 可能的解决方法**
+1. **历史采集**：客户端代理记录每个谓词读 (P, s, 返回行 ID 集)，内核暴露 (start_ts, commit_ts)。对 PostgreSQL，用 `pg_current_snapshot()` 记录 xmin/xmax/xip，推导可见性；版本顺序从逻辑复制流恢复。
+2. **版本区间索引**：键 = 被索引属性的值，区间 = [cts, 被覆盖的 cts)，存于 R-tree（属性维 × 时间维）或"区间树嵌套 B-tree"。新提交写入时关闭旧版本区间、插入新版本。非矩形谓词用包围盒检索 + 残差谓词复核。
+3. **SI 检查**：对谓词读做 stabbing(P, s)，得到期望集 E。返回集缺行判为幻读或非快照读，多行判为读到未来或已中止版本，并输出最小反例（缺失/多余版本及其写事务）。
+4. **SER 检查**：活跃谓词登记表 = {(P 包围盒, s, T)}。新写入 w（前像与后像）提交时反向 stabbing，找出所有 s < cts(w) 且 P 命中的读事务，加 rw 边并在增量依赖图上检测环（沿用 Aion-SER 的增量环检测）。
+5. **回收与乱序**：水位线 = 最小活跃快照 − 允许的乱序延迟，低于水位线的版本区间与谓词登记批量删除，内存占用与活跃窗口成正比。
+
+**🧭 与最接近工作的区别**
+- Aion (2025)：在线、基于时间戳，但只支持按键读写，不支持谓词。
+- *Efficient Black-box Checking of Snapshot Isolation in Databases* (PolySI, 2023)：离线黑盒 SI 检查，同样以键值历史为模型。
+- *Boosting End-to-End Database Isolation Checking via Mini-Transactions* (MTC, 2025)：通过限制工作负载形态提升检查效率，不覆盖谓词读。
+- arXiv 查新（关键词：isolation checking；serializability + checking + predicate；snapshot isolation + checker；phantom + isolation + history）未发现在线谓词感知的隔离检查器。
+
+**🧪 验证方案**
+- 工作负载：TPC-C（Delivery、Stock-Level 含谓词读）、带范围扫描的 YCSB-E、自定义谓词写偏斜模板（如值班医生问题）。
+- 数据库：TiDB、YugabyteDB、CockroachDB、PostgreSQL（可见性规则模式）；注入已知的幻读或谓词锁缺失 bug（修改源码关闭 predicate lock / SSI 检查）。
+- 指标：可持续检查吞吐（TPS）、检测延迟、内存、误报/漏报。
+- 对比：Aion（忽略谓词）、PolySI（离线）、Elle（列表追加）；消融：R-tree vs 区间树 / 有无水位线回收 / 乱序容忍窗口大小。
+
+🔑 `isolation checking` `snapshot isolation` `serializability` `phantom` `predicate reads` `interval index`
+
+[🔝 top](#top)
+
+---
+
+## 💡 Idea 14.24 — *Event-Triggered Detector Selection with Warm Pools: Budgeted, Label-Free Re-Selection for Streaming Time-Series Anomaly Detection*
+
+| | |
+|:--|:--|
+| 🎯 **源论文** | **RAMSeS: Robust and Adaptive Model Selection for Time-Series Anomaly Detection Algorithms** · Mohamed Ahmed Abdelmaksoud Mohamed et al. (TU Berlin & BIFOLD) · 📄 ICDE 2026 · [arXiv:2602.21766](https://arxiv.org/abs/2602.21766) |
+| 📌 **线索来源** | VII Limitations and Future Directions §"periodic re-execution of GA-Ens, LinTS and GAN incurs higher memory, limiting applicability in resource-constrained environments." + §"Future work could adopt re-optimization triggered only when distribution shifts are detected or accuracy degradation." |
+| 📮 **投稿建议** | 🗄️ **DB** · ICDE / VLDB ＋ 🌐 WWW · KDD |
+| ⭐ Novelty | ★★★☆☆ |
+| 🚀 Impact | ★★★★☆ |
+| 🧗 Difficulty | ★★★☆☆ |
+
+**🔍 深入分析**
+RAMSeS 用两条分支为时间序列异常检测（TSAD）选模型：遗传算法优化的堆叠集成，以及 Thompson sampling / ε-greedy 的自适应单模型选择，并用 GAN 与蒙特卡洛做鲁棒性验证。但它在线阶段**周期性重跑**全部组件，内存与计算开销大。作者提出改为"仅在检测到分布漂移或精度下降时触发"，可是精度下降在无标签的流上不可观测。另一个被忽视的成本是：在线检测器有状态（模型、缓冲、统计量），被替换的检测器若已"冷却"，重新启用时需要预热，这会在漂移最关键的时刻造成检测盲区。真正的问题是一个两层的**有预算的系统决策**：何时重选（无标签触发），以及哪些检测器保持热态（内存背包）。关键 insight：检测器之间的**秩一致性向量**是无标签、对漂移敏感的统计量，可以用任意时刻有效的 e-过程控制误触发率；再从历史重选序列学出体制转移马尔可夫链，就能估计漂移后每个检测器成为最优的概率，作为热池背包的价值。
+
+**💡 一句话 Idea**
+用检测器与鲁棒秩聚合共识之间的秩一致性向量构造无标签 e-过程，作为重选触发器（误触发率可控）。在内存预算内，用"漂移后成为最优的概率 × 避免的预热延迟"作为价值，背包式维护热态检测器池；重选时只在热池内做 Thompson sampling，并在后台预热最有希望的冷候选。
+
+**🛠️ 可能的解决方法**
+1. **无标签信号**：窗口 w 内，把各检测器的异常分数做鲁棒秩聚合得到共识 c_w，计算每个检测器与 c_w 的 Spearman 相关，得到一致性向量 a_w，再加上输入分布的 MMD 草图。
+2. **触发器**：对 a_w 的变化构造混合鞅 e-过程，e 值超过 1/α 时触发重选，并保证任意时刻误触发率 ≤ α。同时设最短间隔，防止抖动。
+3. **热池背包**：每个检测器 i 有内存 m_i、预热时长τ_i，价值 v_i = P(i 在下一体制最优) × τ_i × 单位盲区损失。概率由体制转移链给出（体制 = 窗口元特征聚类），在预算 M 下用动态规划或贪心求解背包。
+4. **选择与理论**：触发后在热池内用 Thompson sampling 选模型，奖励用共识一致性代理（可选少量人工复核标签做校正）。分析把分段平稳 bandit 的变点检测遗憾界（CD-UCB 类）推广到代理奖励与热池约束。
+5. **实现**：作为流式 TSAD 的选择中间件，可接入 TimeEval/TSB-AD 检测器库；内存按检测器实测状态大小计量。
+
+**🧭 与最接近工作的区别**
+- RAMSeS (2026)：周期性全量重优化，没有内存预算，也没有预热建模。
+- *MSAD: A Deep Dive into Model Selection for Time series Anomaly Detection* (2025)：以整条序列为单位的离线选择，不处理流式漂移。
+- *Retrieval Over Training: Similarity search-based Model Selection for Time Series Anomaly Detection* (2026)：检索式选择，针对 OOD，但仍是一次性选择，不涉及在线触发与热池。
+- arXiv 查新（关键词：anomaly detection + model selection + streaming + drift；anomaly detector + memory budget）未发现直接重合的工作。
+
+**🧪 验证方案**
+- 数据：TSB-AD / TSB-UAD 的单变量与多变量集合、mTSBench；把异构序列首尾拼接成带体制切换的长流。
+- 指标：VUS-PR、AUC-PR、峰值内存、重选次数、漂移后检测盲区时长、误触发率（与 α 对比）。
+- 对比：RAMSeS 周期重优化、静态最优（oracle）、MSAD 选择器、LaF-AD 无标签选择。
+- 消融：去掉 e-过程（固定阈值）/ 去掉热池（全部热或全部冷）/ 去掉体制转移链（价值只按历史频率）。
+
+🔑 `time-series anomaly detection` `model selection` `concept drift` `e-process` `streaming` `resource-aware`
+
+[🔝 top](#top)
